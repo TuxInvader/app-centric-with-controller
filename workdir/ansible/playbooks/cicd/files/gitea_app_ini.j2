@@ -1,0 +1,68 @@
+APP_NAME = NGINX CiCd Demo
+RUN_USER = gitea
+RUN_MODE = prod
+
+[oauth2]
+JWT_SECRET = {{ gitea_secret_jwt.stdout }}
+
+[security]
+INTERNAL_TOKEN = {{ gitea_secret_token.stdout }}
+INSTALL_LOCK   = true
+SECRET_KEY     = {{ gitea_secret_key.stdout }}
+
+[database]
+DB_TYPE  = mysql
+HOST     = 127.0.0.1:3306
+NAME     = gitea
+USER     = gitea
+PASSWD   = nginx101
+SSL_MODE = disable
+CHARSET  = utf8
+PATH     = /var/lib/gitea/data/gitea.db
+
+[repository]
+ROOT = /home/gitea/gitea-repositories
+
+[server]
+SSH_DOMAIN       = localhost
+DOMAIN           = localhost
+HTTP_PORT        = 3000
+ROOT_URL         = http://{{gitea_hostname}}:3000/
+DISABLE_SSH      = false
+SSH_PORT         = 22
+LFS_START_SERVER = true
+LFS_CONTENT_PATH = /var/lib/gitea/data/lfs
+LFS_JWT_SECRET   = {{ gitea_secret_lfs.stdout }}
+OFFLINE_MODE     = false
+
+[mailer]
+ENABLED = false
+
+[service]
+REGISTER_EMAIL_CONFIRM            = false
+ENABLE_NOTIFY_MAIL                = false
+DISABLE_REGISTRATION              = true
+ALLOW_ONLY_EXTERNAL_REGISTRATION  = false
+ENABLE_CAPTCHA                    = false
+REQUIRE_SIGNIN_VIEW               = true
+DEFAULT_KEEP_EMAIL_PRIVATE        = true
+DEFAULT_ALLOW_CREATE_ORGANIZATION = true
+DEFAULT_ENABLE_TIMETRACKING       = true
+NO_REPLY_ADDRESS                  = noreply.example.org
+
+[picture]
+DISABLE_GRAVATAR        = false
+ENABLE_FEDERATED_AVATAR = true
+
+[openid]
+ENABLE_OPENID_SIGNIN = true
+ENABLE_OPENID_SIGNUP = true
+
+[session]
+PROVIDER = file
+
+[log]
+MODE      = file
+LEVEL     = info
+ROOT_PATH = /var/lib/gitea/log
+

@@ -1,0 +1,15 @@
+# Ansible variable configuration
+---
+
+  controller:
+    version: "3.1"
+    api_version: "v1"
+    hostname: mpctl.multipass.test
+    install_package: ~/offline-controller-installer-latest.tar.gz
+    license_file: ~/license.txt
+    admin_email: admin@nginx.com
+    admin_password: "{{ lookup('password', '~/controller.passwd length=12 chars=ascii_letters,digits') }}"
+    admin_firstname: Admini
+    admin_lastname: Strator
+    api_key: ''
+

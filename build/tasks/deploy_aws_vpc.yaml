@@ -1,0 +1,188 @@
+---
+
+  - name: Create the VPC for the workshop
+    ec2_vpc_net:
+      name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}"
+      tags:
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      cidr_block: "{{ ws.ec2.cidr_block ~ '.0.0/16' }}"
+      dns_hostnames: yes
+      dns_support: yes
+      state: present
+    register: vpc_result
+
+  - name: Register the VPC Info as a fact
+    set_fact:
+      vpc_id: "{{ vpc_result.vpc.id }}"
+
+  - name: Create the public VPC Subnet
+    ec2_vpc_subnet:
+      vpc_id: "{{ vpc_id }}"
+      cidr: "{{  ws.ec2.cidr_block ~ '.' ~ ws.ec2.subnets.public.third ~ '.0/' ~ ws.ec2.subnets.public.bits }}"
+      tags:
+        Name: "public"
+        public: "yes"
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      state: present
+
+  - name: Create the WorkSpace private subnets
+    ec2_vpc_subnet:
+      vpc_id: "{{ vpc_id }}"
+      cidr: "{{  ws.ec2.cidr_block ~ '.' ~ ( (ws.ec2.subnets.private.third | int ) + (item | int) ) ~ '.0/' ~ ws.ec2.subnets.private.bits}}"
+      tags:
+        Name: "{{ ws.prefix ~ item ~ '_private' }}"
+        public: "no"
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      state: present
+    with_sequence: "count={{ ws.stacks }} format=%02d"
+
+  - name: Get the Private VPC subnets
+    ec2_vpc_subnet_info:
+      filters:
+        vpc-id: "{{ vpc_id }}"
+        "tag:public": "no"
+    register: vpc_private_subnet_facts
+
+  - name: Get the Public VPC subnets
+    ec2_vpc_subnet_info:
+      filters:
+        vpc-id: "{{ vpc_id }}"
+        "tag:public": "yes"
+    register: vpc_public_subnet_facts
+
+  - name: Store the Public Subnet IDs
+    set_fact:
+      vpc_public_subnet_ids: "{{ vpc_public_subnet_ids | default({}) | combine({ (item.tags.Name | default('default')): item.subnet_id }) }}"
+    loop: "{{ vpc_public_subnet_facts.subnets }}"
+    loop_control:
+      label:
+        id: "{{item.subnet_id}}"
+        Name: "{{ item.tags.Name }}"
+
+  - name: Store the Private Subnet IDs
+    set_fact:
+      vpc_private_subnet_ids: "{{ vpc_private_subnet_ids | default({}) | combine({ (item.tags.Name | default('default')): item.subnet_id }) }}"
+    loop: "{{ vpc_private_subnet_facts.subnets }}"
+    loop_control:
+      label:
+        id: "{{item.subnet_id}}"
+        Name: "{{ item.tags.Name }}"
+
+  - name: Create the Internet Gateway
+    ec2_vpc_igw:
+      vpc_id: "{{ vpc_id }}"
+      state: present
+      tags:
+        Name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_gw"
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+    register: create_gateway
+
+  - name: Store the Internet Gateway ID
+    set_fact:
+      vpc_gateway_id: "{{ create_gateway.gateway_id }}"
+
+  - name: Create the Route Table for the VPC
+    ec2_vpc_route_table:
+      vpc_id: "{{ vpc_id }}"
+      state: present
+      tags:
+        Name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_route"
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      subnets: "{{ vpc_public_subnet_ids.values() + vpc_private_subnet_ids.values() }}"
+      #subnets: "{{ vpc_public_subnet_ids.values() }}"
+      routes:
+        - dest: 0.0.0.0/0
+          gateway_id: "{{ vpc_gateway_id }}"
+    register: create_route_table
+
+  - name: Store the route Table ID
+    set_fact:
+      route_table_id: "{{ create_route_table.route_table.route_table_id }}"
+
+  # modify the existing default group, because Ansible timesout if we add a
+  # self referncing rule. The default grop has one by default ;-)
+  - name: Create or Modify the Security Group with our Ingress/Egree Rules
+    ec2_group:
+      name: "default"
+      description: "default VPC security group"
+      #description: "security group to controll ingress to workshop"
+      vpc_id: "{{ vpc_id }}"
+      state: present
+      purge_rules: no
+      purge_rules_egress: no
+      purge_tags: no
+      rules:
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 443
+          to_port: 443
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 8443
+          to_port: 8443
+          cidr_ip: 0.0.0.0/0
+  #      - proto: all
+  #        #group_name: "{{ ws.aws_account_id ~ '/' ~ nginx_sg.group_id ~ '/' ~ ws.uk_se_name ~ '_' ~  ws.stack_name ~ '_sg' }}"
+  #        group_name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
+  #        group_id: "{{ nginx_sg.group_id }}"
+  #        from_port: 0
+  #        to_port: 65535
+      rules_egress:
+        - proto: all
+          from_port: 0
+          to_port: 65535
+          cidr_ip: 0.0.0.0/0
+    register: nginx_sg
+
+  #- name: debug
+  #  debug:
+  #    msg: "{{ nginx_sg }}"
+
+  #- name: Add self access rule to the Security Group
+  #  ec2_group:
+  #    name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
+  #    description: "security group to controll ingress to workshop"
+  #    vpc_id: "{{ vpc_id }}"
+  #    state: present
+  #    purge_rules: no
+  #    purge_rules_egress: no
+  #    purge_tags: no
+  #    rules:
+  #      - proto: all
+  #        #group_name: "{{ ws.aws_account_id ~ '/' ~ nginx_sg.group_id ~ '/' ~ ws.uk_se_name ~ '_' ~ ws.stack_name ~ '_sg' }}"
+  #        group_name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
+  #        group_id: "{{ nginx_sg.group_id }}"
+  #        from_port: 0
+  #        to_port: 65535
+
+  - name: Create new EC2 key_pair
+    ec2_key:
+      name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
+      force: false
+      state: present
+    register: vpc_key_result
+
+  - name: Register the EC2 key_pair as a fact
+    set_fact:
+      vpc_key: "{{ vpc_key_result }}"
+    when: vpc_key_result.key.private_key is defined
+  
+  - name: Store key in secrets folder
+    copy:
+      dest: secrets/user.pem
+      content: "{{ vpc_key.key.private_key }}"
+      mode: 0400
+    when: vpc_key.key.private_key is defined
+

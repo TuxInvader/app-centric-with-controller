@@ -1,0 +1,122 @@
+---
+- hosts: localhost
+  become: no
+  connection: local
+  gather_facts: yes
+  vars_files:
+    - secrets/aws_config.yaml
+    - vars.yaml
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ ws.aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ ws.aws_secret_key }}"
+    AWS_REGION: "{{ ws.ec2.region }}"
+
+  tasks:
+
+    - name: Reset the inventory file
+      copy:
+        content: |
+          localhost
+
+          [controllers]
+
+          [controllers:vars]
+          ansible_ssh_private_key_file=secrets/user.pem
+
+        dest: inventory
+
+    - name: locate and register the AMI ID
+      include_tasks: tasks/find_ami_id.yaml
+
+    - name: Deploy the VPC Task
+      include_tasks: tasks/deploy_aws_vpc.yaml
+
+    - name: Create and save new SSH Keys
+      include_tasks: tasks/deploy_aws_keys.yaml
+
+    - name: Retrieve the EC2 instances already deployed
+      ec2_instance_info:
+        filters:
+          "tag:stack": "{{ ws.stack_name }}"
+          "tag:UK-SE": "{{ ws.uk_se_name }}"
+          "instance-state-name": "running"
+      register: ec2_instance_facts
+
+    - name: "Set Fact: ec2_instances"
+      set_fact:
+        ec2_instances: "{{  ec2_instances | default({}) | combine({ (item.tags.Name | default('default')): item.instance_id }) }}"
+      loop: "{{ ec2_instance_facts.instances }}"
+      loop_control:
+        label:
+          id: "{{item.instance_id}}"
+          Name: "{{ item.tags.Name }}" 
+
+    - name: Allow access to S3 from the new VPC
+      include_tasks: tasks/setup_s3_policy.yaml
+
+    - name: Deploy the Virtual Machines Task
+      include_tasks: tasks/deploy_aws_vms.yaml
+      with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
+
+    - name: Dump the deployments information
+      debug:
+        msg: "Stack: {{item}} {{ deployed[item].gateway.public_dns_name }}"
+      with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
+
+    - name: Add ansible controllers to local inventory
+      lineinfile:
+        line: "{{ deployed[ ws.prefix ~ item ].gateway.public_dns_name }} wsid={{ ws.prefix }}{{ item }} privnet={{ ws.ec2.cidr_block ~ 
+              '.' ~ (( ws.ec2.subnets.private.third | int ) + ( item | int )) }} privmask={{ ws.ec2.subnets.private.bits
+              }} privip={{ deployed[ ws.prefix ~ item ].gateway.secondary_ip }}"
+        insertafter: "\\[controllers\\]"
+        path: inventory
+        state: present
+      with_sequence: "count={{ ws.stacks }} format=%02d"
+
+    - name: add the controllers to the current playbook too
+      add_host:
+        name: "{{ deployed[ ws.prefix ~ item ].gateway.public_dns_name }}"
+        groups:
+          - controllers
+        ansible_ssh_private_key_file: secrets/user.pem
+        wsid: "{{ ws.prefix }}{{ item }}"
+        privnet: "{{ ws.ec2.cidr_block ~ '.' ~ (( ws.ec2.subnets.private.third | int ) + ( item | int )) }}"
+        privmask: "{{ ws.ec2.subnets.private.bits }}"
+        privip: "{{ deployed[ ws.prefix ~ item ].gateway.secondary_ip }}"
+      with_sequence: "count={{ ws.stacks }} format=%02d"
+
+    - name: Add controller host record to Route53 DNS
+      route53:
+        state: present
+        hosted_zone_id: "{{ ws.route53.zone_id }}"
+        record: "{{ item ~ '.' ~ ws.route53.zone }}"
+        type: A
+        ttl: 120
+        value: "{{ deployed[item].gateway.public_ip_address }}"
+        overwrite: yes
+      with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
+
+    - name: Add controller wildcard record to Route53 DNS
+      route53:
+        state: present
+        hosted_zone_id: "{{ ws.route53.zone_id }}"
+        record: "{{ '*.' ~ item ~ '.' ~ ws.route53.zone }}"
+        type: A
+        ttl: 120
+        value: "{{ deployed[item].gateway.public_ip_address }}"
+        overwrite: yes
+      with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
+
+    - name: Wait for first gateway to be reachable
+      wait_for:
+        port: 22
+        host: "{{  deployed[ ws.prefix ~ '01' ].gateway.public_dns_name }}"
+        delay: 15
+        sleep: 5
+        timeout: 60
+      become: no
+      delegate_to: localhost
+
+- name: Deploy the workshop files to the gateways
+  import_playbook: deploy_workshop.yaml
+

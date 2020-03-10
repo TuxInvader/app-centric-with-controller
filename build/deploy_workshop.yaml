@@ -1,0 +1,147 @@
+---
+
+- hosts: controllers
+  become: yes
+  gather_facts: no
+  vars_files:
+    - secrets/aws_config.yaml
+    - vars.yaml
+
+  tasks:
+
+    - name: Wait for gateway to be reachable
+      wait_for:
+        port: 22
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+        sleep: 5
+        timeout: 60
+      become: no
+      delegate_to: localhost
+    
+    - name: Ensure python symlink exists
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+    - name: Set the gateway machines hostname
+      command:
+        cmd: "hostname gateway"
+
+    - name: "Setup the secondary interface and enable ip forwarding"
+      copy:
+        dest: /etc/rc.local
+        content: |
+          #!/bin/bash
+
+          nic=$(ip link show | awk -F: '{ if ( $3 ~ /.*state DOWN.*/ ) print $2 }')
+          ifconfig $nic {{ privip }}/{{ privmask }} up
+
+          iptables -t nat -F POSTROUTING
+          iptables -F FORWARD
+
+          iptables -p FORWARD -j REJECT
+          iptables -A FORWARD -s {{ privnet }}.0/{{ privmask }} -j ACCEPT
+          iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+          iptables -t nat -A POSTROUTING -s {{ privnet }}.0/{{ privmask }} -j MASQUERADE
+
+          echo 1 > /proc/sys/net/ipv4/ip_forward
+
+          exit 0
+        mode: 0750
+
+    - name: Enable IP forwarding
+      command:
+        cmd: "/etc/rc.local"
+
+    - name: Add hosts
+      lineinfile:
+        line: "{{ hostline }}"
+        path: /etc/hosts
+        state: present
+      loop: "{{ lookup('file', 'secrets/hosts.' ~ wsid).splitlines() }}"
+      loop_control:
+        loop_var: hostline
+
+    - name: Copy over the ssh key
+      copy:
+        src: secrets/user.pem
+        dest: /home/ubuntu/.ssh/id_rsa
+        owner: ubuntu
+        group: ubuntu
+        mode: 0400
+
+    - name: Copy over the NGINX Plus cert
+      copy:
+        src: secrets/nginx-repo.crt
+        dest: /etc/ssl/nginx/
+        owner: root
+        group: root
+        mode: 0444
+
+    - name: Copy over the NGINX Plus key
+      copy:
+        src: secrets/nginx-repo.key
+        dest: /etc/ssl/nginx/
+        owner: root
+        group: root
+        mode: 0444
+
+    - name: Install Ansible and other Packages
+      include_tasks: tasks/setup_packages.yaml
+
+    - name: Copy over any previous certbot configs
+      unarchive:
+        dest: /etc/
+        owner: root
+        src: "secrets/letsencrypt-{{ wsid }}.tgz"
+      ignore_errors: true
+
+    - name: Copy over controller license key
+      copy:
+        dest: /home/ubuntu/
+        owner: ubuntu
+        group: ubuntu
+        src: "secrets/license.txt"
+
+    - name: Copy over workdir
+      synchronize:
+        src: ../workdir/
+        dest: /home/ubuntu/
+        archive: yes
+        copy_links: yes
+        delete: no
+      become: ubuntu
+
+    - name: create the node_setup playbook
+      template:
+        dest: /home/ubuntu/ansible/node_setup_playbook.yaml
+        src: files/node_setup_playbook.j2
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Upload the deploy_all shell script ;-)
+      copy:
+        src: files/deploy_all.sh
+        dest: /home/ubuntu/.please_dont_run_this_script.sh
+        mode: 0755
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Wait for S3 to be reachable
+      wait_for:
+        port: 443
+        host: nginx-workshops.s3.eu-west-2.amazonaws.com
+        sleep: 5
+        timeout: 60
+
+    - name: Download controller installer from S3
+      get_url:
+        url: https://nginx-workshops.s3.eu-west-2.amazonaws.com/app_centric_automation/controller-installer-3.1.0.tar.gz
+        dest: /home/ubuntu/controller-installer-3.1.0.tar.gz
+        owner: ubuntu
+        group: ubuntu
+        mode: 0644
+
+    - name: Provide the remote ansible with its wsid and domain name
+      lineinfile:
+        path: /home/ubuntu/ansible/inventory
+        line: "[all:vars]\nwsid={{ wsid }}\ndomain={{ ws.route53.zone }}\n"
+

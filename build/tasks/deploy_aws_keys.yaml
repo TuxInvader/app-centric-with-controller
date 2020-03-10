@@ -1,0 +1,20 @@
+---
+  - name: Create new EC2 key_pair
+    ec2_key:
+      name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
+      force: false
+      state: present
+    register: vpc_key_result
+
+  - name: Register the EC2 key_pair as a fact
+    set_fact:
+      vpc_key: "{{ vpc_key_result }}"
+    when: vpc_key_result.key.private_key is defined
+  
+  - name: Store key in secrets folder
+    copy:
+      dest: secrets/user.pem
+      content: "{{ vpc_key.key.private_key }}"
+      mode: 0400
+    when: vpc_key.key.private_key is defined
+

@@ -1,0 +1,18 @@
+# Ansible variable configuration
+---
+
+cicd:
+  git:
+    hostname: git.{{ wsid }}.{{ domain }}
+    admin_username: nginx
+    admin_password: "{{ lookup('password', '~/secrets/git.cicd.passwd length=12') }}"
+    deploy_repos: yes
+
+  jenkins:
+    hostname: jenkins.{{ wsid }}.{{ domain }}
+    http_port: 8080
+    url_prefix: /
+    proxy_url: https://jenkins.{{ wsid }}.{{ domain }}
+    admin_username: nginx
+    admin_password: "{{ lookup('password', '~/secrets/jenkins.cicd.passwd length=12') }}"
+

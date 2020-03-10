@@ -1,0 +1,226 @@
+= NGINX WorkShops Deployment
+:showtitle:
+:toc: left
+
+== Variables
+
+The configuration for the workshop deployment is stored in _build/vars.yaml_
+
+The stack built by the build playbook will use the below variables for creating your VPC and  
+its hosts. Please change them to identify yourself, and so not to clobber other deployments.  
+
+----
+---
+ws:
+  stack_name: workshop
+  uk_se_name: mbodd
+  prefix: ws
+  stacks: 1
+
+  aws_access_key: "{{ secrets.aws_access_key }}"
+  aws_secret_key: "{{ secrets.aws_secret_key }}"
+  aws_account_id: "{{ secrets.aws_account_id }}"
+
+  route53:
+    zone: "{{ secrets.r53_zone }}"
+    zone_id: "{{ secrets.r53_zone_id }}"
+
+  s3:
+    bucket: "{{ secrets.s3_bucket }}"
+----
+
+The `stack_name` and `uk_se_name` need to be unique to your deployment. They are used to name
+your VPC and add your deployment to an S3 bucket policy. You should also set the `prefix` to 
+your initials or something unique to you as the prefix will make up part of your host names in
+Route53.
+
+****
+S3 contains the NGINX Controller installer package which will be downloaded during deployment
+****
+
+The `prefix` is used for each machine in your stack, and the `stacks` number indicates how many
+stacks to deploy. If you are throwing something up for testing, then leave stacks at 1.
+
+The above settings would create:
+
+****
+ * A VPC called mbodd_workshop
+ * A private Subnet called ws01_private
+ * Internet Gateway called: mbodd_workshop_gw
+ * Route Table called: mbodd_workshop_route
+ * Virtual Machines called: ws01-gateway, ws01-nginx1, ws01-nginx2...
+ * etc
+****
+
+The machines created are given names like `ws01-gateway` where ws01 is made up from the  
+`prefix` and `stack` number. Stacks would be numbered 01, 02, 03, etc.
+
+The gateway is always needed, and by default is the only public machine. The playbook will upload
+the `workdir` folder and it's contents to the home directory `/home/ubuntu` on the gateway.
+
+The _vars.yaml_ continues with an ec2 section...
+
+----
+  ec2:
+    region: eu-west-2
+    cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
+
+    machines:
+      gateway:
+        type: t3.small
+        public: yes
+      cicd1:
+        type: t3.xlarge
+        disk_name: /dev/sda1
+        disk_size: 40
+        public: no
+      ctrl1:
+        type: t3.xlarge
+        disk_name: /dev/sda1
+        disk_size: 80
+        public: no
+      nginx1:
+        type: t3.small
+        public: no
+      nginx2:
+        type: t3.small
+        public: no
+----
+
+The `region` should obviously be set to the region in which you want to deploy the workshop.
+
+The `cidr_block` is the first two octets of a _/16_ subnet which will make up the VPC Subnet. +
+For other network addressing see subnets below.
+
+The machines dictionary contains all the machines which should be deployed into the VPC. Any
+machines with `public` set to `yes`, will be multi-homed, having a NIC on the public subnet, and
+the `stack` private subnet. Each `stack` gets it's own private subnet, but they share the public
+one. Machines without a public interface will only be reachable via the gateway machine.
+
+****
+There are two playbooks in _/home/ubuntu/ansible/playbooks/nginx_workshop_gw_ which will install
+and configure NGINX on the gateway, to act as a reverse proxy for access to all other services.
+****
+
+When the stack is deployed a wildcard DNS record will be added to Route53 to point at the public
+IP address of the gateway machine. Eg: _ws01.ukws.nginxlab.net_
+
+The final variables section configures the subnets.
+
+----
+    subnets:
+      public:
+        third: 0
+        bits: 21
+      private:
+        third: 10
+        bits: 24
+----
+
+The `public` network is shared by all stacks, and will be given a _/21_ network block.
+The `private` networks will be dedicated to each stack, with the stack number incrementing
+the third octet. Ie stack #1 will have third == 11, stack #2 with have third == 12.
+
+As the VMs are being deployed their private IP's will be stored in _secrets/hosts.<prefix><stack>_
+
+== Secrets
+This repo keeps all secrets outside of this repository and sym-links them into the build folder,  
+The symlink points to `/var/lib/ansible/secrets` by default  
+
+You should create a file called `aws_config.yaml` inside your secrets folder. Containing:  
+
+----
+---
+secrets:
+  aws_access_key:   <YOUR_ACCESS_KEY>
+  aws_secret_key:   <YOUR_SECRET_KEY>
+  aws_account_id:   <AWS ACCOUNT ID>
+
+  r53_zone:         <ROUTE_53_ZONE_FOR_PUBLIC_HOSTS>
+  r53_zone_id:      <THE_ZONE_ID_FOR_ABOVE>
+
+  s3_bucket:        <NAME_OF_S3_BUCKET>
+...
+----
+
+Ansible will also check for a controller licence file, and NGINX repo keys inside the secrets  
+folder. `license.txt`, `nginx-repo.crt` and `nginx-repo.key`
+
+The workshop playbooks can generate letsencrypt keys for the public domain names, so it's a  
+good idea to tar them up for hostnames you'll use again and drop them in your secrets folder too.
+Ansible will check for: `letsencrypt-<prefix><stack#>.tgz`, and deploy into _/etc/letsencrypt_
+
+----
+$ tar ztvf letsencrypt-ws01.tgz | head -4
+drwxr-xr-x root/root         0 2020-03-02 13:06 letsencrypt/
+-rw-r--r-- root/root        64 2020-03-02 12:14 letsencrypt/.updated-options-ssl-nginx-conf-digest.txt
+-rw-r--r-- root/root       424 2020-03-02 12:14 letsencrypt/ssl-dhparams.pem
+drwx------ root/root         0 2020-03-02 13:06 letsencrypt/renewal/
+----
+
+== Deploying the stack
+
+To deploy the stack to AWS, enter the build folder, and execute `ansible-playbook deploy_aws.yaml`
+
+Once complete you will have access to <prefix><stack#>.<r53_zone> via SSH, HTTP, and HTTPS.
+You should be able to log in as the user _ubuntu_ using the ssh private key stored in _secrets/user.pem_ +
+Eg:
+
+----
+$ ssh -i secrets/user.pem ubuntu@ws01.ukws.nginxlab.net
+----
+
+The _deploy_aws.yaml_ playbook sets up the VPC, and then includes _deploy_workshop.yaml_ to handle
+setting up the workshop (ie the gateway instance). The gateway is set up to provide DNS for the
+other machines, and also act as a default gateway. 
+
+== Using the stack
+
+Once the stack is running, you're ready to follow the tasks in the workshop itself. 
+
+See `workdir/adoc` and/or `workdoc/html`
+
+Or see below for minimal setup instructions....
+
+=== Minimal setup
+
+The first thing to do is to setup the other nodes to use the gateway for internet access and DNS.
+
+----
+$ cd ~/ansible
+$ ansible-playbook node_setup_playbook.yaml
+----
+
+Once that is done, you will want to enable the gateway to act as a reverse proxy.
+
+----
+$ ansible-galaxy install nginxinc.ngnix
+$ cd ~/ansible
+$ ansible-playbook playbooks/nginx_workshop_gw/install.yaml
+$ ansible-playbook playbooks/nginx_workshop_gw/setup.yaml
+----
+
+Other playbooks included are:
+
+[cols="^20,<80"]
+|===
+| _cicd_ | Deploy Jenkins and gitea servers on the cicd1 instance. Once deployed they will be
+accessable at https://git.<prefix><stack>.<domain> and https://jenkins.<prefix><stack>.<domain>
+| _controller_ | Deploy an NGNIX controller, license it, and register nginx instances. Once
+deployed it will be accessable at https://ctrl.<prefix><stack>.<domain>
+| _apps_ | Deploy an API Gateway configuration via the controller
+|===
+
+There's also a hidden script which deploys everthing found here `~/.please_dont_run_this_script.sh`
+
+=== Credentials
+
+Passwords for Git, Jenkins, Controller, etc will be automatically generated and stored in files
+within the `~/secrets` folder on the gateway. The default username is `nginx` for git and jenkins,
+and the controller username is `admin@nginx.com`
+
+== Undeploying the stack
+
+To shut everything down, simply execute `ansible-playbook undeploy_aws.yaml`
+
+

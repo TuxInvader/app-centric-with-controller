@@ -1,0 +1,49 @@
+upstream controller {
+  zone upstream_controller 64k;
+  server ctrl1:443;
+}
+
+server {
+
+    server_name  ctrl.{{ wsid }}.{{ domain }};
+
+    access_log  /var/log/nginx/ctrl.access.log  main;
+
+    location / {
+      proxy_pass https://controller;
+      proxy_set_header Host      $host;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_ssl_server_name on;
+      health_check;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+server {
+    if ($host = ctrl.{{ wsid }}.{{ domain }}) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen       80;
+
+    server_name  ctrl.{{ wsid }}.{{ domain }};
+    return 404; # managed by Certbot
+
+
+}

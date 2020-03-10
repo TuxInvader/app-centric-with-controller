@@ -1,0 +1,29 @@
+= Task 3: Deploy our CI/CD Pipeline
+:showtitle:
+:sectlinks:
+:toc: left
+:prev_section: task2
+:next_section: task4
+
+****
+<<index.adoc#,Top>> +
+<<task2.adoc#,Previous Task>> +
+<<task4.adoc#,Next Task>> +
+****
+
+== Introduction
+
+== Install a role to help install Jenkins
+
+----
+ansible-galaxy install geerlingguy.jenkins`
+----
+
+== Run the playbook
+
+----
+ansible-playbook playbooks/cicd/deploy.yaml
+----
+
+done
+

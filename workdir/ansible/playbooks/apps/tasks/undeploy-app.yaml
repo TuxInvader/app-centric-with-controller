@@ -1,0 +1,47 @@
+---
+
+  - name: "Check {{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+    uri:
+      url: "https://{{ controller.hostname }}/api/{{ controller.api_version }}{{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+      method: GET
+      headers:
+        Cookie: "session={{ nginx_controller_session.cookies.session }}"
+      status_code:
+        - 200
+        - 400
+        - 404
+      validate_certs: false
+    register: last_result
+
+  - name: "Remove {{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+    uri:
+      url: "https://{{ controller.hostname }}/api/{{ controller.api_version }}{{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+      method: "DELETE"
+      headers:
+        Cookie: "session={{ nginx_controller_session.cookies.session }}"
+      status_code:
+        - 202
+        - 204
+      validate_certs: false
+    register: last_result
+    when: last_result.status == 200
+
+  - name: "Wait for configuration {{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+    uri:
+      url: "https://{{ controller.hostname }}/api/{{ controller.api_version }}{{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+      method: GET
+      headers:
+        Cookie: "session={{ nginx_controller_session.cookies.session }}"
+      status_code:
+        - 200
+        - 202
+        - 204
+        - 400
+        - 404
+      validate_certs: false
+    register: last_result
+    until: last_result.status >= 400 and last_result.status <= 404
+    when: urli[ item.key ].wait == true
+    retries: 60
+    delay: 5
+

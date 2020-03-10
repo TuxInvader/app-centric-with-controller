@@ -1,0 +1,56 @@
+---
+ws:
+  stack_name: workshop
+  uk_se_name: mbodd
+  prefix: ws
+  stacks: 1
+
+  aws_access_key: "{{ secrets.aws_access_key }}"
+  aws_secret_key: "{{ secrets.aws_secret_key }}"
+  aws_account_id: "{{ secrets.aws_account_id }}"
+
+  route53:
+    zone: "{{ secrets.r53_zone }}"
+    zone_id: "{{ secrets.r53_zone_id }}"
+
+  s3:
+    bucket: "{{ secrets.s3_bucket }}"
+
+  ec2:
+    cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
+    region: eu-west-2
+
+    machines:
+      gateway:
+        type: t3.small
+        public: yes
+      cicd1:
+        type: t3.xlarge
+        disk_name: /dev/sda1
+        disk_size: 40
+        public: no
+      ctrl1:
+        type: t3.xlarge
+        disk_name: /dev/sda1
+        disk_size: 80
+        public: no
+      nginx1:
+        type: t3.small
+        public: no
+      nginx2:
+        type: t3.small
+        public: no
+      #unit1:
+      #  type: t3.small
+      #  public: no
+      #unit2:
+      #  type: t3.small
+      #  public: no
+
+    subnets:
+      public:
+        third: 0
+        bits: 21
+      private:
+        third: 10
+        bits: 24

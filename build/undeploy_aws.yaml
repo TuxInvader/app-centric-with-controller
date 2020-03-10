@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  become: no
+  connection: local
+  vars_files:
+    - secrets/aws_config.yaml
+    - vars.yaml
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ ws.aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ ws.aws_secret_key }}"
+    AWS_REGION: "{{ ws.ec2.region }}"
+
+  tasks:
+
+    - name: GET VPC ID USING TAGS DEFINED DURING AUTOMATED BUILD
+      ec2_vpc_net_info:
+        filters:
+          "tag:Name": "{{ ws.uk_se_name }}_{{ ws.stack_name }}"
+          "tag:stack": "{{ ws.stack_name }}"
+          "tag:UK-SE": "{{ ws.uk_se_name }}"
+      register: vpc_facts
+      ignore_errors: True
+
+    - name: OUTPUT VPC ID
+      debug:
+        msg: "Identified VPC: {{ vpc_facts }}."
+      ignore_errors: True
+
+    - name: Remove the S3 Policy and endpoint 
+      import_tasks: tasks/remove_s3_policy.yaml
+
+    - name: UnDeploy the VPC Task
+      import_tasks: tasks/undeploy_aws_vpc.yaml
+
+    - name: Reset inventory file
+      copy:
+        content: |
+          localhost
+        dest: inventory
+

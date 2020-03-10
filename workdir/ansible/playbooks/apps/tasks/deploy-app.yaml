@@ -1,0 +1,70 @@
+---
+  - name: "Check {{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+    uri:
+      url: "https://{{ controller.hostname }}/api/{{ controller.api_version }}{{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+      method: GET
+      headers:
+        Cookie: "session={{ nginx_controller_session.cookies.session }}"
+      status_code:
+        - 200
+        - 400
+        - 404
+      validate_certs: false
+    register: last_result
+
+  - name: "Setup {{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+    uri:
+      url: "https://{{ controller.hostname }}/api/{{ controller.api_version }}{{ urli[item.key].path }}{{ urli[item.key].create }}"
+      method: "{{ urli[item.key].method }}"
+      headers:
+        Cookie: "session={{ nginx_controller_session.cookies.session }}"
+      body_format: json
+      body: "{{ item.value.config }}"
+      status_code: 201
+      validate_certs: false
+    register: last_result
+    when: 
+      - last_result.status >= 400
+      - last_result.status <= 404 
+
+  - block:
+
+    - name: "Wait for configuration {{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+      uri:
+        url: "https://{{ controller.hostname }}/api/{{ controller.api_version }}{{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+        method: GET
+        headers:
+          Cookie: "session={{ nginx_controller_session.cookies.session }}"
+        status_code:
+          - 200
+        validate_certs: false
+      register: last_result
+      until: last_result.json.currentStatus.state.selfConfigState.configured == 1 or last_result.json.currentStatus.state.selfConfigState.error == 1
+      when: urli[ item.key ].wait == true 
+      retries: 60
+      delay: 5
+
+    - name: "Check and remove Failed Components: {{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+      uri:
+        url: "https://{{ controller.hostname }}/api/{{ controller.api_version }}{{ urli[item.key].path }}{{ '/' ~ item.value.config.metadata.name }}"
+        method: "DELETE"
+        headers:
+          Cookie: "session={{ nginx_controller_session.cookies.session }}"
+        status_code:
+          - 202
+          - 204
+        validate_certs: false
+      when: 
+        - last_result.json.currentStatus.state.selfConfigState.error == 1
+        - controller.remove_failed == true
+
+    - name: "Dump Error Status"
+      debug:
+        ERROR:
+          - "{{ last_result }}"
+          - "Removed: {{ controller.remove_failed }}"
+      when: last_result.json.currentStatus.state.selfConfigState.error == 1
+      failed_when: last_result.json.currentStatus.state.selfConfigState.error == 1
+
+    when: urli[ item.key ].wait == true
+

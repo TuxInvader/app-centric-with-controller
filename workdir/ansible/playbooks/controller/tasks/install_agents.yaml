@@ -1,0 +1,27 @@
+---
+  - name: Login to the controller if necessary
+    import_tasks: login.yaml
+    when: nginx_controller_session is not defined
+
+  - name: Fetch globals from controller if neccessary
+    import_tasks: fetch_globals.yaml
+    when: ctrl_globals is not defined
+
+  - name: Install Python 2.7 packages
+    apt:
+      name:
+        - python2.7
+      state: latest
+
+  - name: retrieve the controller installer from the NGINX Controller
+    get_url:
+      dest: /tmp/install.sh
+      mode: 0750
+      url: https://{{ controller.hostname }}:8443/1.4/install/controller/
+      validate_certs: no
+
+  - name: Install the controller agent
+    shell:
+      cmd: "API_KEY='{{ ctrl_globals.agentSettings.apiKey }}' sh /tmp/install.sh -y"
+      creates: /lib/systemd/system/controller-agent.service
+

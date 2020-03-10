@@ -1,0 +1,12 @@
+domain={{ wsid }}.{{ ws.route53.zone }}
+expand-hosts
+local=/{{ wsid }}.{{ ws.route53.zone }}/
+port=53
+no-resolv
+server={{ ws.ec2.cidr_block }}.0.2
+cname=git.{{ wsid }}.{{ ws.route53.zone }},cicd1.{{ wsid }}.{{ ws.route53.zone }}
+cname=jenkins.{{ wsid }}.{{ ws.route53.zone }},cicd1.{{ wsid }}.{{ ws.route53.zone }}
+cname=ctrl.{{ wsid }}.{{ ws.route53.zone }},ctrl1.{{ wsid }}.{{ ws.route53.zone }}
+cname=www.{{ wsid }}.{{ ws.route53.zone }},gateway.{{ wsid }}.{{ ws.route53.zone }}
+cname={{ wsid }}.{{ ws.route53.zone }},gateway.{{ wsid }}.{{ ws.route53.zone }}
+host-record=foo.{{ wsid }}.{{ ws.route53.zone }},127.0.0.1,,30

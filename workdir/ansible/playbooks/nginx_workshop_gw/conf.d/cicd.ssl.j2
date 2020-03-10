@@ -1,0 +1,116 @@
+upstream git {
+  zone upstream_nginx 64k;
+  server cicd1:3000;
+  keepalive 32;
+  keepalive_requests 100;
+  keepalive_timeout 60s;
+}
+
+upstream jenkins {
+  zone upstream_nginx 64k;
+  server cicd1:8080;
+  keepalive 32;
+  keepalive_requests 100;
+  keepalive_timeout 60s;
+}
+
+server {
+
+    server_name  git.{{ wsid }}.{{ domain }};
+
+    access_log  /var/log/nginx/git.access.log  main;
+
+    location / {
+      proxy_pass http://git;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header Host      $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Port 443;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_redirect default;
+      health_check;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+server {
+
+    server_name  jenkins.{{ wsid }}.{{ domain }};
+
+    access_log  /var/log/nginx/jenkins.access.log  main;
+
+    location / {
+      proxy_pass http://jenkins;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header Host      $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Port 443;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_redirect default;
+      health_check;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+
+server {
+    if ($host = git.{{ wsid }}.{{ domain }}) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen       80;
+
+    server_name  git.{{ wsid }}.{{ domain }};
+    return 404; # managed by Certbot
+
+
+}
+
+
+server {
+    if ($host = jenkins.{{ wsid }}.{{ domain }}) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen       80;
+
+    server_name  jenkins.{{ wsid }}.{{ domain }};
+    return 404; # managed by Certbot
+
+
+}
+

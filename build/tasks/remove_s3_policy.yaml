@@ -1,0 +1,32 @@
+---
+
+  - name: "Get all endpoints with specific filters"
+    ec2_vpc_endpoint_info:
+      query: endpoints
+      region: "{{ ws.ec2.region }}"
+      filters:
+        vpc-id:
+        - "{{ vpc_facts.vpcs[0].vpc_id }}"
+    register: existing_endpoints
+
+  - name: DELETE VPC Endpoints
+    ec2_vpc_endpoint:
+      state: absent
+      vpc_endpoint_id: "{{ item.vpc_endpoint_id }}"
+    loop: "{{ existing_endpoints.vpc_endpoints | default([]) | list }}"
+
+  - name: Execute Boto to get the current policy
+    command:
+      cmd: "./bin/get_bucket_policy.py {{ ws.s3.bucket }} {{ 'Access-for-' ~ ws.uk_se_name ~ '-' ~ ws.stack_name }}"
+    changed_when: false
+    register: policy
+
+  - name: Set bucket_policy fact
+    set_fact:
+      bucket_policy: "{{ policy.stdout | from_json }}"
+      
+  - name: Remove VPC access to the S3 bucket
+    s3_bucket:
+      name: "{{ ws.s3.bucket }}"
+      policy: "{{ bucket_policy | to_json }}"
+

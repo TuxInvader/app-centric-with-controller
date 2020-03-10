@@ -1,0 +1,17 @@
+# Ansible variable configuration
+---
+
+  specs_dir: ~/ansible/specs
+  jwks_dir: ~/ansible/jwks
+  envs_dir: ~/ansible/envs
+  certs_dir: ~/ansible/certs
+
+  env: f1_prod
+
+  controller:
+    api_version: "v1"
+    hostname: mpctl.multipass.test
+    admin_email: admin@nginx.com
+    admin_password: "{{ lookup('password', '~/controller.passwd length=12') }}"
+    remove_failed: true
+

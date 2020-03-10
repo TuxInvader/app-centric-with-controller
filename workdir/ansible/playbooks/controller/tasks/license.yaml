@@ -1,0 +1,16 @@
+---
+  - name: Login to the controller if necessary
+    import_tasks: login.yaml
+    when: nginx_controller_session is not defined
+
+  - name: Upload the controller license
+    uri:
+      url: https://{{ controller.hostname }}/api/{{ controller.api_version }}/platform/license-file
+      method: POST
+      headers:
+        Cookie: "session={{ nginx_controller_session.cookies.session }}"
+      body_format: json
+      body:
+        content: "{{ lookup( 'file', controller.license_file ) | b64encode }}"
+      status_code: 200
+      validate_certs: False

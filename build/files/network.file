@@ -1,0 +1,13 @@
+[Match]
+Name=*
+
+[Network]
+DHCP=ipv4
+DNS=10.10.11.48
+Gateway=10.10.11.48
+DOMAINS=ws01.ukws.nginxlab.net
+
+[DHCP]
+useDNS=false
+useDomains=false
+

@@ -1,0 +1,188 @@
+---
+  - name: debug
+    debug:
+      msg: "{{ vpc_private_subnet_ids }}"
+
+  - name: "Create the public machines for {{ item }}"
+    ec2:
+      instance_tags:
+        Name: "{{ item }}-{{ machine.key }}"
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      instance_type: "{{ machine.value.type }}"
+      image: "{{ ami_id }}"
+      #group: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
+      group_id: "{{ nginx_sg.group_id }}"
+      vpc_subnet_id: "{{ vpc_public_subnet_ids.public }}"
+      key_name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
+      assign_public_ip: "{{ machine.value.public }}"
+      volumes:
+        - device_name: "{{ machine.value.disk_name | default('/dev/sda1') }}"
+          volume_size: "{{ machine.value.disk_size | default(10) }}"
+          delete_on_termination: yes
+      state: present
+      wait: yes
+    loop: "{{ ws.ec2.machines | dict2items }}"
+    loop_control:
+      loop_var: machine
+    async: 600
+    poll: 0
+    register: _public_deployment_tasks
+    when: 
+      - ec2_instances[ item ~ '-' ~ machine.key ] is not defined
+      - machine.value.public == true
+
+  - name: "Create the public machines for {{ item }}"
+    ec2:
+      instance_tags:
+        Name: "{{ item }}-{{ machine.key }}"
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      instance_type: "{{ machine.value.type }}"
+      image: "{{ ami_id }}"
+      #group: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
+      group_id: "{{ nginx_sg.group_id }}"
+      vpc_subnet_id: "{{ vpc_private_subnet_ids[ item ~ '_private' ] }}"
+      key_name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
+      assign_public_ip: "{{ machine.value.public }}"
+      volumes:
+        - device_name: "{{ machine.value.disk_name | default('/dev/sda1') }}"
+          volume_size: "{{ machine.value.disk_size | default(10) }}"
+          delete_on_termination: yes
+      state: present
+      wait: yes
+    loop: "{{ ws.ec2.machines | dict2items }}"
+    loop_control:
+      loop_var: machine
+    async: 600
+    poll: 0
+    register: _private_deployment_tasks
+    when: 
+      - ec2_instances[ item ~ '-' ~ machine.key ] is not defined
+      - machine.value.public == false
+
+  - name: "Wait for all public deployments to finish"
+    async_status:
+      jid: "{{ tasks.ansible_job_id }}"
+    register: _jobs
+    until: _jobs.finished
+    delay: 10
+    retries: 60
+    loop: "{{ _public_deployment_tasks.results  }}"
+    loop_control:
+      loop_var: tasks
+      label: "{{ tasks.machine.key }}"
+    when: tasks.ansible_job_id is defined 
+
+  - name: "Wait for all private deployments to finish"
+    async_status:
+      jid: "{{ tasks.ansible_job_id }}"
+    register: _jobs
+    until: _jobs.finished
+    delay: 10
+    retries: 60
+    loop: "{{ _private_deployment_tasks.results  }}"
+    loop_control:
+      loop_var: tasks
+      label: "{{ tasks.machine.key }}"
+    when: tasks.ansible_job_id is defined 
+
+  - name: "Retrieve EC2 Instance Information for {{ item }}"
+    ec2_instance_info:
+      filters:
+        "tag:Name": "{{ item }}-{{ machine.key }}"
+        "tag:stack": "{{ ws.stack_name }}"
+        "tag:UK-SE": "{{ ws.uk_se_name }}"
+        "instance-state-name": "running"
+    loop: "{{ ws.ec2.machines | dict2items }}"
+    loop_control:
+      loop_var: machine
+    register: ec2_deployment_result
+
+  - block:
+
+    - name: "Store the host information for {{ item }}"
+      set_fact:
+        #deployed: "{{  deployed | default({}) | combine({ item: ( deployed[item] | default({}) | combine( { result.machine.key:  result.instances.0 }) )}) }}"
+        deployed: "{{  deployed | default({}) | combine({ item: { result.machine.key:  result.instances.0 }}, recursive=True) }}"
+      loop: "{{ ec2_deployment_result.results | list }}"
+      loop_control:
+        loop_var: result
+        label:
+          item: "{{ item }}-{{ result.machine.key }}"
+          address: "{{ result.instances.0.private_ip_address }}"
+          name: "{{ result.instances.0.private_dns_name }}"
+
+    - name: "Update hosts file for this user"
+      lineinfile:
+        line: "{{ result.instances.0.private_ip_address }}\t{{ result.machine.key }} {{ result.machine.key }}.{{ item }}.ukws.nginxlab.net"
+        regexp: ".*\t{{ result.machine.key }}"
+        path: "secrets/hosts.{{ item }}"
+        state: present
+        create: true
+      loop: "{{ ec2_deployment_result.results | list }}"
+      loop_control:
+        loop_var: result
+        label:
+          host: "{{ result.machine.key }}"
+          address: "{{ result.instances.0.private_ip_address }}"
+
+    when: ec2_deployment_result is defined
+
+  - name: "Add private interface to public instances"
+    ec2_eni:
+      instance_id: "{{ deployed[item][ machine.key ].instance_id }}"
+      device_index: 1
+      subnet_id: "{{ vpc_private_subnet_ids[ item ~ '_private' ] }}"
+      security_groups:
+        - "{{ nginx_sg.group_id }}"
+      state: present
+      attached: true
+    loop: "{{ ws.ec2.machines | dict2items }}"
+    loop_control:
+      loop_var: machine
+    when: 
+      - machine.value.public == true
+      - deployed[ item ][ machine.key ].network_interfaces|length == 1
+
+  - name: "Get secondary ENI interfaces "
+    ec2_eni_info:
+      filters:
+        "attachment.instance-id": "{{ deployed[item][ machine.key ].instance_id }}"
+        "subnet-id": "{{ vpc_private_subnet_ids[ item ~ '_private' ] }}"
+        "vpc-id": "{{ vpc_id }}"
+    loop: "{{ ws.ec2.machines | dict2items }}"
+    loop_control:
+      loop_var: machine
+    register: secondary_ifs
+    when: 
+      - machine.value.public == true
+
+  - name: Disable the Source_Dest_Check on the secondary interface to allow NAT
+    ec2_eni:
+      eni_id: "{{ ifs.network_interfaces.0.id }}"
+      source_dest_check: no
+      delete_on_termination: yes
+    loop: "{{ secondary_ifs.results }}"
+    loop_control:
+      loop_var: ifs
+      label: 
+        machine: "{{ ifs.machine.key }}"
+        ip_address: "{{ ifs.network_interfaces.0.private_ip_address | default('na') }}"
+    when:
+      - ifs.skipped is not defined
+
+  - name: "secondary IFs"
+    set_fact:
+      deployed: "{{  deployed | default({}) | combine({ item: { ifs.machine.key: { 
+                'secondary_ip': ifs.network_interfaces.0.private_ip_address,
+                'secondary_int': ifs.network_interfaces.0.id }}}, recursive=True) }}"
+    loop: "{{ secondary_ifs.results }}"
+    loop_control:
+      loop_var: ifs
+      label: 
+        machine: "{{ ifs.machine.key }}"
+        ip_address: "{{ ifs.network_interfaces.0.private_ip_address | default('na') }}"
+    when:
+      - ifs.skipped is not defined
+

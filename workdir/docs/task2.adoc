@@ -1,0 +1,122 @@
+= Task 2: Deploy a simple NGINX Configuration
+:showtitle:
+:sectlinks:
+:toc: left
+:prev_section: task1
+:next_section: task3
+
+****
+<<index.adoc#,Top>> +
+<<task1.adoc#,Previous Task>> +
+<<task3.adoc#,Next Task>> +
+****
+
+== Introduction
+In this lesson we will be getting our hands dirty by deploying your first NGINX Plus system using
+Ansible.  
+
+NGINX will be installed on your gateway node, and it will act as a simple TCP/UDP gateway for  
+the services being deployed during this workshop
+
+'''
+== Check out the playbook
+
+You'll find a playbook in _~/ansible/playbooks/nginx_workshop_gw/install.yaml_
+  
+----
+---
+- hosts: localhost
+  become: true
+  gather_facts: yes
+  connection: local
+  roles:
+    - role: nginxinc.nginx
+  vars:
+    nginx_type: plus
+    nginx_rest_api_enable: true
+    nginx_rest_api_port: 4321
+    nginx_rest_api_write: true
+    nginx_license:
+      certificate: "/etc/ssl/nginx/nginx-repo.crt"
+      key: "/etc/ssl/nginx/nginx-repo.key"
+    nginx_modules:
+      njs: true
+...
+----
+
+We import the _nginxinc.nginx_ role we downloaded from *Ansible Galaxy* and provide it with  
+a set of _vars_. The Variables tell the role how we want NGINX configured. The NGINX role can  
+also install the *NGINX Controller Agent*, as well as *NGINX Unit*
+
+'''
+
+== Apply the playbook
+Ensure that you are in the ansible folder and apply the nginx_workshop_gw playbook:
+
+----
+  $ cd ~/ansible
+  $ ansible-playbook playbooks/nginx_workshop_gw/install.yaml
+----
+
+You will see Ansible skipping a lot of steps as the play book runs. This is because the role is  
+capable of installing NGINX on many different Operation Systems. It only executes the tasks which  
+are relevant for Ubuntu.
+
+Once the playbook has completed, you can check that NGINX is installed by executing
+
+----
+  $ sudo nginx -t
+----
+
+== Imperative vs Declarative
+Ansible is an automation tool and can be used in an imperative or declarative way. The task we just  
+accomplished used a declarative form. We included a role, and provided a number of variables which  
+indicated our desired end state.
+
+ * Imperative
+ Provides a sequence of steps that need to be preformed in order to reach a desired end state.
+ The caller needs a high degree of domain specific knowledge.
+
+ * Declarative
+ Describes the end state, and is not concerned with the steps required to get there.
+ The steps are abstracted away from the caller. This often reduces the amount of domain
+ specific knowledge required.
+
+
+'''
+== Adding Additional tasks
+
+The _install.yaml_ playbook only concerned itself with installing NGNIX using the _nginxinc.nginx_ role. +
+The role abstracted away the steps required to install and setup NGINX, and provided us with a declarative
+interface.
+
+If you take a look at the _setup.yaml_ file in the same folder, you will see it's using a series of tasks
+in order to get the system to a desired state. This is much more of an imperative use of ansible. First we
+add the CertBot PPA to the system, then we install certbot and the NGINX plugin, we check if we've registered
+certs before, and then pick either SSL enabled or disabled versions of NGINX configuration files.
+
+----
+---
+- hosts: localhost
+  become: true
+  gather_facts: yes 
+  connection: local
+
+  tasks:
+
+  - name: Setup the certbot repository
+    apt_repository:
+      repo: ppa:certbot/certbot
+      update_cache: yes 
+
+  - name: Install certbot package
+    apt:
+      name:
+        - python-certbot-nginx
+
+----
+
+Ansible makes it possible to combine roles with additional tasks in a single playbook. So you can have a
+combination of imperative and declarative styles in a single playbook.
+
+

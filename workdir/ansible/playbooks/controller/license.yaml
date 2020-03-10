@@ -1,0 +1,13 @@
+---
+- hosts: controller
+  become: yes
+  vars_files:
+    - ~/ansible/vars/controller.yaml
+  tasks:
+
+    - name: login
+      import_tasks: tasks/login.yaml
+
+    - name: license
+      import_tasks: tasks/license.yaml
+

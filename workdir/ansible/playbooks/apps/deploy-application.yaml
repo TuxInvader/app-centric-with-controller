@@ -1,0 +1,210 @@
+---
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  vars_files:
+    - ~/ansible/vars/apps.yaml
+
+  tasks:
+
+    - name: Load the Environment config
+      include_vars:
+        file: "{{ envs_dir }}/{{ env }}.yaml"
+
+    - name: Login to the controller
+      import_tasks: tasks/controller-login.yaml
+      when: nginx_controller_session is not defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Environment URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs | dict2items }}"
+
+      - name: Deploy the Environment
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ envs | dict2items }}"
+
+      when: envs is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load OAS 3.0 Schemas"
+        set_fact:
+          specs: "{{ specs | default({}) | combine({ item[:-5] | basename : lookup('file', item) | from_yaml }) }}"
+        loop: "{{ lookup('fileglob', specs_dir ~ '/*.yaml', wantlist=true ) }}"
+
+      - name: "Load API-Definitions (OAS3) URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/api-definitions', 
+                'wait': true, 'create': '/' ~ item.value.config.metadata.name ~ '/oas-config', 'method': 'PUT' }  }) }}"
+        loop: "{{ oas3 | default({}) | dict2items }}"
+
+      - name: Upload API Definitions
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ oas3 | default({}) | dict2items }}"
+
+      when: oas3 is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load local JWKS Files"
+        set_fact:
+          jwks: "{{ jwks | default({}) | combine({ item[:-5] | basename: lookup('file', item) | from_json }) }}"
+        loop: "{{ lookup('fileglob', jwks_dir ~ '/*.json', wantlist=true ) }}"
+
+      - name: "Load IDP URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/security/identity-providers',
+                'wait': false, 'create': '/' ~ item.value.config.metadata.name, 'method': 'PUT' }  }) }}"
+        loop: "{{ idps | default({}) | dict2items }}"
+
+      - name: "Inject EnvironmentRef Parameters"
+        set_fact:
+          idps: "{{ idps | default({}) | combine({ item.key: {'config':{'desiredState':{'environmentRefs': [ { 'ref': '/services/environments/' ~ env } ]}}}}, recursive=true) }}" 
+        loop: "{{ idps | default({}) | dict2items }}"
+
+      - name: Upload IDP Definitions
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ idps | default({}) | dict2items }}"
+
+      when: idps is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Client Keys URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/security/identity-providers/' ~ item.value.parent ~ '/clients',
+                'wait': false, 'create': '/' ~ item.value.config.metadata.name, 'method': 'PUT' }  }) }}"
+        loop: "{{ clients | default({}) |dict2items }}"
+
+      - name: Deploy the Gateways
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ clients | default({}) |dict2items }}"
+
+      when: clients is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Certificate Cert"
+        set_fact:
+          pem: "{{ pem | default({}) | combine({ 'public':{ item[:-8] | basename : lookup('file', item) }}, recursive=true) }}"
+        loop: "{{ lookup('fileglob', certs_dir ~ '/*.crt.pem', wantlist=true ) }}"
+
+      - name: "Load Certificate Keys"
+        set_fact:
+          pem: "{{ pem | default({}) | combine({ 'private':{ item[:-8] | basename : lookup('file', item) }}, recursive=true) }}"
+        loop: "{{ lookup('fileglob', certs_dir ~ '/*.key.pem', wantlist=true ) }}"
+
+      - name: "Load Certificate Chain"
+        set_fact:
+          pem: "{{ pem | default({}) | combine({ 'chain': { item[:-8] | basename : [ lookup('file', item) ] }}, recursive=true) }}"
+        loop: "{{ lookup('fileglob', certs_dir ~ '/*.int.pem', wantlist=true ) }}"
+
+      - name: "Load Certificate URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/certs',
+                'wait': true, 'create': '/' ~ item.key, 'method': 'PUT' }  }) }}"
+        loop: "{{ envs[ env ].certs | default({}) |dict2items }}"
+
+      - name: Deploy the Certificates
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ envs[ env ].certs | default({}) |dict2items }}"
+
+      when: envs[ env ].certs is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Gateway URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/gateways',
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].gateways | default({}) |dict2items }}"
+
+      - name: Deploy the Gateways
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ envs[ env ].gateways | default({}) |dict2items }}"
+
+      when: envs[ env ].gateways is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Application URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/apps', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].apps | default({}) |dict2items }}"
+
+      - name: Deploy the Applications
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ envs[ env ].apps | default({}) |dict2items}}"
+      
+      when: envs[ env ].apps is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Published-API URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/apps/' ~ item.value.parent ~ '/published-apis',
+                'wait': true, 'create': '/' ~ item.value.config.metadata.name, 'method': 'PUT' }  }) }}"
+        loop: "{{ envs[ env ].apis | default({}) |dict2items }}"
+
+      - name: Deploy the Published APIs
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ envs[ env ].apis | default({}) |dict2items}}"
+      
+      when: envs[ env ].apis is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Components URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/apps/' ~ item.value.parent ~ '/components', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].components | default({}) |dict2items }}"
+
+      - name: Deploy the Components
+        include_tasks: tasks/deploy-app.yaml
+        loop: "{{ envs[ env ].components | default({}) |dict2items}}"
+
+      when: envs[ env ].components is defined
+

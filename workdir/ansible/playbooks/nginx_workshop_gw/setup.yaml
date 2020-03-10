@@ -1,0 +1,90 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: yes
+  connection: local
+
+  tasks:
+
+  - name: Setup the certbot repository
+    apt_repository:
+      repo: ppa:certbot/certbot
+      update_cache: yes
+
+  - name: Install certbot package
+    apt:
+      name:
+        - python-certbot-nginx
+
+  - name: Check for existing SSL Certificate
+    stat:
+      path: /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem
+    register: certfile
+
+  - name: Use SSL template if certificate was found
+    set_fact:
+       config_suffix: "ssl.j2"
+    when: certfile.stat.exists == true
+
+  - name: Copy over gateway nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/gateway.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Copy over www nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/www.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/www.{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Copy over CICD nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/cicd.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/jenkins.{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Copy over www nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/controller.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/ctrl.{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Remove the nginx default config file
+    file:
+      path: /etc/nginx/conf.d/default.conf
+      state: absent
+
+  - name: Setup certbot
+    shell:
+      cmd: certbot -n --register-unsafely-without-email --agree-tos register
+      creates: /etc/letsencrypt/accounts/acme-v02.api.letsencrypt.org
+
+  - name: Check for Certifcate Expiry (within 7 days)
+    shell: |
+      openssl x509 -in "/etc/letsencrypt/live/{{ wsid }}.{{ domain }}/cert.pem" -checkend 604800
+    ignore_errors: true
+    register: cert_status
+
+  - name: Renew/Generate Certificates
+    shell: |
+      certbot -n --renew-with-new-domains \
+      --nginx \
+      --cert-name {{wsid}}.{{ domain }} \
+      -d {{wsid}}.{{ domain }} \
+      -d www.{{wsid}}.{{ domain }} \
+      -d api.{{wsid}}.{{ domain }} \
+      -d ctrl.{{wsid}}.{{ domain }} \
+      -d git.{{wsid}}.{{ domain }} \
+      -d jenkins.{{wsid}}.{{ domain }}
+    when: cert_status.rc != 0
+
+  - name: Restart NGINX
+    service:
+      name: nginx
+      state: restarted
+    when: cert_status.rc == 0

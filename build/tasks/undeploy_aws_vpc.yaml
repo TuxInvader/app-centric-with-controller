@@ -1,0 +1,124 @@
+---
+
+  - name: GET EC2 FACTS
+    ec2_instance_info:
+      filters:
+        "tag:stack": "{{ ws.stack_name }}"
+        "tag:UK-SE": "{{ ws.uk_se_name }}"
+        "instance-state-name": "running"
+    register: ec2_instance_facts
+    ignore_errors: True
+
+  - name: DELETE NGINX EC2 INSTANCE
+    ec2:
+      state: absent
+      wait: yes
+      instance_ids: "{{ item.instance_id }}"
+      instance_tags:
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+    loop: "{{ ec2_instance_facts.instances }}"
+    loop_control:
+      label: "{{ item.instance_id}}, {{ item.tags.Name }}"
+    async: 600
+    poll: 0
+    register: _undeployment_tasks
+    ignore_errors: True
+
+  - name: "Wait for all deployments to finish"
+    async_status:
+      jid: "{{ tasks.ansible_job_id }}"
+    register: _jobs
+    until: _jobs.finished
+    delay: 10
+    retries: 60
+    loop: "{{ _undeployment_tasks.results }}"
+    loop_control:
+      loop_var: tasks
+      label: "{{ tasks.item.tags.Name }}"
+
+  - name: "Get all endpoints with specific filters"
+    ec2_vpc_endpoint_info:
+      query: endpoints
+      region: "{{ ws.ec2.region }}"
+      filters:
+        vpc-id:
+        - "{{ vpc_facts.vpcs[0].vpc_id }}"
+    register: existing_endpoints
+
+  - name: DELETE VPC Endpoints
+    ec2_vpc_endpoint:
+      state: absent
+      vpc_endpoint_id: "{{ item.vpc_endpoint_id }}"
+    loop: "{{ existing_endpoints.vpc_endpoints | default([]) | list }}"
+
+  - name: DELETE INTERNET GATEWAY
+    ec2_vpc_igw:
+      vpc_id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+      state: absent
+    ignore_errors: True
+
+  - name: COLLECT SUBNET FACTS
+    ec2_eni_info:
+      filters:
+        vpc-id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+    register: vpc_enis
+
+  - name: DELETE PRIVATE ENI INTERFACES
+    ec2_eni:
+      eni_id: "{{ item.id }}"
+      state: absent
+      force_detach: yes
+    loop: "{{ vpc_enis.network_interfaces }}"
+      
+  - name: DELETE PUBLIC VPC SUBNETS
+    ec2_vpc_subnet:
+      vpc_id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+      cidr: "{{  ws.ec2.cidr_block ~ '.' ~ ws.ec2.subnets.public.third  ~ '.0/' ~ ws.ec2.subnets.public.bits}}"
+      state: absent
+    with_sequence: "count={{ ws.stacks }} format=%02d"
+    ignore_errors: True
+
+  - name: DELETE PRIVATE VPC SUBNETS
+    ec2_vpc_subnet:
+      vpc_id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+      cidr: "{{  ws.ec2.cidr_block ~ '.' ~ ( ( ws.ec2.subnets.private.third | int )  + ( item | int )) ~ '.0/' ~ ws.ec2.subnets.private.bits}}"
+      state: absent
+    with_sequence: "count={{ ws.stacks }} format=%02d"
+    ignore_errors: True
+
+  - name: DELETE ROUTE TABLES
+    ec2_vpc_route_table:
+      vpc_id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+      tags:
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      state: absent
+    ignore_errors: True
+
+  - name: DELETE SECURITY GROUP FOR PUBLIC SUBNET
+    ec2_group:
+      state: absent
+      name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
+      vpc_id: "{{ vpc_facts.vpcs[0].vpc_id }}"
+    ignore_errors: True
+
+  - name: DELETE VPC
+    ec2_vpc_net:
+      name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}"
+      state: absent
+      cidr_block: "{{ ws.ec2.cidr_block ~ '.0.0/16' }}"
+      region: "{{ ws.ec2.region }}"
+    ignore_errors: True
+
+  - name: Delete the EC2 key_pair
+    ec2_key:
+      name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
+      region: "{{ ws.ec2.region }}"
+      state: absent
+    register: vpc_key
+
+  - name: Delete key in secrets folder
+    file:
+      path: secrets/user.pem
+      state: absent

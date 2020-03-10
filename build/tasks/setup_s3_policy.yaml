@@ -1,0 +1,51 @@
+---
+
+  - name: Create a gateway endpoint for S3 access
+    ec2_vpc_endpoint:
+      state: present
+      vpc_id: "{{ vpc_id }}"
+      service: com.amazonaws.{{ ws.ec2.region }}.s3
+      route_table_ids:
+        - "{{ route_table_id }}"
+      policy: { "Statement": [ { "Action": "*", "Effect": "Allow", "Resource": "*", "Principal": "*" } ] }
+    register: create_vpce
+
+  - name: Set VPCE Fact
+    set_fact:
+      vpce: create_vpce
+
+  - name: Execute Boto to get the current policy
+    command:
+      cmd: "./bin/get_bucket_policy.py {{ ws.s3.bucket }} {{ 'Access-for-' ~ ws.uk_se_name ~ '-' ~ ws.stack_name }}"
+    changed_when: false
+    register: policy
+
+  - name: Set bucket_policy fact
+    set_fact:
+      bucket_policy: "{{ policy.stdout | from_json }}"
+      
+  - name: merge bucket_policy
+    set_fact:
+      bucket_policy: "{{ policy.stdout | from_json | combine({ 'Statement': bucket_policy['Statement'] +  [
+        { 
+          'Sid': 'Access-for-' ~ ws.uk_se_name ~ '-' ~ ws.stack_name,
+          'Principal': '*',
+          'Action': [ 's3:GetObject' ],
+          'Effect': 'Allow',
+          'Resource': [
+            'arn:aws:s3:::' ~  ws.s3.bucket ,
+            'arn:aws:s3:::' ~  ws.s3.bucket ~ '/*'
+          ],
+          'Condition': {
+            'StringEquals': {
+              'aws:sourceVpc': vpc_id 
+            }
+          }
+        } ] }, recursive=True) }}"
+     
+
+  - name: Allow VPC access to the S3 bucket
+    s3_bucket:
+      name: "{{ ws.s3.bucket }}"
+      policy: "{{ bucket_policy | to_json }}"
+

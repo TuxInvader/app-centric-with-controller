@@ -1,0 +1,146 @@
+---
+- hosts: cicd
+  become: yes
+  vars_files:
+    - ~/ansible/vars/cicd.yaml
+  vars:
+    jenkins_hostname: "{{ cicd.jenkins.hostname }}"
+    jenkins_http_port: "{{ cicd.jenkins.http_port }}"
+    jenkins_url_prefix: "{{ cicd.jenkins.url_prefix }}"
+    jenkins_admin_username: "{{ cicd.jenkins.admin_username }}" 
+    jenkins_admin_password: "{{ cicd.jenkins.admin_password }}"
+    #jenkins_admin_password_file: /var/lib/jenkins/secrets/initialAdminPassword
+    jenkins_plugins: 
+      - workflow-scm-step
+      - display-url-api
+      - mailer
+      - command-launcher
+      - git
+      - jsch
+      - scm-api
+      - script-security
+      - structs
+      - apache-httpcomponents-client-4-api
+      - ssh-credentials
+      - trilead-api
+      - jdk-tool
+      - git-client
+      - credentials
+      - jaxb
+      - workflow-step-api
+      - cloudbees-folder
+      - antisamy-markup-formatter
+      - token-macro
+      - bouncycastle-api
+      - build-timeout
+      - plain-credentials
+      - credentials-binding
+      - workflow-api
+      - timestamper
+      - workflow-support
+      - durable-task
+      - workflow-durable-task-step
+      - junit
+      - matrix-project
+      - resource-disposer
+      - ws-cleanup
+      - ant
+      - ace-editor
+      - jquery-detached
+      - workflow-cps
+      - workflow-job
+      - workflow-basic-steps
+      - gradle
+      - pipeline-milestone-step
+      - jackson2-api
+      - pipeline-input-step
+      - pipeline-stage-step
+      - pipeline-graph-analysis
+      - pipeline-rest-api
+      - handlebars
+      - momentjs
+      - pipeline-stage-view
+      - pipeline-build-step
+      - pipeline-model-api
+      - pipeline-model-extensions
+      - git-server
+      - workflow-cps-global-lib
+      - branch-api
+      - workflow-multibranch
+      - authentication-tokens
+      - docker-commons
+      - docker-workflow
+      - pipeline-stage-tags-metadata
+      - pipeline-model-declarative-agent
+      - pipeline-model-definition
+      - lockable-resources
+      - workflow-aggregator
+      - github-api
+      - github
+      - github-branch-source
+      - pipeline-github-lib
+      - mapdb-api
+      - ssh-slaves
+      - matrix-auth
+      - pam-auth
+      - ldap
+      - email-ext
+      - gitea
+      - ssh-steps
+      - blueocean
+    jenkins_plugins_state: latest
+
+
+  tasks:
+
+    - name: Update the package cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+        autoclean: true
+        autoremove: true
+        upgrade: true
+
+    - name: Install Required Packages 
+      apt:
+        name:
+          - mariadb-server
+          - mariadb-client
+          - openjdk-11-jre-headless
+          - git
+        state: latest
+
+    - name: Run through the jenkins setup 
+      import_role:
+        name: geerlingguy.jenkins
+
+    - name: Fix the Jenkins resource URL
+      copy:
+        content: |
+          <?xml version='1.1' encoding='UTF-8'?>
+          <jenkins.model.JenkinsLocationConfiguration>
+          <adminAddress>address not configured yet &lt;nobody@nowhere&gt;</adminAddress>
+          <jenkinsUrl>{{ cicd.jenkins.proxy_url |default('http://' ~ jenkins_hostname ~ ':' ~ jenkins_http_port ~ jenkins_url_prefix) }}</jenkinsUrl>
+          </jenkins.model.JenkinsLocationConfiguration>
+        dest: /var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml
+        owner: jenkins
+        group: jenkins
+
+    - name: fix a defect to disable setup wizard
+      jenkins_script:
+        script: |
+          import static jenkins.model.Jenkins.instance as jenkins
+          import jenkins.install.InstallState
+          if (!jenkins.installState.isSetupComplete()) {
+            InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+          }
+        user: "{{ jenkins_admin_username }}"
+        password: "{{ jenkins_admin_password }}"
+
+    - name: Restart Jenkins
+      service:
+        name: jenkins
+        state: restarted
+
+- name: Install and setup the Gitea service
+  import_playbook: gitea.yaml

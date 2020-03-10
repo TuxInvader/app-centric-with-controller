@@ -1,0 +1,184 @@
+---
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  vars:
+  vars_files:
+    - ~/ansible/vars/apps.yaml
+
+  tasks:
+
+    - name: Load the Environment config
+      include_vars:
+        file: "{{ envs_dir }}/{{ env }}.yaml"
+
+    - name: Login to the controller
+      import_tasks: tasks/controller-login.yaml
+      when: nginx_controller_session is not defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Component URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/apps/' ~ item.value.parent ~ '/components', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].components | dict2items }}"
+
+      - name: Remove the Components
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ envs[ env ].components |dict2items}}"
+
+      when: envs[ env ].components is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Published API URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/apps/' ~ item.value.parent ~ '/published-apis', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].apis | default({}) | dict2items }}"
+
+      - name: Remove the Components
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ envs[ env ].apis |default({}) | dict2items}}"
+
+      when: envs[ env ].apis is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Application URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/apps', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].apps |default({}) |dict2items }}"
+
+      - name: Remove the Applications
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ envs[ env ].apps |default({}) |dict2items}}"
+      
+      when: envs[ env ].apps is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Gateway URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/gateways', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].gateways |default({}) |dict2items }}"
+
+      - name: Remove the Gateways
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ envs[ env ].gateways |default({}) |dict2items }}"
+
+      when: envs[ env ].gateways is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Certificate URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments/' ~ env ~ '/certs', 
+                'wait':true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs[ env ].certs |default({}) |dict2items }}"
+
+      - name: Remove the Certificate
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ envs[ env ].certs |default({}) |dict2items }}"
+
+      when: envs[ env ].certs is defined
+
+ 
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load OAS 3.0 Schemas and set URL Parameters"
+        set_fact:
+          #specs: "{{  specs | default({}) | combine({ item.key: (lookup('file', 'specs/' ~ item.key ~ '.yaml') | from_yaml) }) }}"
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/api-definitions', 
+                'wait': true, 'create': '/' ~ item.value.config.metadata.name ~ '/oas-config', 'method': 'PUT' }  }) }}"
+        loop: "{{ oas3 | default({}) |dict2items }}"
+
+      - name: Remove API Definitions
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ oas3 | default({}) |dict2items }}"
+
+      when: oas3 is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load Client Keys URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/security/identity-providers/' ~ item.value.parent ~ '/clients',
+                'wait': false, 'create': '/' ~ item.value.config.metadata.name, 'method': 'PUT' }  }) }}"
+        loop: "{{ clients |default({}) |dict2items }}"
+
+      - name: Remove the Client Keys
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ clients |default({}) |dict2items }}"
+
+      when: clients is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load IDP URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/security/identity-providers', 
+                'wait': false, 'create': '', 'method': 'PUT' }  }) }}"
+        loop: "{{ idps | default({}) |dict2items }}"
+
+      - name: Remove Identity Providers
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ idps | default({}) |dict2items }}"
+
+      when: idps is defined
+
+    - block:
+
+      - name: Reset URL params
+        set_fact:
+          urli: {}
+
+      - name: "Load ENV URL Parameters"
+        set_fact:
+          urli: "{{  urli | default({}) | combine({ item.key: { 'path': '/services/environments', 
+                'wait': true, 'create': '', 'method': 'POST' }  }) }}"
+        loop: "{{ envs | dict2items }}"
+
+      - name: Remove the Environment
+        include_tasks: tasks/undeploy-app.yaml
+        loop: "{{ envs | dict2items }}"
+
+      when: envs is defined
+
+

@@ -1,0 +1,44 @@
+---
+
+  - name: Setup the ansible repository
+    apt_repository:
+      repo: ppa:ansible/ansible
+      update_cache: yes
+
+  - name: Install required packaages and ansible on gateway
+    apt:
+      name:
+        - jq
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - ansible
+        - dnsmasq
+        - asciidoctor
+        - rsync
+      state: latest
+
+  - name: Configure the dnsmasq daemon
+    template:
+      src: files/dnsmasq.j2
+      dest: /etc/dnsmasq.conf
+
+  - name: Configure systemd-resolved
+    copy:
+      content: |
+        [Resolve]
+        DNS=127.0.0.1
+        Domains={{ wsid }}.{{ ws.route53.zone }}
+      dest: /etc/systemd/resolved.conf
+
+  - name: Restart dnsmasq service
+    service:
+      name: dnsmasq
+      state: restarted
+
+  - name: Restart systemd resolver service
+    service:
+      name: systemd-resolved
+      state: restarted
+
