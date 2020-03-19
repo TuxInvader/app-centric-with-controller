@@ -28,11 +28,11 @@ aGUzj4Avlh:8
 
 === Credentials for SSH access
 
-Our first pipeline will be deploying NGINX configuration directly onto one of our NGNIX
+The purpose of our first pipeline will be to deploy NGINX configuration to our NGINX web
 servers. We shall acomplish this using SSH, and so Jenkins needs to be given the same
 passwordless SSH access enjoyed by our ansible playbooks.
 
-Navigate to _Credentials_ -> _Global Credentials_ and click the `Add Credentials` button.
+Navigate to _Credentials_ -> _System_ -> _Global Credentials_ and click the `Add Credentials` button.
 
 image:img/jenkins-add-creds.png[Add Credentials]
 
@@ -48,7 +48,8 @@ Jenkins also needs to be able to access our source code repositories stored in G
 to provide a set of credentials for that access next.
 
 Using the same `add Credentials` dialog, set the `Kind` to be "username with password" and enter
-a `username` of "nginx", and the `password` as found in `~/secrets/git.cicd.password`
+a `username` of "nginx", and the `password` as found in `~/secrets/git.cicd.password`. Set the `ID` to
+"gitea" so you remember what it is for.
 
 Once complete, click `OK` to save.
 
@@ -116,5 +117,48 @@ jenkins URL of your server. It should be: `http://jenkins.<yourdomain>:8080/gite
 The `HTTP Method` should be set to "POST", and the `Post Content Type` should be
 "application/json". The `Secret` should be blank. Click `Add Webhook`.
 
+You will be taken back to the WebHook settings for the WhatCheese repository, and you should now
+see the hook you just created. Click on the webhook, and scroll down to the bottom, where you will
+find a test section. Run a test of your new webhook.
+
+== WhatCheese Demo site
+
+In this section we have linked our Git server (gitea) and our CI/CD automation platform (Jenkins)
+together. We told Jenkins about the WhatCheese organization on Gitea, and Jenkins will now scan the
+WhatCheese organization periodically looking for new projects. We also created a Webhook in Gitea
+to poke Jenkins whenever a changed is committed. 
+
+The Whatcheese-web pipeline should have deployed our whatcheese demo site for us. Take a look at
+http://www.<yourdomain>/ and see if it's working. 
+
+****
+Uh-Oh! It's not working is it :-(
+****
+
+The reason it doesn't work is because the nginx config file is looking for the wrong hostname, so
+you're seeing the default NGINX page rather than the whatcheese website. Because we've already set
+up our CI/CD pipeline, all we need to do is change the config file and make a commit.
+
+You can do this through the gitea website, or if you want to be a proper developer you can check
+out the repository to your gateway machine.
+
+'''
+ubuntu@gateway:~$ cd ~/source/
+ubuntu@gateway:~/source$ git clone http://cicd1:3000/WhatCheese/whatcheese-web/
+Cloning into 'whatcheese-web'...
+Username for 'http://cicd1:3000': nginx
+Password for 'http://nginx@cicd1:3000':
+remote: Counting objects: 102, done.
+remote: Compressing objects: 100% (93/93), done.
+remote: Total 102 (delta 31), reused 0 (delta 0)
+Receiving objects: 100% (102/102), 3.89 MiB | 17.46 MiB/s, done.
+Resolving deltas: 100% (31/31), done.
+ubuntu@gateway:~/source$ ls -l
+total 8
+drwxr-xr-x 4 ubuntu ubuntu 4096 Mar 19 09:55 ansible-playbooks
+drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 19 12:41 whatcheese-web
+ubuntu@gateway:~/source$ cd whatcheese-web/
+ubuntu@gateway:~/source/whatcheese-web$ vi conf/nginx.conf
+'''
 
 
