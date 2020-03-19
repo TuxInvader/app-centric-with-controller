@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 3: Deploy our CI/CD Pipeline</title>
+<title>Task 3: Deploy Your CI/CD Pipeline</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,13 +438,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 3: Deploy our CI/CD Pipeline</h1>
+<h1>Task 3: Deploy Your CI/CD Pipeline</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_introduction">Introduction</a></li>
 <li><a href="#_install_a_role_to_help_install_jenkins">Install a role to help install Jenkins</a></li>
 <li><a href="#_run_the_playbook">Run the playbook</a></li>
+<li><a href="#_check_gitea_is_running">Check Gitea is running</a></li>
+<li><a href="#_check_jenkins_is_running">Check Jenkins is running</a></li>
 </ul>
 </div>
 </div>
@@ -465,7 +467,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_introduction"><a class="link" href="#_introduction">Introduction</a></h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Now we&#8217;re going to deploy some tools for CI/CD automation. We&#8217;ll be using a free Open Source Git repository
+server with a github like HTTP interface called <a href="https://gitea.io/en-us/">Gitea</a>, and for orchestration automation
+we&#8217;ll be using <a href="https://jenkins.io/">Jenkins</a></p>
+</div>
+<hr>
 </div>
 </div>
 <div class="sect1">
@@ -476,6 +483,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre>ansible-galaxy install geerlingguy.jenkins`</pre>
 </div>
 </div>
+<hr>
 </div>
 </div>
 <div class="sect1">
@@ -486,15 +494,39 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre>ansible-playbook playbooks/cicd/deploy.yaml</pre>
 </div>
 </div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_check_gitea_is_running"><a class="link" href="#_check_gitea_is_running">Check Gitea is running</a></h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>done</p>
+<p>You should now be able to access your Gitea server at <code><a href="https://git.&lt;yourdomain&gt" class="bare">https://git.&lt;yourdomain&gt</a>;</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/gitea.png" alt="Gitea"></span></p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_check_jenkins_is_running"><a class="link" href="#_check_jenkins_is_running">Check Jenkins is running</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You should also be able to access your Jenkins server at <code><a href="https://jenkins.&lt;yourdomain&gt" class="bare">https://jenkins.&lt;yourdomain&gt</a>;</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/jenkins.png" alt="Jenkins"></span></p>
+</div>
+<div class="paragraph">
+<p><a href="task4.html">Next Task</a></p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-10 20:41:51 UTC
+Last updated 2020-03-19 16:16:16 UTC
 </div>
 </div>
 </body>

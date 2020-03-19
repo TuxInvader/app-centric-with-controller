@@ -715,7 +715,7 @@ indicates that Ansible should attept to run the command as root, and <code>gathe
 information about the hosts first.</p>
 </div>
 <div class="paragraph">
-<p>Next follows a list of tasks for the playbook to perform. They are essentially all in the format:</p>
+<p>Next follows a list of tasks for the playbook to perform. They essentially all use the same format:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -727,14 +727,14 @@ information about the hosts first.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Each name will be printed by Ansible as it runs through the playbook, and if something goes wrong, the name
-will be used to reference where the error occurred. Each task runs an ansible module, which is defined on
-the next line, and is usually followed by a series of module specific options. Finally some task_options
-may be defined for storing output, or looping through the task multiple times.</p>
+<p>Each <code>name</code> will be printed by Ansible as it runs through the playbook, and if something goes wrong, the <code>name</code>
+will be used to reference where the error occurred. Each task runs an ansible <code>module</code>, which is defined on
+the next line, and is usually followed by a series of <code>module</code> specific options. Finally some <code>task_options</code>
+may be defined for storing output, or looping through the task multiple times, etc.</p>
 </div>
 <div class="paragraph">
-<p>If you look through the node_setup_playbook you will see that it is essentially doing three things on the
-machines named in the <code>remote</code> group of our ansible inventory <code>~/ansible/inventory</code>.</p>
+<p>If you look through the node_setup_playbook you will see that it is doing three things on each of the
+machines listed in the <code>remote</code> group of our ansible inventory <code>~/ansible/inventory</code>.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -756,7 +756,7 @@ and some tasks later will require them to download packages from the internet. A
 configuration on your gateways which responds authoritatively for your workshops domain.</p>
 </div>
 <div class="paragraph">
-<p>Now run the playbook</p>
+<p>Let&#8217;s run the playbook</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -764,10 +764,11 @@ configuration on your gateways which responds authoritatively for your workshops
 </div>
 </div>
 <div class="paragraph">
-<p>Cool. We&#8217;re a step closer to having a useful workshop envionment. In task 2 we&#8217;ll install NGINX on the
+<p>With that done, we&#8217;re a step closer to having a useful workshop envionment. In task 2 we&#8217;ll install NGINX on the
 gateway to open up access to the nodes you just configured. But before we can do that, we need to install
 an ansible role to help us.</p>
 </div>
+<hr>
 </div>
 </div>
 <div class="sect1">
@@ -791,14 +792,14 @@ Lets use ansible-galaxy to install the NGINX role published by F5/NGINX.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>We&#8217;ll make use of this role in task2.</p>
+<p>We&#8217;ll make use of this role in <a href="task2.html">Task 2</a></p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-19 14:49:27 UTC
+Last updated 2020-03-19 15:54:45 UTC
 </div>
 </div>
 </body>

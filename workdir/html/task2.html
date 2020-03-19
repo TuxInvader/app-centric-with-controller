@@ -444,9 +444,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_introduction">Introduction</a></li>
 <li><a href="#_check_out_the_playbook">Check out the playbook</a></li>
-<li><a href="#_apply_the_playbook">Apply the playbook</a></li>
+<li><a href="#_apply_the_install_playbook">Apply the install playbook</a></li>
 <li><a href="#_imperative_vs_declarative">Imperative vs Declarative</a></li>
 <li><a href="#_adding_additional_tasks">Adding Additional tasks</a></li>
+<li><a href="#_apply_the_setup_playbook">Apply the setup playbook</a></li>
 </ul>
 </div>
 </div>
@@ -482,7 +483,12 @@ the services being deployed during this workshop</p>
 <h2 id="_check_out_the_playbook"><a class="link" href="#_check_out_the_playbook">Check out the playbook</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You&#8217;ll find a playbook in <em>~/ansible/playbooks/nginx_workshop_gw/install.yaml</em></p>
+<p>You&#8217;ll find the playbook in <em>~/ansible/playbooks/nginx_workshop_gw/install.yaml</em></p>
+</div>
+<div class="paragraph">
+<p>This is similar in some ways to the <em>node_setup_playbook.yaml</em> that we looked at in the previous lesson,
+however you&#8217;ll notice some pretty significant differences. This playbook is using <code>roles</code> rather
+than <code>tasks</code>, and we&#8217;re setting a number of variables in a new <code>vars</code> section.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -507,23 +513,34 @@ the services being deployed during this workshop</p>
 </div>
 </div>
 <div class="paragraph">
-<p>We import the <em>nginxinc.nginx</em> role we downloaded from <strong>Ansible Galaxy</strong> and provide it with
-a set of <em>vars</em>. The Variables tell the role how we want NGINX configured. The NGINX role can
-also install the <strong>NGINX Controller Agent</strong>, as well as <strong>NGINX Unit</strong></p>
+<p>So we import the <code>role</code> <em>nginxinc.nginx</em> that we downloaded from <strong>Ansible Galaxy</strong> and provide it
+with a set of <code>vars</code>. The Variables tell the role how we want NGINX configured.</p>
+</div>
+<div class="paragraph">
+<p>When the role is loaded, it will run through various tasks depending on which variables we have
+provided in the <code>vars</code> section. As you can see we are installing NINGX Plus, enabling the REST
+API on port 4321, and installing the NJS module.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>The NGINX role can also install the <strong>NGINX Controller Agent</strong>, as well as <strong>NGINX Unit</strong></p>
+</div>
+</div>
 </div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_apply_the_playbook"><a class="link" href="#_apply_the_playbook">Apply the playbook</a></h2>
+<h2 id="_apply_the_install_playbook"><a class="link" href="#_apply_the_install_playbook">Apply the install playbook</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Ensure that you are in the ansible folder and apply the nginx_workshop_gw playbook:</p>
+<p>Ensure that you are in the ansible folder and apply the <em>nginx_workshop_gw/install.yaml</em> playbook:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>  $ cd ~/ansible
-  $ ansible-playbook playbooks/nginx_workshop_gw/install.yaml</pre>
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/nginx_workshop_gw/install.yaml</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -536,18 +553,23 @@ are relevant for Ubuntu.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>  $ sudo nginx -t</pre>
+<pre>$ sudo nginx -t</pre>
 </div>
 </div>
+<hr>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_imperative_vs_declarative"><a class="link" href="#_imperative_vs_declarative">Imperative vs Declarative</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Ansible is an automation tool and can be used in an imperative or declarative way. The task we just
-accomplished used a declarative form. We included a role, and provided a number of variables which
-indicated our desired end state.</p>
+<p>If we compare the two playbooks that we&#8217;ve looked at so far, <em>node_setup_playbook.yaml</em> and
+<em>nginx_workshop_gw/install.yaml</em> we can see that they have very different approaches. The node setup
+playbook had a set of step-by-step tasks, while the <em>install.yaml</em> just had a set of definitions.</p>
+</div>
+<div class="paragraph">
+<p>The first playbook uses an imperative style, and the second one uses a declarative one.
+Obviously Ansible supports both approaches.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -606,12 +628,37 @@ certs before, and then pick either SSL enabled or disabled versions of NGINX con
 <p>Ansible makes it possible to combine roles with additional tasks in a single playbook. So you can have a
 combination of imperative and declarative styles in a single playbook.</p>
 </div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_apply_the_setup_playbook"><a class="link" href="#_apply_the_setup_playbook">Apply the setup playbook</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Again, ensure that you are in the ansible folder and apply the <em>nginx_workshop_gw/setup.yaml</em> playbook:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/nginx_workshop_gw/setup.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You now have the gateway setup and ready to provide access to the rest of the workshop servers. You should
+now be able to point your web browser at your gateway and see these documents in beautiful HTML5.</p>
+</div>
+<div class="paragraph">
+<p>Try accessing <code><a href="https://&lt;yourfqdn&gt;/tasks" class="bare">https://&lt;yourfqdn&gt;/tasks</a></code></p>
+</div>
+<div class="paragraph">
+<p><a href="task3.html">Next Task</a></p>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-10 20:41:51 UTC
+Last updated 2020-03-19 15:57:38 UTC
 </div>
 </div>
 </body>

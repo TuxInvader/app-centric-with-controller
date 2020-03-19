@@ -16,6 +16,7 @@
 In this task we are going to login in to our newly deployed Jenkins automation server, and 
 create a new CI/CD pipeline.
 
+'''
 == Setup Credentials
 
 Log into the Jenkins instance running in your workshop eg: `https://jenkins.ws99.<your_workshop_domain>` +
@@ -26,6 +27,7 @@ $ cat secrets/jenkins.cicd.passwd
 aGUzj4Avlh:8
 ----
 
+'''
 === Credentials for SSH access
 
 The purpose of our first pipeline will be to deploy NGINX configuration to our NGINX web
@@ -42,6 +44,7 @@ to access the workshop instances into the private key field.
 
 Once complete, click `OK` to save.
 
+'''
 === Credentials for Gitea access
 
 Jenkins also needs to be able to access our source code repositories stored in Gitea. We will need
@@ -53,12 +56,14 @@ a `username` of "nginx", and the `password` as found in `~/secrets/git.cicd.pass
 
 Once complete, click `OK` to save.
 
+'''
 == Connecting Jenkins and Gitea
 
 Your Jenkins server has a Gitea plugin, which enables Jenkins to be able to enumerate Organizations
 and source repositories on the Gitea server. The plugin also enables a webhook end point so that
 we can automatically trigger a build pipeline when changes are commited to Git.
 
+'''
 === Create a Gitea reference
 
 Login to Jenkins and select `Manage Jenkins` from the side menu, and then `Configure System` in
@@ -69,6 +74,7 @@ image:img/add-gitea-server.png[Add Gitea Server]
 
 If the connection infomation is correct, then you should see a 403/Forbidden error. Click Save.
 
+'''
 === Create a Gitea Item
 
 Go back to the Jenkins home page, and click `New Item`. Call the item "whatcheese" and scroll down
@@ -83,6 +89,7 @@ configurations. Return to the Jenkins home page.
 
 image:img/jenkins-home.png[Gitea Whatcheese Org]
 
+'''
 == View the Pipeline 
 
 Navigate back to your Jenkins home page, and then follow the link in the side menu `Open Blue Ocean` +
@@ -100,6 +107,7 @@ the username "nginx" and the same password you provided to Jenkins earlier. Find
 _WhatCheese/whatcheese-web_ repoisitory and take a look at the Jenkinsfile. The pipeline presented
 in Blue Ocean is a visual representation of the CI/CD pipeline described in this file.
 
+'''
 == Setup an Automated Webhook
 
 Jenkins can be set up to periodically poll Gitea for changes, but it would be better if we could
@@ -121,6 +129,7 @@ You will be taken back to the WebHook settings for the WhatCheese repository, an
 see the hook you just created. Click on the webhook, and scroll down to the bottom, where you will
 find a test section. Run a test of your new webhook.
 
+'''
 == WhatCheese Demo site
 
 In this section we have linked our Git server (gitea) and our CI/CD automation platform (Jenkins)
@@ -172,3 +181,4 @@ now be accessable in your browser. Well done!
 
 image:img/whatcheese-web.png[WhatCheese Website]
 
+<<task5.adoc#,Next Task>>
