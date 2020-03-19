@@ -2,10 +2,10 @@
 ---
 
   controller:
-    version: "3.1"
+    version: "3.2"
     api_version: "v1"
     hostname: ctrl.{{ wsid }}.{{ domain }}
-    install_package: ~/controller-installer-3.1.0.tar.gz
+    install_package: ~/controller-installer-3.2.0.tar.gz
     license_file: ~/license.txt
     admin_email: admin@nginx.com
     admin_password: "{{ lookup('password', '~/secrets/controller.passwd length=12 chars=ascii_letters,digits') }}"
