@@ -61,13 +61,15 @@ host_key_checking = False
 inventory      = inventory
 nocows = 1
 remote_user = ubuntu
+stdout_callback = yaml
 ----
 
 We set the remote user to be *"ubuntu"*, so when ansible attempts to execute a command it will try to ssh
 to the remote system as ubuntu. We set nocows to 1, which disables cowsay, but feel free to re-enable it
-if you find it comforting. Finally we set the location of the inventory file.
+if you find it comforting. We also tell ansible to use the "yaml" output plugin, this is so we get nicely
+formatted output, especially useful when things go wrong.
 
-The inventory can be a script to generate hosts/groups dynamically, but in our case a simple static text
+The inventory file can be a script to generate hosts/groups dynamically, but in our case a simple static text
 file will suffice.
 
 '''
@@ -167,7 +169,66 @@ It has several advantages over Ad-Hoc mode:
 == Finishing our configuration
 
 The machines that you are connecting to for this workshop have all been deployed using Ansible. +
-However the set up is not complete, 
+However the set up is not complete, lets finish that task now - using our new ansible skills.
+
+Change directory to your ansible folder and take a look at the node setup playbook.
+----
+$ cd ~/ansible
+$ less node_setup_playbook.yaml
+----
+
+Ansible configuration uses YAML extensivley. You are now looking at an ansible playbook, the three dashes
+denote this is a yaml file.
+
+----
+---
+- hosts: remote
+  become: true
+  gather_facts: yes
+
+  tasks:
+----
+
+The `hosts` line tells Ansible on which host or group it should be applying this playbook. The `become` entry
+indicates that Ansible should attept to run the command as root, and `gather_facts` tells ansible to collect
+information about the hosts first.
+
+Next follows a list of tasks for the playbook to perform. They are essentially all in the format:
+
+----
+  - name: A friendly description of the task
+    module:
+      module_options
+      module_options
+    task_options
+----
+
+Each name will be printed by Ansible as it runs through the playbook, and if something goes wrong, the name
+will be used to reference where the error occurred. Each task runs an ansible module, which is defined on
+the next line, and is usually followed by a series of module specific options. Finally some task_options
+may be defined for storing output, or looping through the task multiple times.
+
+If you look through the node_setup_playbook you will see that it is essentially doing three things on the
+machines named in the `remote` group of our ansible inventory `~/ansible/inventory`.
+
+  * Add each machines hostname to it's own hostfile
+  * set the machines hostname using the hostname command
+  * install a script `/etc/rc.ansible` and configure systemd to run it.
+
+The script Ansible is adding to each machine configures them to use your ansible controller as their 
+default gateway, and to consult it for DNS. This is because your gateway is the only public machine,
+and some tasks later will require them to download packages from the internet. Also there is a DNSMasq
+configuration on your gateways which responds authoritatively for your workshops domain.
+
+Now run the playbook
+
+----
+$ ansible-playbook node_setup_playbook.yaml
+----
+
+Cool. We're a step closer to having a useful workshop envionment. In task 2 we'll install NGINX on the
+gateway to open up access to the nodes you just configured. But before we can do that, we need to install
+an ansible role to help us.
 
 == Ansible Roles
 
