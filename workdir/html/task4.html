@@ -493,7 +493,7 @@ The username is <code>nginx</code> and the password can be found in <code>~/secr
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>ubuntu@gateway:~$ cat secrets/jenkins.cicd.passwd
+<pre>$ cat secrets/jenkins.cicd.passwd
 aGUzj4Avlh:8</pre>
 </div>
 </div>
@@ -665,8 +665,8 @@ out the repository to your gateway machine.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>ubuntu@gateway:~$ cd ~/source/
-ubuntu@gateway:~/source$ git clone http://cicd1:3000/WhatCheese/whatcheese-web/
+<pre>$ cd ~/source/
+$ git clone http://cicd1:3000/WhatCheese/whatcheese-web/
 Cloning into 'whatcheese-web'...
 Username for 'http://cicd1:3000': nginx
 Password for 'http://nginx@cicd1:3000':
@@ -675,11 +675,7 @@ remote: Compressing objects: 100% (93/93), done.
 remote: Total 102 (delta 31), reused 0 (delta 0)
 Receiving objects: 100% (102/102), 3.89 MiB | 17.46 MiB/s, done.
 Resolving deltas: 100% (31/31), done.
-ubuntu@gateway:~/source$ ls -l
-total 8
-drwxr-xr-x 4 ubuntu ubuntu 4096 Mar 19 09:55 ansible-playbooks
-drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 19 12:41 whatcheese-web
-ubuntu@gateway:~/source$ cd whatcheese-web/</pre>
+$ cd whatcheese-web/</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -687,12 +683,12 @@ ubuntu@gateway:~/source$ cd whatcheese-web/</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>ubuntu@gateway:~/source/whatcheese-web$ git config --global user.email me@myworkshop.nginx
-ubuntu@gateway:~/source/whatcheese-web$ git config --global user.name Chuck Norris
-ubuntu@gateway:~/source/whatcheese-web$
-ubuntu@gateway:~/source/whatcheese-web$ git add conf/nginx.conf
-ubuntu@gateway:~/source/whatcheese-web$ git commit -m "fix hostname"
-ubuntu@gateway:~/source/whatcheese-web$ git push</pre>
+<pre>$ git config --global user.email me@myworkshop.nginx
+$ git config --global user.name Chuck Norris
+
+$ git add conf/nginx.conf
+$ git commit -m "fix hostname"
+$ git push</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -707,7 +703,7 @@ now be accessable in your browser. Well done!</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-19 13:17:34 UTC
+Last updated 2020-03-19 14:00:18 UTC
 </div>
 </div>
 </body>
