@@ -142,7 +142,7 @@ up our CI/CD pipeline, all we need to do is change the config file and make a co
 You can do this through the gitea website, or if you want to be a proper developer you can check
 out the repository to your gateway machine.
 
-'''
+----
 ubuntu@gateway:~$ cd ~/source/
 ubuntu@gateway:~/source$ git clone http://cicd1:3000/WhatCheese/whatcheese-web/
 Cloning into 'whatcheese-web'...
@@ -159,6 +159,6 @@ drwxr-xr-x 4 ubuntu ubuntu 4096 Mar 19 09:55 ansible-playbooks
 drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 19 12:41 whatcheese-web
 ubuntu@gateway:~/source$ cd whatcheese-web/
 ubuntu@gateway:~/source/whatcheese-web$ vi conf/nginx.conf
-'''
+----
 
 
