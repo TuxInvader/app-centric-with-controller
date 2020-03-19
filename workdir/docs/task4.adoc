@@ -22,7 +22,7 @@ Log into the Jenkins instance running in your workshop eg: `https://jenkins.ws99
 The username is `nginx` and the password can be found in `~/secrets/jenkins.cicd.password`
 
 ----
-ubuntu@gateway:~$ cat secrets/jenkins.cicd.passwd
+$ cat secrets/jenkins.cicd.passwd
 aGUzj4Avlh:8
 ----
 
@@ -143,8 +143,8 @@ You can do this through the gitea website, or if you want to be a proper develop
 out the repository to your gateway machine.
 
 ----
-ubuntu@gateway:~$ cd ~/source/
-ubuntu@gateway:~/source$ git clone http://cicd1:3000/WhatCheese/whatcheese-web/
+$ cd ~/source/
+$ git clone http://cicd1:3000/WhatCheese/whatcheese-web/
 Cloning into 'whatcheese-web'...
 Username for 'http://cicd1:3000': nginx
 Password for 'http://nginx@cicd1:3000':
@@ -153,22 +153,18 @@ remote: Compressing objects: 100% (93/93), done.
 remote: Total 102 (delta 31), reused 0 (delta 0)
 Receiving objects: 100% (102/102), 3.89 MiB | 17.46 MiB/s, done.
 Resolving deltas: 100% (31/31), done.
-ubuntu@gateway:~/source$ ls -l
-total 8
-drwxr-xr-x 4 ubuntu ubuntu 4096 Mar 19 09:55 ansible-playbooks
-drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 19 12:41 whatcheese-web
-ubuntu@gateway:~/source$ cd whatcheese-web/
+$ cd whatcheese-web/
 ----
 
 Modify the `conf/nginx.conf` file, and change the `server_name` directive to match `www.<yourdomain>`
 
 ----
-ubuntu@gateway:~/source/whatcheese-web$ git config --global user.email me@myworkshop.nginx
-ubuntu@gateway:~/source/whatcheese-web$ git config --global user.name Chuck Norris
-ubuntu@gateway:~/source/whatcheese-web$
-ubuntu@gateway:~/source/whatcheese-web$ git add conf/nginx.conf
-ubuntu@gateway:~/source/whatcheese-web$ git commit -m "fix hostname"
-ubuntu@gateway:~/source/whatcheese-web$ git push
+$ git config --global user.email me@myworkshop.nginx
+$ git config --global user.name Chuck Norris
+
+$ git add conf/nginx.conf
+$ git commit -m "fix hostname"
+$ git push
 ----
 
 If you check the Jenkins server, you should see a build was triggerd. And the Whatcheese website should
