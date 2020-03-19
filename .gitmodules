@@ -1,0 +1,3 @@
+[submodule "workdir/source/ansible-playbooks"]
+	path = workdir/source/ansible-playbooks
+	url = https://github.com/TuxInvader/ansible-playbooks.git
