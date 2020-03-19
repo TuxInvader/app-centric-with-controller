@@ -21,8 +21,12 @@ the services being deployed during this workshop
 '''
 == Check out the playbook
 
-You'll find a playbook in _~/ansible/playbooks/nginx_workshop_gw/install.yaml_
-  
+You'll find the playbook in _~/ansible/playbooks/nginx_workshop_gw/install.yaml_
+
+This is similar in some ways to the _node_setup_playbook.yaml_ that we looked at in the previous lesson,
+however you'll notice some pretty significant differences. This playbook is using `roles` rather
+than `tasks`, and we're setting a number of variables in a new `vars` section.
+
 ----
 ---
 - hosts: localhost
@@ -44,18 +48,25 @@ You'll find a playbook in _~/ansible/playbooks/nginx_workshop_gw/install.yaml_
 ...
 ----
 
-We import the _nginxinc.nginx_ role we downloaded from *Ansible Galaxy* and provide it with  
-a set of _vars_. The Variables tell the role how we want NGINX configured. The NGINX role can  
-also install the *NGINX Controller Agent*, as well as *NGINX Unit*
+So we import the `role` _nginxinc.nginx_ that we downloaded from *Ansible Galaxy* and provide it
+with a set of `vars`. The Variables tell the role how we want NGINX configured. 
+
+When the role is loaded, it will run through various tasks depending on which variables we have
+provided in the `vars` section. As you can see we are installing NINGX Plus, enabling the REST
+API on port 4321, and installing the NJS module.
+
+****
+The NGINX role can also install the *NGINX Controller Agent*, as well as *NGINX Unit*
+****
 
 '''
+== Apply the install playbook
 
-== Apply the playbook
-Ensure that you are in the ansible folder and apply the nginx_workshop_gw playbook:
+Ensure that you are in the ansible folder and apply the _nginx_workshop_gw/install.yaml_ playbook:
 
 ----
-  $ cd ~/ansible
-  $ ansible-playbook playbooks/nginx_workshop_gw/install.yaml
+$ cd ~/ansible
+$ ansible-playbook playbooks/nginx_workshop_gw/install.yaml
 ----
 
 You will see Ansible skipping a lot of steps as the play book runs. This is because the role is  
@@ -65,13 +76,18 @@ are relevant for Ubuntu.
 Once the playbook has completed, you can check that NGINX is installed by executing
 
 ----
-  $ sudo nginx -t
+$ sudo nginx -t
 ----
 
+'''
 == Imperative vs Declarative
-Ansible is an automation tool and can be used in an imperative or declarative way. The task we just  
-accomplished used a declarative form. We included a role, and provided a number of variables which  
-indicated our desired end state.
+
+If we compare the two playbooks that we've looked at so far, _node_setup_playbook.yaml_ and
+_nginx_workshop_gw/install.yaml_ we can see that they have very different approaches. The node setup
+playbook had a set of step-by-step tasks, while the _install.yaml_ just had a set of definitions.
+
+The first playbook uses an imperative style, and the second one uses a declarative one.
+Obviously Ansible supports both approaches.
 
  * Imperative
  Provides a sequence of steps that need to be preformed in order to reach a desired end state.
@@ -119,4 +135,20 @@ certs before, and then pick either SSL enabled or disabled versions of NGINX con
 Ansible makes it possible to combine roles with additional tasks in a single playbook. So you can have a
 combination of imperative and declarative styles in a single playbook.
 
+'''
+== Apply the setup playbook
+
+Again, ensure that you are in the ansible folder and apply the _nginx_workshop_gw/setup.yaml_ playbook:
+
+----
+$ cd ~/ansible
+$ ansible-playbook playbooks/nginx_workshop_gw/setup.yaml
+----
+
+You now have the gateway setup and ready to provide access to the rest of the workshop servers. You should
+now be able to point your web browser at your gateway and see these documents in beautiful HTML5.
+
+Try accessing `https://<yourfqdn>/tasks`
+
+<<task3.adoc#,Next Task>> 
 

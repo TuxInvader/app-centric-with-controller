@@ -28,6 +28,6 @@ During this workshop, we'll be looking at various ways to automate NGINX. Includ
 
 * <<task1.adoc#,Task 1: Familiarize yourself with Ansible>>
 * <<task2.adoc#,Task 2: Deploy a simple NGINX Configuration>>
-* <<task3.adoc#,Task 3: Deploy our CI/CD Pipeline>>
+* <<task3.adoc#,Task 3: Deploy Your CI/CD Pipeline>>
 * <<task4.adoc#,Task 4: Manage NGINX with CICD>>
 

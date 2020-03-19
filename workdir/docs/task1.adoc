@@ -36,8 +36,8 @@ accessable via SSH/HTTP/HTTPS. You will be provided a FQDN and a SSH private key
 This machine is your Ansible Control Node, and your "frontend" for all other systems
 ****
 
-'''
 
+'''
 == Running Ansible
 
 In your home directory, you have a directory called ansible. We will be executing all of your ansible
@@ -48,7 +48,6 @@ As you've probably guessed, the ansible.cfg file we are using for this workshop 
 _~/ansible_ folder, and running commands outside of this folder will not work as expected.
 
 '''
-
 == Take a look at your ansible configuration
 
 The ansible.cfg file in your ansible folder contains all of the ansible defaults.
@@ -98,7 +97,6 @@ cicd1
 Ansible uses the inventory to match hosts and groups of hosts on which to execute tasks or playbooks.
 
 '''
-
 == Ansible Ad-hoc mode
 Ansible allows you to execute tasks in an ad-hoc way. Try executing the following:
 
@@ -127,7 +125,6 @@ the module directly with the _content_ argument.
 Here we simply copied the /etc/hosts file into your home directory.
 
 '''
-
 == Ansible Facts
 
 Ansible can also gather facts about the nodes on which it executes. These facts include the
@@ -148,7 +145,6 @@ $ ansible -m setup nginx -a "filter=ansible_dist*"
 ----
 
 '''
-
 == Ansible Playbooks
 
 In the previous section we used ansible to execute single tasks using the specified modules.
@@ -165,7 +161,6 @@ It has several advantages over Ad-Hoc mode:
  * You can use other tasks from Ansible Roles.
 
 '''
-
 == Finishing our configuration
 
 The machines that you are connecting to for this workshop have all been deployed using Ansible. +
@@ -193,7 +188,7 @@ The `hosts` line tells Ansible on which host or group it should be applying this
 indicates that Ansible should attept to run the command as root, and `gather_facts` tells ansible to collect
 information about the hosts first.
 
-Next follows a list of tasks for the playbook to perform. They are essentially all in the format:
+Next follows a list of tasks for the playbook to perform. They essentially all use the same format:
 
 ----
   - name: A friendly description of the task
@@ -203,13 +198,13 @@ Next follows a list of tasks for the playbook to perform. They are essentially a
     task_options
 ----
 
-Each name will be printed by Ansible as it runs through the playbook, and if something goes wrong, the name
-will be used to reference where the error occurred. Each task runs an ansible module, which is defined on
-the next line, and is usually followed by a series of module specific options. Finally some task_options
-may be defined for storing output, or looping through the task multiple times.
+Each `name` will be printed by Ansible as it runs through the playbook, and if something goes wrong, the `name`
+will be used to reference where the error occurred. Each task runs an ansible `module`, which is defined on
+the next line, and is usually followed by a series of `module` specific options. Finally some `task_options`
+may be defined for storing output, or looping through the task multiple times, etc.
 
-If you look through the node_setup_playbook you will see that it is essentially doing three things on the
-machines named in the `remote` group of our ansible inventory `~/ansible/inventory`.
+If you look through the node_setup_playbook you will see that it is doing three things on each of the
+machines listed in the `remote` group of our ansible inventory `~/ansible/inventory`.
 
   * Add each machines hostname to it's own hostfile
   * set the machines hostname using the hostname command
@@ -220,16 +215,17 @@ default gateway, and to consult it for DNS. This is because your gateway is the 
 and some tasks later will require them to download packages from the internet. Also there is a DNSMasq
 configuration on your gateways which responds authoritatively for your workshops domain.
 
-Now run the playbook
+Let's run the playbook
 
 ----
 $ ansible-playbook node_setup_playbook.yaml
 ----
 
-Cool. We're a step closer to having a useful workshop envionment. In task 2 we'll install NGINX on the
+With that done, we're a step closer to having a useful workshop envionment. In task 2 we'll install NGINX on the
 gateway to open up access to the nodes you just configured. But before we can do that, we need to install
 an ansible role to help us.
 
+'''
 == Ansible Roles
 
 An Ansible Role is a group of tasks and variables which have been built in a standard way to enable reuse.
@@ -245,5 +241,6 @@ Lets use ansible-galaxy to install the NGINX role published by F5/NGINX.
 $ ansible-galaxy install nginxinc.nginx
 ----
 
-We'll make use of this role in task2.
+We'll make use of this role in <<task2.adoc#,Task 2>> 
+
 
