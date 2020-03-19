@@ -28,6 +28,10 @@ During this workshop, we'll be looking at various ways to automate NGINX. Includ
 
 * <<task1.adoc#,Task 1: Familiarize yourself with Ansible>>
 * <<task2.adoc#,Task 2: Deploy a simple NGINX Configuration>>
-* <<task3.adoc#,Task 3: Deploy Your CI/CD Pipeline>>
-* <<task4.adoc#,Task 4: Manage NGINX with CICD>>
+* <<task3.adoc#,Task 3: Deploy Your CI/CD Infrastructure>>
+* <<task4.adoc#,Task 4: Automate NGINX with CI/CD Pipeline>>
+* <<task5.adoc#,Task 5: Setup NGINX Controller>>
+* <<task6.adoc#,Task 6: Automate NGINX with CI/CD and Controller>>
+* <<task7.adoc#,Task 7: Automate API Management with Controller>>
+* <<task8.adoc#,Task 8: Play time and Wrap Up>>
 

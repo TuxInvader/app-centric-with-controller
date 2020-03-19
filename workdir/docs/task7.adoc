@@ -1,0 +1,21 @@
+= Task 7: Automate API Management with Controller
+:showtitle:
+:sectlinks:
+:toc: left
+:prev_section: task6
+:next_section: task8
+
+****
+<<index.adoc#,Top>> +
+<<task6.adoc#,Previous Task>> +
+<<task8.adoc#,Next Task>> +
+****
+
+== Introduction
+
+
+'''
+== First Section
+
+
+<<task8.adoc#,Next Task>>

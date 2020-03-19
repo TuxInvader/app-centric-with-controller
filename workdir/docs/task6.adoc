@@ -1,0 +1,21 @@
+= Task 6: Automate NGINX with CI/CD and Controller
+:showtitle:
+:sectlinks:
+:toc: left
+:prev_section: task5
+:next_section: task7
+
+****
+<<index.adoc#,Top>> +
+<<task5.adoc#,Previous Task>> +
+<<task7.adoc#,Next Task>> +
+****
+
+== Introduction
+
+
+'''
+== First Section
+
+
+<<task7.adoc#,Next Task>>
