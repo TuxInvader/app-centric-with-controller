@@ -16,6 +16,15 @@
       name:
         - python-certbot-nginx
 
+  - name: Setup Basic Auth File for API/Dash/Swagger access
+    htpasswd:
+      path: /home/ubuntu/secrets/htpasswd
+      name: nginx
+      password: "{{ lookup('password', '/home/ubuntu/secrets/basic_auth.passwd length=12') }}"
+      owner: root
+      group: nginx
+      mode: 0640
+
   - name: Check for existing SSL Certificate
     stat:
       path: /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem
@@ -76,7 +85,9 @@
       --nginx \
       --cert-name {{wsid}}.{{ domain }} \
       -d {{wsid}}.{{ domain }} \
+      -d devportal.{{wsid}}.{{ domain }} \
       -d www.{{wsid}}.{{ domain }} \
+      -d app.{{wsid}}.{{ domain }} \
       -d api.{{wsid}}.{{ domain }} \
       -d ctrl.{{wsid}}.{{ domain }} \
       -d git.{{wsid}}.{{ domain }} \

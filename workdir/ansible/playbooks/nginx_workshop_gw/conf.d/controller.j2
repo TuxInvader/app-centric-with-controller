@@ -4,6 +4,12 @@ upstream controller {
   server ctrl1:443;
 }
 
+upstream devportal {
+  zone upstream_devportal 64k;
+  server nginx1:8090;
+  server nginx2:8090;
+}
+
 server {
     listen       80;
 
@@ -13,6 +19,30 @@ server {
 
     location / {
       proxy_pass https://controller;
+      proxy_set_header Host      $host;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_ssl_server_name on;
+      health_check;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}
+
+server {
+    listen       80;
+
+    server_name  devportal.{{ wsid }}.{{ domain }};
+
+    access_log  /var/log/nginx/dp.access.log  main;
+
+    location / {
+      proxy_pass https://devportal;
       proxy_set_header Host      $host;
       proxy_http_version 1.1;
       proxy_set_header Connection "";

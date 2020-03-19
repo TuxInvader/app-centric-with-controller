@@ -6,9 +6,9 @@ upstream nginx {
 }
 
 server {
-    listen       80;
+    listen       80 default_server;
 
-    server_name  www.{{ wsid }}.{{ domain }};
+    server_name   www.{{ wsid }}.{{ domain }};
 
     access_log  /var/log/nginx/www.access.log  main;
 
@@ -31,9 +31,32 @@ server {
 server {
     listen       80;
 
-    server_name  api.{{ wsid }}.{{ domain }};
+    server_name   api.{{ wsid }}.{{ domain }};
 
     access_log  /var/log/nginx/api.access.log  main;
+
+    location / {
+      proxy_pass http://nginx;
+      proxy_set_header Host      $host;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header X-Real-IP $remote_addr;
+      health_check;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}
+
+server {
+    listen       80;
+
+    server_name   app.{{ wsid }}.{{ domain }};
+
+    access_log  /var/log/nginx/app.access.log  main;
 
     location / {
       proxy_pass http://nginx;

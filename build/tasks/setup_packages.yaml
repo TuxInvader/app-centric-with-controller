@@ -17,6 +17,7 @@
         - dnsmasq
         - asciidoctor
         - rsync
+        - python-passlib
       state: latest
 
   - name: Configure the dnsmasq daemon

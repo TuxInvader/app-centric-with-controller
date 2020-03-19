@@ -1,5 +1,5 @@
 server {
-    listen       80 default_server;
+    listen       80;
 
     server_name  {{ wsid }}.{{ domain }};
 
@@ -14,4 +14,23 @@ server {
         alias  /home/ubuntu/html;
     }
 
+    location /api {
+      api write=on;
+      auth_basic "nginx restricted";
+      auth_basic_user_file /home/ubuntu/secrets/htpasswd;
+    }
+
+    location = /dashboard.html {
+      root   /usr/share/nginx/html;
+      auth_basic "nginx restricted";
+      auth_basic_user_file /home/ubuntu/secrets/htpasswd;
+    }
+
+    location /swagger-ui {
+      root   /usr/share/nginx/html;
+      auth_basic "nginx restricted";
+      auth_basic_user_file /home/ubuntu/secrets/htpasswd;
+    }
+
 }
+
