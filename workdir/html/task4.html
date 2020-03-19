@@ -645,18 +645,18 @@ to poke Jenkins whenever a changed is committed.</p>
 </div>
 <div class="paragraph">
 <p>The Whatcheese-web pipeline should have deployed our whatcheese demo site for us. Take a look at
-<a href="http://www.&lt;yourdomain&gt;/" class="bare">http://www.&lt;yourdomain&gt;/</a> and see if it&#8217;s working.</p>
+<code><a href="http://www.&lt;yourdomain&gt;/" class="bare">http://www.&lt;yourdomain&gt;/</a></code> and see if it&#8217;s working.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
-<p>Uh-Oh! It&#8217;s not working is it :-(</p>
+<p>If you see the default "Welcome to nginx" page then it&#8217;s not working :-(</p>
 </div>
 </div>
 </div>
 <div class="paragraph">
 <p>The reason it doesn&#8217;t work is because the nginx config file is looking for the wrong hostname, so
-you&#8217;re seeing the default NGINX page rather than the whatcheese website. Because we&#8217;ve already set
+you&#8217;re seeing the default NGINX page rather than the whatcheese website. But because we&#8217;ve already set
 up our CI/CD pipeline, all we need to do is change the config file and make a commit.</p>
 </div>
 <div class="paragraph">
@@ -679,16 +679,35 @@ ubuntu@gateway:~/source$ ls -l
 total 8
 drwxr-xr-x 4 ubuntu ubuntu 4096 Mar 19 09:55 ansible-playbooks
 drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 19 12:41 whatcheese-web
-ubuntu@gateway:~/source$ cd whatcheese-web/
-ubuntu@gateway:~/source/whatcheese-web$ vi conf/nginx.conf</pre>
+ubuntu@gateway:~/source$ cd whatcheese-web/</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Modify the <code>conf/nginx.conf</code> file, and change the <code>server_name</code> directive to match <code>www.&lt;yourdomain&gt;</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ubuntu@gateway:~/source/whatcheese-web$ git config --global user.email me@myworkshop.nginx
+ubuntu@gateway:~/source/whatcheese-web$ git config --global user.name Chuck Norris
+ubuntu@gateway:~/source/whatcheese-web$
+ubuntu@gateway:~/source/whatcheese-web$ git add conf/nginx.conf
+ubuntu@gateway:~/source/whatcheese-web$ git commit -m "fix hostname"
+ubuntu@gateway:~/source/whatcheese-web$ git push</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you check the Jenkins server, you should see a build was triggerd. And the Whatcheese website should
+now be accessable in your browser. Well done!</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/whatcheese-web.png" alt="WhatCheese Website"></span></p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-19 12:52:26 UTC
+Last updated 2020-03-19 13:17:34 UTC
 </div>
 </div>
 </body>

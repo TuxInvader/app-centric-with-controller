@@ -129,14 +129,14 @@ WhatCheese organization periodically looking for new projects. We also created a
 to poke Jenkins whenever a changed is committed. 
 
 The Whatcheese-web pipeline should have deployed our whatcheese demo site for us. Take a look at
-http://www.<yourdomain>/ and see if it's working. 
+`http://www.<yourdomain>/` and see if it's working. 
 
 ****
-Uh-Oh! It's not working is it :-(
+If you see the default "Welcome to nginx" page then it's not working :-(
 ****
 
 The reason it doesn't work is because the nginx config file is looking for the wrong hostname, so
-you're seeing the default NGINX page rather than the whatcheese website. Because we've already set
+you're seeing the default NGINX page rather than the whatcheese website. But because we've already set
 up our CI/CD pipeline, all we need to do is change the config file and make a commit.
 
 You can do this through the gitea website, or if you want to be a proper developer you can check
@@ -158,7 +158,21 @@ total 8
 drwxr-xr-x 4 ubuntu ubuntu 4096 Mar 19 09:55 ansible-playbooks
 drwxrwxr-x 5 ubuntu ubuntu 4096 Mar 19 12:41 whatcheese-web
 ubuntu@gateway:~/source$ cd whatcheese-web/
-ubuntu@gateway:~/source/whatcheese-web$ vi conf/nginx.conf
 ----
 
+Modify the `conf/nginx.conf` file, and change the `server_name` directive to match `www.<yourdomain>`
+
+----
+ubuntu@gateway:~/source/whatcheese-web$ git config --global user.email me@myworkshop.nginx
+ubuntu@gateway:~/source/whatcheese-web$ git config --global user.name Chuck Norris
+ubuntu@gateway:~/source/whatcheese-web$
+ubuntu@gateway:~/source/whatcheese-web$ git add conf/nginx.conf
+ubuntu@gateway:~/source/whatcheese-web$ git commit -m "fix hostname"
+ubuntu@gateway:~/source/whatcheese-web$ git push
+----
+
+If you check the Jenkins server, you should see a build was triggerd. And the Whatcheese website should
+now be accessable in your browser. Well done!
+
+image:img/whatcheese-web.png[WhatCheese Website]
 
