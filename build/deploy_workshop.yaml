@@ -128,20 +128,21 @@
     - name: Wait for S3 to be reachable
       wait_for:
         port: 443
-        host: nginx-workshops.s3.eu-west-2.amazonaws.com
+        host: "{{ ws.s3.bucket }}.s3.{{ ws.ec2.region }}.amazonaws.com"
         sleep: 5
         timeout: 60
-
-    - name: Download controller installer from S3
-      get_url:
-        url: https://nginx-workshops.s3.eu-west-2.amazonaws.com/app_centric_automation/controller-installer-3.2.0.tar.gz
-        dest: /home/ubuntu/controller-installer-3.2.0.tar.gz
-        owner: ubuntu
-        group: ubuntu
-        mode: 0644
 
     - name: Provide the remote ansible with its wsid and domain name
       lineinfile:
         path: /home/ubuntu/ansible/inventory
         line: "[all:vars]\nwsid={{ wsid }}\ndomain={{ ws.route53.zone }}\n"
+
+    - name: Download controller installer from S3
+      get_url:
+        url: https://{{ ws.s3.bucket }}.s3.{{ ws.ec2.region }}.amazonaws.com/app_centric_automation/controller-installer-3.2.0.tar.gz
+        dest: /home/ubuntu/controller-installer-3.2.0.tar.gz
+        owner: ubuntu
+        group: ubuntu
+        mode: 0644
+      ignore_errors: true
 
