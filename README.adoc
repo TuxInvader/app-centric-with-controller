@@ -36,6 +36,7 @@ Route53.
 
 ****
 S3 contains the NGINX Controller installer package which will be downloaded during deployment
+See the S3 section below for notes on region availability
 ****
 
 The `prefix` is used for each machine in your stack, and the `stacks` number indicates how many
@@ -173,6 +174,14 @@ $ ssh -i secrets/user.pem ubuntu@ws01.ukws.nginxlab.net
 The _deploy_aws.yaml_ playbook sets up the VPC, and then includes _deploy_workshop.yaml_ to handle
 setting up the workshop (ie the gateway instance). The gateway is set up to provide DNS for the
 other machines, and also act as a default gateway. 
+
+== S3 Usage
+
+The deployment will attempt to download a copy of the NGINX Controller installer package from S3. However
+this will only succeed if the S3 Bucket is in the same region as your deployment. UK-London will work :-)
+
+You may need to create a new S3 bucket for your region, and upload the controller package. Alternatively
+you could supply the package via scp after the build is complete.
 
 == Using the stack
 
