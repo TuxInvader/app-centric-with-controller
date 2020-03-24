@@ -190,7 +190,7 @@ Once the stack is running, you're ready to follow the tasks in the workshop itse
 See `workdir/docs` and/or `workdoc/html`
 
 ****
-Workshop Docs link: <<workdir/docs/index#,workdir/docs>>
+*Workshop Docs link:* <<workdir/docs/index#,workdir/docs/index>>
 ****
 
 Or see below for minimal setup instructions....

@@ -55,9 +55,7 @@ When the role is loaded, it will run through various tasks depending on which va
 provided in the `vars` section. As you can see we are installing NINGX Plus, enabling the REST
 API on port 4321, and installing the NJS module.
 
-****
-The NGINX role can also install the *NGINX Controller Agent*, as well as *NGINX Unit*
-****
+TIP: The NGINX role can also install the *NGINX Controller Agent*, as well as *NGINX Unit*
 
 '''
 == Apply the install playbook

@@ -2,7 +2,7 @@
 ws:
   stack_name: workshop
   uk_se_name: mbodd
-  prefix: ws
+  prefix: mb
   stacks: 1
 
   aws_access_key: "{{ secrets.aws_access_key }}"
