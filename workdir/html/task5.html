@@ -458,6 +458,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_controller_licensing">Controller Licensing</a></li>
 <li><a href="#_controller_agent">Controller Agent</a></li>
+<li><a href="#_complete_the_ui_tour">Complete the UI Tour</a></li>
+<li><a href="#_create_a_new_dashboard">Create a new dashboard</a></li>
 </ul>
 </div>
 </div>
@@ -647,7 +649,7 @@ and the analytics which controller collects are equally Application focused.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#_anaytics">Analytics</a></p>
+<p><a href="#_analytics">Analytics</a></p>
 </li>
 <li>
 <p><a href="#_api_management">API Management</a></p>
@@ -747,6 +749,44 @@ your two NGINX Plus instances, you can either run the <code>deploy_nginx.yaml</c
 in the UI to install a controller agent onto both <code>nginx1</code> and <code>nginx2</code>.</p>
 </div>
 <div class="paragraph">
+<p>Within a few minutes of the instances being licensed you should see them appear in the overview section. We can
+now view analytics for these nodes from an infrastructure perspective in the graphs section, and get a config
+analysis from the Analyzer.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_complete_the_ui_tour"><a class="link" href="#_complete_the_ui_tour">Complete the UI Tour</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you click on the NGINX Button again, there are two more areas for us to explore: <code>Analytics</code> and <code>Services</code></p>
+</div>
+<div class="paragraph">
+<p>The</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>log_format main_ext'$remote_addr - $remote_user [$time_local] "$request" '
+'$status $body_bytes_sent "$http_referer" '
+'"$http_user_agent" "$http_x_forwarded_for" '
+'"$host" sn="$server_name" '
+'rt=$request_time '
+'ua="$upstream_addr" us="$upstream_status" '
+'ut="$upstream_response_time" ul="$upstream_response_length" '
+'cs=$upstream_cache_status' ;</pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_a_new_dashboard"><a class="link" href="#_create_a_new_dashboard">Create a new dashboard</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Regardless of whether you deployed the agent to NGINX1 and NGINX2 manually or using Ansible. We&#8217;re now going to</p>
+</div>
+<div class="paragraph">
 <p><a href="task6.html">Next Task</a></p>
 </div>
 </div>
@@ -754,7 +794,7 @@ in the UI to install a controller agent onto both <code>nginx1</code> and <code>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-24 14:36:37 UTC
+Last updated 2020-03-26 11:27:47 UTC
 </div>
 </div>
 </body>

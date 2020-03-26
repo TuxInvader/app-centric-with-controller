@@ -121,9 +121,9 @@ and the analytics which controller collects are equally Application focused.
 
 Currently the controller has three core modules:
 
-* <<_anaytics,Analytics>>
-* <<_api_management,API Management>>
-* <<_load_balancing,Load Balancing>>
+* <<Analytics>>
+* <<API Management>>
+* <<Load Balancing>>
 
 === Analytics
 The controller can be used as an analytics engine, either from an infrastructure perspective when not
@@ -175,5 +175,30 @@ image:img/ctrl-agent.png[Controller Agent Install]
 As with the licensing above, there is an ansible playbook in the controller folder which can deploy agents to
 your two NGINX Plus instances, you can either run the `deploy_nginx.yaml` playbook. Or follow the instructions
 in the UI to install a controller agent onto both `nginx1` and `nginx2`.
+
+Within a few minutes of the instances being licensed you should see them appear in the overview section. We can
+now view analytics for these nodes from an infrastructure perspective in the graphs section, and get a config
+analysis from the Analyzer.
+
+'''
+== Complete the UI Tour
+
+If you click on the NGINX Button again, there are two more areas for us to explore: `Analytics` and `Services`
+
+The 
+
+----
+log_format main_ext'$remote_addr - $remote_user [$time_local] "$request" '
+'$status $body_bytes_sent "$http_referer" '
+'"$http_user_agent" "$http_x_forwarded_for" '
+'"$host" sn="$server_name" '
+'rt=$request_time '
+'ua="$upstream_addr" us="$upstream_status" '
+'ut="$upstream_response_time" ul="$upstream_response_length" '
+'cs=$upstream_cache_status' ;
+----
+'''
+== Create a new dashboard
+Regardless of whether you deployed the agent to NGINX1 and NGINX2 manually or using Ansible. We're now going to 
 
 <<task6.adoc#,Next Task>>
