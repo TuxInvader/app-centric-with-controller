@@ -72,7 +72,7 @@ The _vars.yaml_ continues with an S3 section...
 S3 contains the NGINX Controller installer package which will be downloaded during deployment
 
 TIP: If you are deploying into a region for the first time, you will want to create a local S3
-Bucket. See the <<_s3_prerequisites,S3 Prerequisites>> section below
+Bucket. See the <<S3 Prerequisites>> section below
 
 The `bucket` will be given a suffix of `-{{ ws.aws_region }}` and is epected to be a S3 bucket holding your downloads.
 The `files` should all be placed in the named `folder` inside the bucket. The `files` section contains the files needed by the 
