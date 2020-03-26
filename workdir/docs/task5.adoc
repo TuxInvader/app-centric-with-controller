@@ -191,20 +191,31 @@ analysis from the Analyzer.
 
 If you click on the NGINX Button again, there are two more areas for us to explore: `Analytics` and `Services`
 
-The 
+=== Analytics Section
+
+The anlytics section provides you with an overall application health score based on the number of successful and
+unsuccessful requests through the monitored NGINX instances.
+
+image:img/ctrl-health.png[Controller Overview]
+
+We can also create custom dashboards, which enable you to combine various metrics related to a NGINX instance or
+application into a single page. Why not try creating a Dashboard comparing `NGINX Performance Metrics` from the
+Whatcheese website, Jenkins, and other services to see how they compare.
+
+You will need to generate some traffic. A simple curl script from the gateway would work
 
 ----
-log_format main_ext '$remote_addr - $remote_user [$time_local] "$request" '
-'$status $body_bytes_sent "$http_referer" '
-'"$http_user_agent" "$http_x_forwarded_for" '
-'"$host" sn="$server_name" '
-'rt=$request_time '
-'ua="$upstream_addr" us="$upstream_status" '
-'ut="$upstream_response_time" ul="$upstream_response_length" '
-'cs=$upstream_cache_status' ;
+$ while :; do curl -s https://www.fqdn/ > /dev/null ; curl -s --resolve jenkins.fqdn:443:127.0.0.1  https://jenkins.fqdn/ > /dev/null; sleep 0.1 ; done
 ----
-'''
-== Create a new dashboard
-Regardless of whether you deployed the agent to NGINX1 and NGINX2 manually or using Ansible. We're now going to 
+
+When you create the daashboard, you can use the `New Set`, `New Graph`, and `New Value` buttons to pick the metrics
+you are interested in. You can then apply a `vhost` filter to limit the data to a specific application
+
+In Analytics we can also set up Alerts and Events based on the metrics which Controller is collecting.
+
+=== Services Section
+
+The Services Section is where the controller becomes truely Application Centric...
+
 
 <<task6.adoc#,Next Task>>

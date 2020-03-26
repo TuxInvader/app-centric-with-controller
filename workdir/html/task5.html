@@ -458,8 +458,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_controller_licensing">Controller Licensing</a></li>
 <li><a href="#_controller_agent">Controller Agent</a></li>
-<li><a href="#_complete_the_ui_tour">Complete the UI Tour</a></li>
-<li><a href="#_create_a_new_dashboard">Create a new dashboard</a></li>
+<li><a href="#_complete_the_ui_tour">Complete the UI Tour</a>
+<ul class="sectlevel2">
+<li><a href="#_analytics_section">Analytics Section</a></li>
+<li><a href="#_services_section">Services Section</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -770,29 +774,40 @@ analysis from the Analyzer.</p>
 <div class="paragraph">
 <p>If you click on the NGINX Button again, there are two more areas for us to explore: <code>Analytics</code> and <code>Services</code></p>
 </div>
+<div class="sect2">
+<h3 id="_analytics_section"><a class="link" href="#_analytics_section">Analytics Section</a></h3>
 <div class="paragraph">
-<p>The</p>
+<p>The anlytics section provides you with an overall application health score based on the number of successful and
+unsuccessful requests through the monitored NGINX instances.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/ctrl-health.png" alt="Controller Overview"></span></p>
+</div>
+<div class="paragraph">
+<p>We can also create custom dashboards, which enable you to combine various metrics related to a NGINX instance or
+application into a single page. Why not try creating a Dashboard comparing <code>NGINX Performance Metrics</code> from the
+Whatcheese website, Jenkins, and other services to see how they compare.</p>
+</div>
+<div class="paragraph">
+<p>You will need to generate some traffic. A simple curl script from the gateway would work</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>log_format main_ext '$remote_addr - $remote_user [$time_local] "$request" '
-'$status $body_bytes_sent "$http_referer" '
-'"$http_user_agent" "$http_x_forwarded_for" '
-'"$host" sn="$server_name" '
-'rt=$request_time '
-'ua="$upstream_addr" us="$upstream_status" '
-'ut="$upstream_response_time" ul="$upstream_response_length" '
-'cs=$upstream_cache_status' ;</pre>
+<pre>$ while :; do curl -s https://www.fqdn/ &gt; /dev/null ; curl -s --resolve jenkins.fqdn:443:127.0.0.1  https://jenkins.fqdn/ &gt; /dev/null; sleep 0.1 ; done</pre>
 </div>
 </div>
-<hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_create_a_new_dashboard"><a class="link" href="#_create_a_new_dashboard">Create a new dashboard</a></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Regardless of whether you deployed the agent to NGINX1 and NGINX2 manually or using Ansible. We&#8217;re now going to</p>
+<p>When you create the daashboard, you can use the <code>New Set</code>, <code>New Graph</code>, and <code>New Value</code> buttons to pick the metrics
+you are interested in. You can then apply a <code>vhost</code> filter to limit the data to a specific application</p>
+</div>
+<div class="paragraph">
+<p>In Analytics we can also set up Alerts and Events based on the metrics which Controller is collecting.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_services_section"><a class="link" href="#_services_section">Services Section</a></h3>
+<div class="paragraph">
+<p>The Services Section is where the controller becomes truely Application Centric&#8230;&#8203;</p>
 </div>
 <div class="paragraph">
 <p><a href="task6.html">Next Task</a></p>
@@ -800,9 +815,10 @@ analysis from the Analyzer.</p>
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-26 13:20:53 UTC
+Last updated 2020-03-26 14:49:38 UTC
 </div>
 </div>
 </body>
