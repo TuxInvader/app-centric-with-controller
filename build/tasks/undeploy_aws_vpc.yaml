@@ -40,7 +40,7 @@
   - name: "Get all endpoints with specific filters"
     ec2_vpc_endpoint_info:
       query: endpoints
-      region: "{{ ws.ec2.region }}"
+      region: "{{ ws.aws_region }}"
       filters:
         vpc-id:
         - "{{ vpc_facts.vpcs[0].vpc_id }}"
@@ -108,13 +108,13 @@
       name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}"
       state: absent
       cidr_block: "{{ ws.ec2.cidr_block ~ '.0.0/16' }}"
-      region: "{{ ws.ec2.region }}"
+      region: "{{ ws.aws_region }}"
     ignore_errors: True
 
   - name: Delete the EC2 key_pair
     ec2_key:
       name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
-      region: "{{ ws.ec2.region }}"
+      region: "{{ ws.aws_region }}"
       state: absent
     register: vpc_key
 

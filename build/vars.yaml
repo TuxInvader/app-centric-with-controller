@@ -8,6 +8,7 @@ ws:
   aws_access_key: "{{ secrets.aws_access_key }}"
   aws_secret_key: "{{ secrets.aws_secret_key }}"
   aws_account_id: "{{ secrets.aws_account_id }}"
+  aws_region: "eu-west-2"
 
   route53:
     zone: "{{ secrets.r53_zone }}"
@@ -17,12 +18,12 @@ ws:
     bucket: "{{ secrets.s3_bucket }}"
     folder: "app_centric_automation"
     files:
-      controller: "controller-installer-3.2.tar.gz"
+      controller: "controller-installer-3.2.0.tar.gz"
+      controller_local: "/Users/markboddington/controller-installer-3.2.0.tar.gz"
       controller_version: 3.2
 
   ec2:
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
-    region: eu-west-2
 
     machines:
       gateway:

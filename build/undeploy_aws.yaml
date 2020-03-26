@@ -8,7 +8,7 @@
   environment:
     AWS_ACCESS_KEY_ID: "{{ ws.aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ ws.aws_secret_key }}"
-    AWS_REGION: "{{ ws.ec2.region }}"
+    AWS_REGION: "{{ ws.aws_region }}"
 
   tasks:
 

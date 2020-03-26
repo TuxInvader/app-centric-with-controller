@@ -128,7 +128,7 @@
     - name: Wait for S3 to be reachable
       wait_for:
         port: 443
-        host: "{{ ws.s3.bucket }}.s3.{{ ws.ec2.region }}.amazonaws.com"
+        host: "{{ ws.s3.bucket }}-{{ ws.aws_region }}.s3.{{ ws.aws_region }}.amazonaws.com"
         sleep: 5
         timeout: 60
 
@@ -139,7 +139,7 @@
 
     - name: Download controller installer from S3
       get_url:
-        url: https://{{ ws.s3.bucket }}.s3.{{ ws.ec2.region }}.amazonaws.com/{{ ws.s3.folder}}/{{ ws.s3.files.controller }}
+        url: https://{{ ws.s3.bucket }}-{{ ws.aws_region }}.s3.{{ ws.aws_region }}.amazonaws.com/{{ ws.s3.folder}}/{{ ws.s3.files.controller }}
         dest: /home/ubuntu/{{ ws.s3.files.controller }}
         owner: ubuntu
         group: ubuntu

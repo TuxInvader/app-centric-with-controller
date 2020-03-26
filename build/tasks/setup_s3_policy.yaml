@@ -4,7 +4,7 @@
     ec2_vpc_endpoint:
       state: present
       vpc_id: "{{ vpc_id }}"
-      service: com.amazonaws.{{ ws.ec2.region }}.s3
+      service: com.amazonaws.{{ ws.aws_region }}.s3
       route_table_ids:
         - "{{ route_table_id }}"
       policy: { "Statement": [ { "Action": "*", "Effect": "Allow", "Resource": "*", "Principal": "*" } ] }
@@ -16,7 +16,7 @@
 
   - name: Execute Boto to get the current policy
     command:
-      cmd: "./bin/get_bucket_policy.py {{ ws.s3.bucket }} {{ 'Access-for-' ~ ws.uk_se_name ~ '-' ~ ws.stack_name }}"
+      cmd: "./bin/get_bucket_policy.py {{ ws.s3.bucket }}-{{ ws.aws_region }} {{ 'Access-for-' ~ ws.uk_se_name ~ '-' ~ ws.stack_name }}"
     changed_when: false
     register: policy
 
@@ -33,8 +33,8 @@
           'Action': [ 's3:GetObject' ],
           'Effect': 'Allow',
           'Resource': [
-            'arn:aws:s3:::' ~  ws.s3.bucket ,
-            'arn:aws:s3:::' ~  ws.s3.bucket ~ '/*'
+            'arn:aws:s3:::' ~  ws.s3.bucket ~ '-' ~ ws.aws_region ,
+            'arn:aws:s3:::' ~  ws.s3.bucket ~ '-' ~ ws.aws_region ~ '/*'
           ],
           'Condition': {
             'StringEquals': {
@@ -46,6 +46,6 @@
 
   - name: Allow VPC access to the S3 bucket
     s3_bucket:
-      name: "{{ ws.s3.bucket }}"
+      name: "{{ ws.s3.bucket }}-{{ ws.aws_region }}"
       policy: "{{ bucket_policy | to_json }}"
 

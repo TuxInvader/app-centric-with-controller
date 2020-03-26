@@ -20,6 +20,7 @@ ws:
   aws_access_key: "{{ secrets.aws_access_key }}"
   aws_secret_key: "{{ secrets.aws_secret_key }}"
   aws_account_id: "{{ secrets.aws_account_id }}"
+  aws_region: "eu-west-1"
 
   route53:
     zone: "{{ secrets.r53_zone }}"
@@ -51,6 +52,8 @@ The machines created are given names like `ws01-gateway` where ws01 is made up f
 The gateway is always needed, and by default is the only public machine. The playbook will upload
 the `workdir` folder and it's contents to the home directory `/home/ubuntu` on the gateway.
 
+The `aws_region` should obviously be set to the region in which you want to deploy the workshop.
+
 
 The _vars.yaml_ continues with an S3 section...
 
@@ -60,22 +63,24 @@ The _vars.yaml_ continues with an S3 section...
     folder: "app_centric_automation"
     files:
       controller: "controller-installer-3.2.tar.gz"
+      controller_local: "/home/mark/controller-installer-3.2.tar.gz"
       controller_version: 3.2
 ----
 
 S3 contains the NGINX Controller installer package which will be downloaded during deployment
-See the S3 section below for notes on region availability
 
-The `bucket` is the ID of the bucket which holds your downloads. The `files` should all be placed
-in the named `folder` inside the bucket. The `files` section contains the files needed by the 
-workshop. Currently the only file(s) store in S3 is the controller installer package.
+TIP: If you are deploying into a region for the first time, you will want to create a local S3
+Bucket. See the <<_s3_prerequisites,S3 Prerequisites>> section below
 
-TIP: The value set here will override values set in the workdir env files during deployment.
+The `bucket` will be given a suffix of `-{{ ws.aws_region }}` and is epected to be a S3 bucket holding your downloads.
+The `files` should all be placed in the named `folder` inside the bucket. The `files` section contains the files needed by the 
+workshop. Currently the only file(s) stored in S3 is the controller installer package.
+
+TIP: The `controller` values  set here will override values set in the workdir env files during deployment.
 
 The _vars.yaml_ continues with an ec2 section...
 ----
   ec2:
-    region: eu-west-2
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
 
     machines:
@@ -99,8 +104,6 @@ The _vars.yaml_ continues with an ec2 section...
         type: t3.small
         public: no
 ----
-
-The `region` should obviously be set to the region in which you want to deploy the workshop.
 
 The `cidr_block` is the first two octets of a _/16_ subnet which will make up the VPC Subnet. +
 For other network addressing see subnets below.
@@ -187,13 +190,25 @@ The _deploy_aws.yaml_ playbook sets up the VPC, and then includes _deploy_worksh
 setting up the workshop (ie the gateway instance). The gateway is set up to provide DNS for the
 other machines, and also act as a default gateway. 
 
-== S3 Usage
+== S3 Prerequisites
 
 The deployment will attempt to download a copy of the NGINX Controller installer package from S3. However
-this will only succeed if the S3 Bucket is in the same region as your deployment. UK-London will work :-)
+this will only succeed if the S3 Bucket is in the same region as your deployment. UK London will work :-)
 
-You may need to create a new S3 bucket for your region, and upload the controller package. Alternatively
-you could supply the package via scp after the build is complete.
+You may need to create a new S3 bucket for your region and upload the controller package.
+
+There is a playbook, which will create a new S3 bucket for your region called `deploy_s3_bucket.yaml`.
+You will need to set the `ws.aws_region` to the AWS region you want to deploy too, and set an
+appropriate bucket name in `ws.s3.bucket`. The resulting bucket will be named `{{ws.s3.bucket}}-{{ws.aws_region}}`
+
+When ready, run the playbook from the `build` folder.
+
+----
+$ ansible-playbook deploy_s3_bucket.yaml
+----
+
+The playbook will create a new S3 bucket, with a default policy which allows access from your AWS
+users, but no public access. It will aslo upload the controller image specified in ws.s3.files.controller*
 
 == Using the stack
 

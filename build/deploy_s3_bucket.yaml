@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  become: no
+  connection: local
+  gather_facts: yes
+  vars_files:
+    - secrets/aws_config.yaml
+    - vars.yaml
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ ws.aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ ws.aws_secret_key }}"
+    AWS_REGION: "{{ ws.aws_region }}"
+
+  tasks:
+
+    - name: Define the default bucket_policy
+      set_fact:
+        bucket_policy:
+          Version: "2012-10-17"
+          Statement:
+            Sid: "AWS Account Users"
+            Effect: "Allow"
+            Principal:
+              AWS: "arn:aws:iam::{{ ws.aws_account_id }}:root"
+            Action: "S3:*"
+            Resource:
+              - "arn:aws:s3:::{{ ws.s3.bucket }}-{{ ws.aws_region }}"
+              - "arn:aws:s3:::{{ ws.s3.bucket }}-{{ ws.aws_region }}/*"
+
+    - name: Create S3 bucket
+      s3_bucket:
+        name: "{{ ws.s3.bucket }}-{{ ws.aws_region }}"
+        policy: "{{ bucket_policy | to_json }}"
+        region: "{{ ws.aws_region }}"
+
+    - name: Upload the controller image to the S3 bucket
+      aws_s3:
+        bucket: "{{ ws.s3.bucket }}-{{ ws.aws_region }}"
+        object: "/{{ ws.s3.folder}}/{{ ws.s3.files.controller }}"
+        src: "{{ ws.s3.files.controller_local }}"
+        mode: "put"
+
