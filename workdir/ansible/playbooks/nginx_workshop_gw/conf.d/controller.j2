@@ -15,7 +15,7 @@ server {
 
     server_name  ctrl.{{ wsid }}.{{ domain }};
 
-    access_log  /var/log/nginx/ctrl.access.log  main;
+    access_log  /var/log/nginx/ctrl.access.log  main_ext;
 
     location / {
       proxy_pass https://controller;
@@ -39,7 +39,7 @@ server {
 
     server_name  devportal.{{ wsid }}.{{ domain }};
 
-    access_log  /var/log/nginx/dp.access.log  main;
+    access_log  /var/log/nginx/dp.access.log  main_ext;
 
     location / {
       proxy_pass https://devportal;
