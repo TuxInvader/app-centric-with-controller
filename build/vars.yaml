@@ -4,6 +4,7 @@ ws:
   uk_se_name: mbodd
   prefix: mb
   stacks: 1
+  save_certbot_configs: yes
 
   aws_access_key: "{{ secrets.aws_access_key }}"
   aws_secret_key: "{{ secrets.aws_secret_key }}"
