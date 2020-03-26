@@ -169,7 +169,7 @@ Ansible will also check for a controller licence file, and NGINX repo keys insid
 folder. `license.txt`, `nginx-repo.crt` and `nginx-repo.key`
 
 The workshop playbooks can generate letsencrypt keys for the public domain names, so it's a  
-good idea to tar them up for hostnames you'll use again and drop them in your secrets folder too.
+good idea to tar them up for hostnames you'll use again and drop them in your secrets folder.
 Ansible will check for: `letsencrypt-<prefix><stack#>.tgz`, and deploy into _/etc/letsencrypt_
 
 ----
@@ -204,7 +204,7 @@ this will only succeed if the S3 Bucket is in the same region as your deployment
 You may need to create a new S3 bucket for your region and upload the controller package.
 
 There is a playbook, which will create a new S3 bucket for your region called `deploy_s3_bucket.yaml`.
-You will need to set the `ws.aws_region` to the AWS region you want to deploy too, and set an
+You will need to set the `ws.aws_region` to the AWS region you want to deploy to, and set an
 appropriate bucket name in `ws.s3.bucket`. The resulting bucket will be named `{{ws.s3.bucket}}-{{ws.aws_region}}`
 
 When ready, run the playbook from the `build` folder.
