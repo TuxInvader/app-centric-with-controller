@@ -1,4 +1,7 @@
 ---
+- name: Fetch Certbot/letsencrypt configs
+  import_playbook: fetch_certbot_configs.yaml
+
 - hosts: localhost
   become: no
   connection: local

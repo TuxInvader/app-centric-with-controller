@@ -1,0 +1,31 @@
+---
+- hosts: controllers
+  become: yes
+  vars_files:
+    - secrets/aws_config.yaml
+    - vars.yaml
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ ws.aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ ws.aws_secret_key }}"
+    AWS_REGION: "{{ ws.aws_region }}"
+
+  tasks:
+
+    - name: Fetch Certbot Configurations
+      block:
+
+        - name: Collect Certbot configs
+          archive:
+            dest: "/home/ubuntu/letsencrypt-{{ wsid }}.tar.gz"
+            path: /etc/letsencrypt
+            format: gz
+            force_archive: true
+
+        - name: Fetch archive and store in secrets
+          fetch:
+            src: "/home/ubuntu/letsencrypt-{{ wsid }}.tar.gz"
+            dest: secrets/
+            flat: yes
+
+      when: ws.save_certbot_configs == true
+

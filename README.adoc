@@ -17,6 +17,7 @@ ws:
   uk_se_name: mbodd
   prefix: ws
   stacks: 1
+  save_certbot_configs: yes
 
   aws_access_key: "{{ secrets.aws_access_key }}"
   aws_secret_key: "{{ secrets.aws_secret_key }}"
@@ -54,6 +55,9 @@ The gateway is always needed, and by default is the only public machine. The pla
 the `workdir` folder and it's contents to the home directory `/home/ubuntu` on the gateway.
 
 The `aws_region` should obviously be set to the region in which you want to deploy the workshop.
+
+If the `save_certbot_configs` setting is yes|true then the undeploy script will tar up the letsencrypt
+certificates from the workshop instances and store them in your local `secrets` folder during shutdown.
 
 === S3 Vars
 
@@ -170,6 +174,9 @@ folder. `license.txt`, `nginx-repo.crt` and `nginx-repo.key`
 
 The workshop playbooks can generate letsencrypt keys for the public domain names, so it's a  
 good idea to tar them up for hostnames you'll use again and drop them in your secrets folder.
+
+TIP: The undeploy script will do this for you if `save_certbot_configs` is enabled.
+
 Ansible will check for: `letsencrypt-<prefix><stack#>.tgz`, and deploy into _/etc/letsencrypt_
 
 ----
