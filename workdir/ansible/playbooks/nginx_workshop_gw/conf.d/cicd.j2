@@ -14,7 +14,7 @@ server {
 
     server_name  git.{{ wsid }}.{{ domain }};
 
-    access_log  /var/log/nginx/git.access.log  main_ext;
+    #access_log  /var/log/nginx/git.access.log  main_ext;
 
     location / {
       proxy_pass http://git;
@@ -43,7 +43,7 @@ server {
 
     server_name  jenkins.{{ wsid }}.{{ domain }};
 
-    access_log  /var/log/nginx/jenkins.access.log  main_ext;
+    #access_log  /var/log/nginx/jenkins.access.log  main_ext;
 
     location / {
       proxy_pass http://jenkins;

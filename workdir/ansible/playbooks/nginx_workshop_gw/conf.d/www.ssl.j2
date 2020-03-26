@@ -12,7 +12,7 @@ server {
 
     server_name  www.{{ wsid }}.{{ domain }};
 
-    access_log  /var/log/nginx/www.access.log  main_ext;
+    #access_log  /var/log/nginx/www.access.log  main_ext;
 
     location / {
       proxy_pass http://nginx;
@@ -41,7 +41,7 @@ server {
 
     server_name  api.{{ wsid }}.{{ domain }};
 
-    access_log  /var/log/nginx/api.access.log  main_ext;
+    #access_log  /var/log/nginx/api.access.log  main_ext;
 
     location / {
       proxy_pass http://nginx;
@@ -70,7 +70,7 @@ server {
 
     server_name  app.{{ wsid }}.{{ domain }};
 
-    access_log  /var/log/nginx/app.access.log  main_ext;
+    #access_log  /var/log/nginx/app.access.log  main_ext;
 
     location / {
       proxy_pass http://nginx;
