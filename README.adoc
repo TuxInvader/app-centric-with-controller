@@ -216,6 +216,8 @@ $ ansible-playbook deploy_s3_bucket.yaml
 The playbook will create a new S3 bucket, with a default policy which allows access from your AWS
 users, but no public access. It will aslo upload the controller image specified in ws.s3.files.controller*
 
+TIP: You can also run the deploy_s3_bucket when you want to upload a new version of controller
+
 == Using the stack
 
 Once the stack is running, you're ready to follow the tasks in the workshop itself. 
