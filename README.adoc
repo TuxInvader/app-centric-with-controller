@@ -6,6 +6,7 @@
 
 The configuration for the workshop deployment is stored in _build/vars.yaml_
 
+=== Stack
 The stack built by the build playbook will use the below variables for creating your VPC and  
 its hosts. Please change them to identify yourself, and so not to clobber other deployments.  
 
@@ -54,6 +55,7 @@ the `workdir` folder and it's contents to the home directory `/home/ubuntu` on t
 
 The `aws_region` should obviously be set to the region in which you want to deploy the workshop.
 
+=== S3 Vars
 
 The _vars.yaml_ continues with an S3 section...
 
@@ -77,6 +79,8 @@ The `files` should all be placed in the named `folder` inside the bucket. The `f
 workshop. Currently the only file(s) stored in S3 is the controller installer package.
 
 TIP: The `controller` values  set here will override values set in the workdir env files during deployment.
+
+=== EC2 Vars
 
 The _vars.yaml_ continues with an ec2 section...
 ----
@@ -120,6 +124,8 @@ and configure NGINX on the gateway, to act as a reverse proxy for access to all 
 
 When the stack is deployed a wildcard DNS record will be added to Route53 to point at the public
 IP address of the gateway machine. Eg: _ws01.ukws.nginxlab.net_
+
+=== Subnet Vars
 
 The final variables section configures the subnets.
 
