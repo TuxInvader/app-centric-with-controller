@@ -24,20 +24,12 @@ ws:
   route53:
     zone: "{{ secrets.r53_zone }}"
     zone_id: "{{ secrets.r53_zone_id }}"
-
-  s3:
-    bucket: "{{ secrets.s3_bucket }}"
 ----
 
 The `stack_name` and `uk_se_name` need to be unique to your deployment. They are used to name
 your VPC and add your deployment to an S3 bucket policy. You should also set the `prefix` to 
 your initials or something unique to you as the prefix will make up part of your host names in
 Route53.
-
-****
-S3 contains the NGINX Controller installer package which will be downloaded during deployment
-See the S3 section below for notes on region availability
-****
 
 The `prefix` is used for each machine in your stack, and the `stacks` number indicates how many
 stacks to deploy. If you are throwing something up for testing, then leave stacks at 1.
@@ -59,8 +51,28 @@ The machines created are given names like `ws01-gateway` where ws01 is made up f
 The gateway is always needed, and by default is the only public machine. The playbook will upload
 the `workdir` folder and it's contents to the home directory `/home/ubuntu` on the gateway.
 
-The _vars.yaml_ continues with an ec2 section...
 
+The _vars.yaml_ continues with an S3 section...
+
+----
+  s3:
+    bucket: "{{ secrets.s3_bucket }}"
+    folder: "app_centric_automation"
+    files:
+      controller: "controller-installer-3.2.tar.gz"
+      controller_version: 3.2
+----
+
+S3 contains the NGINX Controller installer package which will be downloaded during deployment
+See the S3 section below for notes on region availability
+
+The `bucket` is the ID of the bucket which holds your downloads. The `files` should all be placed
+in the named `folder` inside the bucket. The `files` section contains the files needed by the 
+workshop. Currently the only file(s) store in S3 is the controller installer package.
+
+TIP: The value set here will override values set in the workdir env files during deployment.
+
+The _vars.yaml_ continues with an ec2 section...
 ----
   ec2:
     region: eu-west-2

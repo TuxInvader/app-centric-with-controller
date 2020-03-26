@@ -1,7 +1,1 @@
 localhost
-
-[controllers]
-ec2-35-178-206-141.eu-west-2.compute.amazonaws.com wsid=mb01 privnet=10.10.11 privmask=24 privip=10.10.11.102
-
-[controllers:vars]
-ansible_ssh_private_key_file=secrets/user.pem

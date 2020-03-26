@@ -15,6 +15,10 @@ ws:
 
   s3:
     bucket: "{{ secrets.s3_bucket }}"
+    folder: "app_centric_automation"
+    files:
+      controller: "controller-installer-3.2.tar.gz"
+      controller_version: 3.2
 
   ec2:
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
