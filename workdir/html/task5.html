@@ -749,6 +749,14 @@ your two NGINX Plus instances, you can either run the <code>deploy_nginx.yaml</c
 in the UI to install a controller agent onto both <code>nginx1</code> and <code>nginx2</code>.</p>
 </div>
 <div class="paragraph">
+<p>I recommend you add the two nginx instances using the playbook, and once you have done that. Follow the manual
+instructions to add your gateway instance. If the pop-up closes for any reason, you will find a <code>+ Create</code> button
+in the top right of the interface.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/ctrl-instances.png" alt="NGINX Instances"></span></p>
+</div>
+<div class="paragraph">
 <p>Within a few minutes of the instances being licensed you should see them appear in the overview section. We can
 now view analytics for these nodes from an infrastructure perspective in the graphs section, and get a config
 analysis from the Analyzer.</p>
@@ -767,7 +775,7 @@ analysis from the Analyzer.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>log_format main_ext'$remote_addr - $remote_user [$time_local] "$request" '
+<pre>log_format main_ext '$remote_addr - $remote_user [$time_local] "$request" '
 '$status $body_bytes_sent "$http_referer" '
 '"$http_user_agent" "$http_x_forwarded_for" '
 '"$host" sn="$server_name" '
@@ -794,7 +802,7 @@ analysis from the Analyzer.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-26 11:27:47 UTC
+Last updated 2020-03-26 13:20:53 UTC
 </div>
 </div>
 </body>

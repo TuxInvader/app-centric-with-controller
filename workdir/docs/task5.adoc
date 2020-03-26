@@ -176,6 +176,12 @@ As with the licensing above, there is an ansible playbook in the controller fold
 your two NGINX Plus instances, you can either run the `deploy_nginx.yaml` playbook. Or follow the instructions
 in the UI to install a controller agent onto both `nginx1` and `nginx2`.
 
+I recommend you add the two nginx instances using the playbook, and once you have done that. Follow the manual
+instructions to add your gateway instance. If the pop-up closes for any reason, you will find a `+ Create` button
+in the top right of the interface.
+
+image:img/ctrl-instances.png[NGINX Instances]
+
 Within a few minutes of the instances being licensed you should see them appear in the overview section. We can
 now view analytics for these nodes from an infrastructure perspective in the graphs section, and get a config
 analysis from the Analyzer.
@@ -188,7 +194,7 @@ If you click on the NGINX Button again, there are two more areas for us to explo
 The 
 
 ----
-log_format main_ext'$remote_addr - $remote_user [$time_local] "$request" '
+log_format main_ext '$remote_addr - $remote_user [$time_local] "$request" '
 '$status $body_bytes_sent "$http_referer" '
 '"$http_user_agent" "$http_x_forwarded_for" '
 '"$host" sn="$server_name" '
