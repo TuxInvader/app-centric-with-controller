@@ -6,6 +6,22 @@
 
 The configuration for the workshop deployment is stored in _build/vars.yaml_
 
+== Ansible Modules
+
+You'll need to have the following python modules available on your system to run the build playbook
+
+* boto
+* boto3
+* botocore
+* nose
+* tornado
+
+So depending on how you installed ansible, and apy-get, yum or pip may be in oder
+
+----
+$ pip install boto boto3 botocore nose tornado
+----
+
 === Stack
 The stack built by the build playbook will use the below variables for creating your VPC and  
 its hosts. Please change them to identify yourself, and so not to clobber other deployments.  
