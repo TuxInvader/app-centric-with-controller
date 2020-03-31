@@ -2,11 +2,7 @@
 :showtitle:
 :toc: left
 
-== Variables
-
-The configuration for the workshop deployment is stored in _build/vars.yaml_
-
-== Ansible Modules
+== Required Ansible (python) Modules
 
 You'll need to have the following python modules available on your system to run the build playbook
 
@@ -21,6 +17,10 @@ So depending on how you installed ansible, and apy-get, yum or pip may be in ode
 ----
 $ pip install boto boto3 botocore nose tornado
 ----
+
+== Variables
+
+The configuration for the workshop deployment is stored in _build/vars.yaml_
 
 === Stack
 The stack built by the build playbook will use the below variables for creating your VPC and  
