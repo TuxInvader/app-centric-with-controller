@@ -12,7 +12,7 @@ You'll need to have the following python modules available on your system to run
 * nose
 * tornado
 
-So depending on how you installed ansible, and apy-get, yum or pip may be in oder
+So depending on how you installed ansible, an apt-get, yum or pip may be in oder
 
 ----
 $ pip install boto boto3 botocore nose tornado
@@ -37,6 +37,7 @@ ws:
 
   aws_access_key: "{{ secrets.aws_access_key }}"
   aws_secret_key: "{{ secrets.aws_secret_key }}"
+  aws_sts_token: "{{ secrets.aws_sts_token }}"
   aws_account_id: "{{ secrets.aws_account_id }}"
   aws_region: "eu-west-1"
 
@@ -176,7 +177,9 @@ You should create a file called `aws_config.yaml` inside your secrets folder. Co
 secrets:
   aws_access_key:   <YOUR_ACCESS_KEY>
   aws_secret_key:   <YOUR_SECRET_KEY>
+  aws_sts_token:    <YOUR_STS_TOKEN>
   aws_account_id:   <AWS ACCOUNT ID>
+  aws_user_role:    <The Role for SSO access tokens>
 
   r53_zone:         <ROUTE_53_ZONE_FOR_PUBLIC_HOSTS>
   r53_zone_id:      <THE_ZONE_ID_FOR_ABOVE>
@@ -184,7 +187,6 @@ secrets:
   s3_bucket:        <NAME_OF_S3_BUCKET>
 ...
 ----
-
 Ansible will also check for a controller licence file, and NGINX repo keys inside the secrets  
 folder. `license.txt`, `nginx-repo.crt` and `nginx-repo.key`
 
@@ -202,6 +204,28 @@ drwxr-xr-x root/root         0 2020-03-02 13:06 letsencrypt/
 -rw-r--r-- root/root       424 2020-03-02 12:14 letsencrypt/ssl-dhparams.pem
 drwx------ root/root         0 2020-03-02 13:06 letsencrypt/renewal/
 ----
+
+=== Generating access with SSO
+
+If you use SSO then you will need to provide a STS session token along with your temporary
+access keys. Assuming you have the AWS CLI installed and configured, then you can generate
+the temp keys with...
+
+----
+$ aws sso get-role-credentials --account-id <account id> --role-name <role> --access-token <cli access token>
+----
+
+Or use my little script
+
+----
+$ ./bin/get_aws_token.sh
+----
+
+You should see a file named `<uuid>.json` in your aws folder: `~/.aws/sso/cache/<uuid>.json`. That file
+will contain your current access token in use by the CLI.
+
+Fill out the aws secrets using the values return by the AWS CLI. Alternatively login using your browser
+and retrive temporary keys from the portal.
 
 == Deploying the stack
 
