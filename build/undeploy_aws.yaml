@@ -17,7 +17,7 @@
   tasks:
 
     - name: GET VPC ID USING TAGS DEFINED DURING AUTOMATED BUILD
-      ec2_vpc_net_info:
+      ec2_vpc_net_facts:
         filters:
           "tag:Name": "{{ ws.uk_se_name }}_{{ ws.stack_name }}"
           "tag:stack": "{{ ws.stack_name }}"

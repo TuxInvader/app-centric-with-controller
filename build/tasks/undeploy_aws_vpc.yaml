@@ -1,7 +1,7 @@
 ---
 
   - name: GET EC2 FACTS
-    ec2_instance_info:
+    ec2_instance_facts:
       filters:
         "tag:stack": "{{ ws.stack_name }}"
         "tag:UK-SE": "{{ ws.uk_se_name }}"
@@ -38,7 +38,7 @@
       label: "{{ tasks.item.tags.Name }}"
 
   - name: "Get all endpoints with specific filters"
-    ec2_vpc_endpoint_info:
+    ec2_vpc_endpoint_facts:
       query: endpoints
       region: "{{ ws.aws_region }}"
       filters:
@@ -59,7 +59,7 @@
     ignore_errors: True
 
   - name: COLLECT SUBNET FACTS
-    ec2_eni_info:
+    ec2_eni_facts:
       filters:
         vpc-id: "{{ vpc_facts.vpcs[0].vpc_id }}"
     register: vpc_enis

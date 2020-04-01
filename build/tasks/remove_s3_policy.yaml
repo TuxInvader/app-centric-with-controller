@@ -1,7 +1,7 @@
 ---
 
   - name: "Get all endpoints with specific filters"
-    ec2_vpc_endpoint_info:
+    ec2_vpc_endpoint_facts:
       query: endpoints
       region: "{{ ws.aws_region }}"
       filters:

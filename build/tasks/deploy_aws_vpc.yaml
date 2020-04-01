@@ -40,14 +40,14 @@
     with_sequence: "count={{ ws.stacks }} format=%02d"
 
   - name: Get the Private VPC subnets
-    ec2_vpc_subnet_info:
+    ec2_vpc_subnet_facts:
       filters:
         vpc-id: "{{ vpc_id }}"
         "tag:public": "no"
     register: vpc_private_subnet_facts
 
   - name: Get the Public VPC subnets
-    ec2_vpc_subnet_info:
+    ec2_vpc_subnet_facts:
       filters:
         vpc-id: "{{ vpc_id }}"
         "tag:public": "yes"

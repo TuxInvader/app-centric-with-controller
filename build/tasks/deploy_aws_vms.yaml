@@ -88,7 +88,7 @@
     when: tasks.ansible_job_id is defined 
 
   - name: "Retrieve EC2 Instance Information for {{ item }}"
-    ec2_instance_info:
+    ec2_instance_facts:
       filters:
         "tag:Name": "{{ item }}-{{ machine.key }}"
         "tag:stack": "{{ ws.stack_name }}"
@@ -146,7 +146,7 @@
       - deployed[ item ][ machine.key ].network_interfaces|length == 1
 
   - name: "Get secondary ENI interfaces "
-    ec2_eni_info:
+    ec2_eni_facts:
       filters:
         "attachment.instance-id": "{{ deployed[item][ machine.key ].instance_id }}"
         "subnet-id": "{{ vpc_private_subnet_ids[ item ~ '_private' ] }}"

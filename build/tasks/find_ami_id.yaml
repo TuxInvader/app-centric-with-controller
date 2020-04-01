@@ -1,7 +1,7 @@
 ---
 
   - name: Locate the required Linux VM
-    ec2_ami_info:
+    ec2_ami_facts:
       region: "{{ ws.aws_region }}"
       filters:
         name: "ubuntu/*hvm-ssd*/ubuntu-bionic-18.04-amd64-server-20200112"

@@ -36,7 +36,7 @@
       include_tasks: tasks/deploy_aws_keys.yaml
 
     - name: Retrieve the EC2 instances already deployed
-      ec2_instance_info:
+      ec2_instance_facts:
         filters:
           "tag:stack": "{{ ws.stack_name }}"
           "tag:UK-SE": "{{ ws.uk_se_name }}"
