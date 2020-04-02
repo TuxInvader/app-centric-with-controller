@@ -206,7 +206,7 @@ envs:
                   loadBalancingMethod:
                     type: ROUND_ROBIN
                   locationRefs:
-                    - ref: /services/infrastructure/locations/unspecified
+                    - ref: /infrastructure/locations/unspecified
                   uris:
                     http://ergast.com:
                       isBackup: false
@@ -265,7 +265,7 @@ envs:
                   loadBalancingMethod:
                     type: ROUND_ROBIN
                   locationRefs:
-                    - ref: /services/infrastructure/locations/unspecified
+                    - ref: /infrastructure/locations/unspecified
                   uris:
                     http://ergast.com:
                       isBackup: false
