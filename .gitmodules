@@ -1,3 +1,6 @@
 [submodule "workdir/source/ansible-playbooks"]
 	path = workdir/source/ansible-playbooks
 	url = https://github.com/TuxInvader/ansible-playbooks.git
+[submodule "workdir/source/ergast-f1-api"]
+	path = workdir/source/ergast-f1-api
+	url = https://github.com/TuxInvader/ergast-f1-api.git
