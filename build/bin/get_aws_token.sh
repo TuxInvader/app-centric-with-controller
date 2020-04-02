@@ -9,11 +9,11 @@ rcode=$?
 
 if [ "$rcode" != "0" ]
 then
-  echo stderr ""
-  echo stderr "*************************************************"
-  echo stderr "Failed to get credentials. Refreshing your login."
-  echo stderr "*************************************************"
-  echo stderr ""
+  echo >&2 ""
+  echo >&2 "*************************************************"
+  echo >&2 "Failed to get credentials. Refreshing your login."
+  echo >&2 "*************************************************"
+  echo >&2 ""
   aws sso login
   sleep 2
   token=$(grep accessToken ~/.aws/sso/cache/* | sed -e 's/.*accessToken": "\([^"]*\).*/\1/')
@@ -23,11 +23,11 @@ fi
 
 if [ "$rcode" != "0" ]
 then
-  echo stderr ""
-  echo stderr "*************************************************"
-  echo stderr "Failed Again. Giving Up. Sorry it didn't work out."
-  echo stderr "*************************************************"
-  echo stderr ""
+  echo >&2 ""
+  echo >&2 "*************************************************"
+  echo >&2 "Failed Again. Giving Up. Sorry it didn't work out."
+  echo >&2 "*************************************************"
+  echo >&2 ""
   exit $rcode
 fi
 
