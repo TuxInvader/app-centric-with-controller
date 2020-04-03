@@ -1,0 +1,9 @@
+# Ansible variable configuration
+---
+
+  unit:
+    admin_password: "{{ lookup('password', '~/unit.passwd length=12 chars=ascii_letters,digits') }}"
+
+  ergast:
+
+
