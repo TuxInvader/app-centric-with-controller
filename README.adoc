@@ -237,10 +237,10 @@ good idea to tar them up for hostnames you'll use again and drop them in your se
 
 TIP: The undeploy script will do this for you if `save_certbot_configs` is enabled.
 
-Ansible will check for: `letsencrypt-<prefix><stack#>.tgz`, and deploy into _/etc/letsencrypt_
+Ansible will check for: `letsencrypt-<prefix><stack#>.tar.gz`, and deploy into _/etc/letsencrypt_
 
 ----
-$ tar ztvf letsencrypt-ws01.tgz | head -4
+$ tar ztvf letsencrypt-ws01.tar.gz | head -4
 drwxr-xr-x root/root         0 2020-03-02 13:06 letsencrypt/
 -rw-r--r-- root/root        64 2020-03-02 12:14 letsencrypt/.updated-options-ssl-nginx-conf-digest.txt
 -rw-r--r-- root/root       424 2020-03-02 12:14 letsencrypt/ssl-dhparams.pem

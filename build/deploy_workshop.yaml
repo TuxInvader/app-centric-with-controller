@@ -91,7 +91,7 @@
       unarchive:
         dest: /etc/
         owner: root
-        src: "secrets/letsencrypt-{{ wsid }}.tgz"
+        src: "secrets/letsencrypt-{{ wsid }}.tar.gz"
       ignore_errors: true
 
     - name: Copy over controller license key
