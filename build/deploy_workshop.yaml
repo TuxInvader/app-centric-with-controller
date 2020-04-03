@@ -106,7 +106,6 @@
         src: ../workdir/
         dest: /home/ubuntu/
         archive: yes
-        copy_links: yes
         delete: no
       become: ubuntu
 
@@ -159,4 +158,12 @@
         line: "    install_package: ~/{{ ws.s3.files.controller }}"
         path: /home/ubuntu/ansible/vars/controller.yaml
         state: present
+
+    - name: Patch the Ergast F1 environment
+      lineinfile:
+        dest: "/home/ubuntu/ansible/envs/f1_prod.yaml"
+        regexp: "(\ *)workship_fe_placeholder: {}"
+        backrefs: true
+        line: "\\1\"http://api.{{ wsid }}.{{ ws.route53.zone }}\": {}"
+        src: "secrets/letsencrypt-{{ wsid }}.tar.gz"
 

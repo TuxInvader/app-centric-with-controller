@@ -85,9 +85,8 @@ envs:
             name: nginx_gw
           desiredState:
             ingress:
-              uris: 
-                "http://ergast.nginx": {} 
-                "https://ergast.nginx": {} 
+              uris:
+                workship_fe_placeholder: {}
               placement:
                 instanceRefs:
                   - ref: "/infrastructure/locations/unspecified/instances/2"
@@ -146,18 +145,19 @@ envs:
               ntlmAuthentication: DISABLED
               preserveHostHeader: DISABLED
               workloadGroups:
-                ergast.com:
+                ergastf1:
                   loadBalancingMethod:
                     type: ROUND_ROBIN
                   uris:
-                    http://ergast.com:
+                    http://unit1:
                       isBackup: false
                       isDown: false
                       isDrain: false
                       resolve: DISABLED
-              monitoring:
-                defaultState: HEALTHY
-                uri: /
+            programmability:
+              uriRewrites:
+                - incomingPattern: "^(/blog)/old$"
+                  rewritePattern: "$1/new"
             logging:
               errorLog: DISABLED
               accessLog:
@@ -202,25 +202,20 @@ envs:
               ntlmAuthentication: DISABLED
               preserveHostHeader: DISABLED
               workloadGroups:
-                ergast:
+                ergastf1:
                   loadBalancingMethod:
                     type: ROUND_ROBIN
                   locationRefs:
                     - ref: /infrastructure/locations/unspecified
                   uris:
-                    http://ergast.com:
+                    http://unit1:
                       isBackup: false
                       isDown: false
                       isDrain: false
                       resolve: DISABLED
               monitoring:
                 defaultState: HEALTHY
-                uri: /
-            # As of 3.1, rewrites are applied across all locations, so limit them to the coponent 
-            programmability:
-              uriRewrites:
-                - incomingPattern: "^(/api/f1/drivers.*)$"
-                  rewritePattern: "$1.json"
+                uri: /api/f1/seasons
             logging:
               errorLog: DISABLED
               accessLog:
@@ -261,26 +256,20 @@ envs:
               ntlmAuthentication: DISABLED
               preserveHostHeader: DISABLED
               workloadGroups:
-                ergast:
+                ergastf1:
                   loadBalancingMethod:
                     type: ROUND_ROBIN
                   locationRefs:
                     - ref: /infrastructure/locations/unspecified
                   uris:
-                    http://ergast.com:
+                    http://unit1:
                       isBackup: false
                       isDown: false
                       isDrain: false
                       resolve: DISABLED
               monitoring:
                 defaultState: HEALTHY
-                uri: /
-            programmability:
-              uriRewrites:
-                - incomingPattern: "^(/api/f1/seasons)$"
-                  rewritePattern: "$1.json"
-                - incomingPattern: "^(/api/f1/[0-9]+.*)$"
-                  rewritePattern: "$1.json"
+                uri: /api/f1/seasons
             logging:
               errorLog: DISABLED
               accessLog:
