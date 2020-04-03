@@ -20,9 +20,9 @@ ws:
     bucket: "{{ secrets.s3_bucket }}"
     folder: "app_centric_automation"
     files:
-      controller: "controller-installer-3.2.0.tar.gz"
-      controller_local: "/Users/markboddington/controller-installer-3.2.0.tar.gz"
-      controller_version: 3.2
+      controller: "controller-installer-3.3-rc1.tar.gz"
+      controller_local: "/Users/markboddington/controller-installer-3.3-rc1.tar.gz"
+      controller_version: 3.3
 
   ec2:
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
@@ -47,9 +47,9 @@ ws:
       nginx2:
         type: t3.small
         public: no
-      #unit1:
-      #  type: t3.small
-      #  public: no
+      unit1:
+        type: t3.small
+        public: no
       #unit2:
       #  type: t3.small
       #  public: no
