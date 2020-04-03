@@ -2,7 +2,49 @@
 :showtitle:
 :toc: left
 
-== Required Ansible (python) Modules
+== Cloning this Repo
+
+This repository deploys a new VPC into AWS containing various NGINX and Open Source software.
+But before you can use it you need to set a few things up. After cloning you will need to:
+
+=== Check out the submodules
+
+We use submodules to load in some playbooks, and demo applications. Git may not have fetched them
+automatically for you. So to ensure you have them, and they stay up-to-date run:
+
+----
+$ git submodule update --init
+$ git config --global submodule.recurse true
+----
+
+=== Setup the build dir
+
+Next you need to change to the build folder, and copy the example inventory and vars.yaml files
+from `example` folder.
+
+----
+$ cp example/* .
+----
+
+You'll also need a secrets folder to store keys and other sensitive information. Create a folder
+some where outside of the source tree and then sym-link it into the build folder. Eg:
+
+----
+$ sudo mkdir -p /var/lib/ansible/secrets
+$ sudo chown <user>:<group> /var/lib/ansible/secrets
+$ sudo ln -s /var/lib/ansible/secrets secrets
+----
+
+Then review and edit the `vars.yaml`, and create `secrets/aws_config.yaml` using the instructions below
+
+== Setting up Ansible
+
+I recommend using the most recent version of ansible. I'm using `2.9`. You can install ansible and the
+required modules below using pip, or your package manager (if it has an up-to-date ansible). 
+
+----
+$ pip install ansible
+----
 
 You'll need to have the following python modules available on your system to run the build playbook
 
