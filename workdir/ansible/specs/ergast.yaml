@@ -41,20 +41,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      summary: Create a driver
-      operationId: createDrivers
-      tags:
-        - drivers
-      responses:
-        '201':
-          description: Null response
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   '/drivers/{driverId}':
     get:
       summary: Info for a specific driver
