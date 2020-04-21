@@ -79,5 +79,4 @@
     service:
       name: nginx
       state: restarted
-    when: cert_status.rc == 0
 
