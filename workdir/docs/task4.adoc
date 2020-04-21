@@ -165,13 +165,13 @@ Resolving deltas: 100% (31/31), done.
 $ cd whatcheese-web/
 ----
 
-Modify the `conf/nginx.conf` file, and change the `server_name` directive to match `www.<yourdomain>`
+Modify the `conf/nginx-lb.conf` file, and change the `server_name` directive to match `www.<yourdomain>`
 
 ----
 $ git config --global user.email me@myworkshop.nginx
 $ git config --global user.name Chuck Norris
 
-$ git add conf/nginx.conf
+$ git add conf/nginx-lb.conf
 $ git commit -m "fix hostname"
 $ git push
 ----
