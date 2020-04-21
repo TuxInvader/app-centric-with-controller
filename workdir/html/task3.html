@@ -429,6 +429,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_run_the_playbook">Run the playbook</a></li>
 <li><a href="#_check_gitea_is_running">Check Gitea is running</a></li>
 <li><a href="#_check_jenkins_is_running">Check Jenkins is running</a></li>
+<li><a href="#_introducing_nginx_unit">Introducing NGINX Unit</a>
+<ul class="sectlevel2">
+<li><a href="#_about_unit">About Unit</a></li>
+<li><a href="#_key_features">Key Features</a></li>
+<li><a href="#_supported_app_languages">Supported App Languages</a></li>
+<li><a href="#_usage_of_unit_on_this_course">Usage of Unit on this course</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -460,6 +468,10 @@ we&#8217;ll be using <a href="https://jenkins.io/">Jenkins</a></p>
 <div class="sect1">
 <h2 id="_install_a_role_to_help_install_jenkins"><a class="link" href="#_install_a_role_to_help_install_jenkins">Install a role to help install Jenkins</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Jenkins is a beast of a system with a whole bunch of plugins. We&#8217;re going to use an Ansible Galaxy role to help
+us get it all set up. So first install the <code>geerlinguy.jenkins</code> role on your gateway machine.</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre>ansible-galaxy install geerlingguy.jenkins`</pre>
@@ -471,6 +483,12 @@ we&#8217;ll be using <a href="https://jenkins.io/">Jenkins</a></p>
 <div class="sect1">
 <h2 id="_run_the_playbook"><a class="link" href="#_run_the_playbook">Run the playbook</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Take a look at the playbook with your favourite text editor if your curious to see what it does.
+The playbook is in <code>playbooks/cicd/deploy.yaml</code> and this one file covers installing the jenkins
+server using the role you downloaded. Once Jenkins is installed it then includes a <code>gitea.yaml</code>
+manifest in the same directory. This second manifest handles installing the gitea service.</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre>ansible-playbook playbooks/cicd/deploy.yaml</pre>
@@ -500,15 +518,124 @@ we&#8217;ll be using <a href="https://jenkins.io/">Jenkins</a></p>
 <div class="paragraph">
 <p><span class="image"><img src="img/jenkins.png" alt="Jenkins"></span></p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introducing_nginx_unit"><a class="link" href="#_introducing_nginx_unit">Introducing NGINX Unit</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>NGINX runs approximately 37% of the worlds websites, that&#8217;s some 470 million sites
+globally. NGINX has been in active development for many years, so when it was first
+started most websites were built using static html and javascript files.</p>
+</div>
+<div class="paragraph">
+<p>Modern sites are much more dynamic, and NGINX has adapted over the years to be able to
+execute the application run times on which they are built. However this is not optimal, and
+so NGINX started developing a sister project: <a href="http://unit.nginx.org/">NGINX Unit</a></p>
+</div>
+<div class="sect2">
+<h3 id="_about_unit"><a class="link" href="#_about_unit">About Unit</a></h3>
+<div class="paragraph">
+<p>NGINX Unit is a lightweight dynamic open-source server for diverse web applications.</p>
+</div>
+<div class="paragraph">
+<p>Built from scratch, Unit can run web apps in different language versions; fully configurable
+in runtime with zero interruption, it enables on-the-fly granular management for engineering
+and operations.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_key_features"><a class="link" href="#_key_features">Key Features</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Configuration updates dynamically via a RESTful JSON API</p>
+</li>
+<li>
+<p>Disparate language versions run simultaneously</p>
+</li>
+<li>
+<p>Application processes scale on demand</p>
+</li>
+<li>
+<p>SSL/TLS is supported seamlessly (OpenSSL 1.0.1 and later)</p>
+</li>
+<li>
+<p>Extensive request routing, load balancing, and static file serving options are available</p>
+</li>
+<li>
+<p>Server-side WebSockets are implemented for Node.js and Java</p>
+</li>
+<li>
+<p>Namespaces enable application isolation</p>
+</li>
+<li>
+<p>HTTP requests can be proxied elsewhere during routing</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_supported_app_languages"><a class="link" href="#_supported_app_languages">Supported App Languages</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Assembly</p>
+</li>
+<li>
+<p>Python</p>
+</li>
+<li>
+<p>PHP</p>
+</li>
+<li>
+<p>Go</p>
+</li>
+<li>
+<p>Perl</p>
+</li>
+<li>
+<p>Ruby</p>
+</li>
+<li>
+<p>JavaScript (Node.js)</p>
+</li>
+<li>
+<p>Java</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_usage_of_unit_on_this_course"><a class="link" href="#_usage_of_unit_on_this_course">Usage of Unit on this course</a></h3>
+<div class="paragraph">
+<p>We&#8217;ll be using Unit to host the backend applications which we are about to deploy using our
+newly built CI/CD pipelines. You have two machines in your lab which are designated for this
+task: <code>unit1</code> and <code>unit2</code>. Before we move on to deploying your first service, we&#8217;ll need to
+get those boxes ready.</p>
+</div>
+<div class="paragraph">
+<p>Please run the following ansible playbook to install docker on the unit machines:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook ansible/playbooks/unit/deploy.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That&#8217;s it, you&#8217;re ready to run your first deployment pipeline&#8230;&#8203;. Exciting!!!</p>
+</div>
 <div class="paragraph">
 <p><a href="task4.html">Next Task</a></p>
 </div>
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-03 10:34:22 BST
+Last updated 2020-04-21 20:58:34 BST
 </div>
 </div>
 </body>
