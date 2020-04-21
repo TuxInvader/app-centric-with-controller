@@ -16,7 +16,6 @@
         sleep: 5
         timeout: 60
       become: no
-      delegate_to: localhost
     
     - name: Ensure python symlink exists
       raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
