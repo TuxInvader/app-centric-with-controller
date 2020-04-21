@@ -148,5 +148,17 @@ now be able to point your web browser at your gateway and see these documents in
 
 Try accessing `https://<yourfqdn>/tasks`
 
+'''
+== Finally setup the NGINX backends
+
+Okay, so we have installed NGINX on the gateway machine and configured to serve content from our HTML folder
+and to load balance onto the services we're going to deploy later. Before moving on lets run a final playbook
+to install NGINX onto our backend NGINX instances (nginx1 and nginx2). Please run:
+
+----
+$ cd ~/ansible
+$ ansible-playbook playbooks/nginx_workshop_gw/install_backends.yaml
+----
+
 <<task3.adoc#,Next Task>> 
 
