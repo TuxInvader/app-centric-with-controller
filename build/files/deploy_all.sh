@@ -30,6 +30,11 @@ echo "Setting up local NGINX gateway"
 playbook playbooks/nginx_workshop_gw/install.yaml 
 playbook playbooks/nginx_workshop_gw/setup.yaml
 
+echo "Setting up backend NGINX servers"
+playbook playbooks/nginx_workshop_gw/install_backends.yaml
+
+echo "Setting up the Ci/Cd pipe-line (git and jenkins)....."
+playbook playbooks/cicd/deploy.yaml
 
 echo "Setting up the NGINX Controller....."
 playbook playbooks/controller/deploy.yaml 
@@ -37,9 +42,6 @@ playbook playbooks/controller/license.yaml
 
 echo "Setting up and registering NGINX instances with controller...."
 playbook playbooks/controller/deploy_nginx.yaml
-
-echo "Setting up the Ci/Cd pipe-line (git and jenkins)....."
-playbook playbooks/cicd/deploy.yaml
 
 echo -e "\n\n******\n  All Done!  \n******\n\n"
 
