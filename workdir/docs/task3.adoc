@@ -103,7 +103,7 @@ Please run the following ansible playbook to install docker on the unit machines
 
 ----
 $ cd ~/ansible
-$ ansible-playbook ansible/playbooks/unit/deploy.yaml
+$ ansible-playbook playbooks/unit/deploy.yaml
 ----
 
 That's it, you're ready to run your first deployment pipeline.... Exciting!!!
