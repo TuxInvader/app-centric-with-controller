@@ -86,3 +86,7 @@
       enabled: true
       state: restarted
 
+  - name: Ensure machines all have up-to-date caches
+    apt:
+      update_cache: yes
+
