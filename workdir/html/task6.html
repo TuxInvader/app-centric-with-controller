@@ -425,7 +425,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_introduction">Introduction</a></li>
-<li><a href="#_first_section">First Section</a></li>
+<li><a href="#_configure_jenkins_to_use_ansible">Configure Jenkins to use Ansible</a></li>
 </ul>
 </div>
 </div>
@@ -446,12 +446,49 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_introduction"><a class="link" href="#_introduction">Introduction</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>In the previous section we setup Jenkins with our demo sites git repository, and we created
+a webhook on the git repository to poke Jenkins whenever a change was committed to git. Jenkins
+executes the pipeline configured in the <code>Jenkinsfile</code> whenever a deployment is triggered.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Jenkinsfile</code> used previously was simply using SSH to connect to the remote machines
+and then either copying files in to place or executing commands. Jenkins has a huge repository
+of plugins whch help it accomplish these tasks. The SSH tasks were performed by the
+<a href="https://plugins.jenkins.io/ssh-steps/">SSH Pipeline Steps</a> plugin.</p>
+</div>
+<div class="paragraph">
+<p>In this section we&#8217;re going to manage the NGINX Load Balancing configuration with NGINX Controller</p>
+</div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_first_section"><a class="link" href="#_first_section">First Section</a></h2>
+<h2 id="_configure_jenkins_to_use_ansible"><a class="link" href="#_configure_jenkins_to_use_ansible">Configure Jenkins to use Ansible</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;re going to use a new <code>Jenkinsfile</code> which uses the <a href="https://plugins.jenkins.io/ansible/">Ansible
+Plugin</a>, but we first need to install Ansible onto the machine running jenkins. To do that, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ssh cicd1
+$ sudo apt-get install python3-pip
+$ sudo pip3 install ansible</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once Ansible is installed the next step is to install the Jenkins plugin. In your browser, navigate
+to <code>Manage Jenkins</code> &#8594; <code>Manage Plugins</code> and change to the <code>Available</code> tab and search for <code>Ansible</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/jenkins-ansible.png" alt="Ansible Plugin"></span></p>
+</div>
+<div class="paragraph">
+<p>Select the <code>Ansible</code> plugin and then click <code>Download now and install after restart</code>. On the next
+screen tick <code>Restart Jenkins when installation is complete and no jobs are running</code>. Jenkins should
+download the plugin and then restart.</p>
+</div>
 <div class="paragraph">
 <p><a href="task7.html">Next Task</a></p>
 </div>
@@ -460,7 +497,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-03 10:34:22 BST
+Last updated 2020-04-28 14:29:33 BST
 </div>
 </div>
 </body>

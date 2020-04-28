@@ -13,9 +13,36 @@
 
 == Introduction
 
+In the previous section we setup Jenkins with our demo sites git repository, and we created
+a webhook on the git repository to poke Jenkins whenever a change was committed to git. Jenkins 
+executes the pipeline configured in the `Jenkinsfile` whenever a deployment is triggered.
+
+The `Jenkinsfile` used previously was simply using SSH to connect to the remote machines
+and then either copying files in to place or executing commands. Jenkins has a huge repository
+of plugins whch help it accomplish these tasks. The SSH tasks were performed by the
+https://plugins.jenkins.io/ssh-steps/[SSH Pipeline Steps] plugin.
+
+In this section we're going to manage the NGINX Load Balancing configuration with NGINX Controller
 
 '''
-== First Section
+== Configure Jenkins to use Ansible
 
+We're going to use a new `Jenkinsfile` which uses the https://plugins.jenkins.io/ansible/[Ansible
+Plugin], but we first need to install Ansible onto the machine running jenkins. To do that, run:
+
+----
+$ ssh cicd1
+$ sudo apt-get install python3-pip
+$ sudo pip3 install ansible
+----
+
+Once Ansible is installed the next step is to install the Jenkins plugin. In your browser, navigate
+to `Manage Jenkins` -> `Manage Plugins` and change to the `Available` tab and search for `Ansible`
+
+image:img/jenkins-ansible.png[Ansible Plugin]
+
+Select the `Ansible` plugin and then click `Download now and install after restart`. On the next
+screen tick `Restart Jenkins when installation is complete and no jobs are running`. Jenkins should
+download the plugin and then restart.
 
 <<task7.adoc#,Next Task>>
