@@ -45,4 +45,16 @@ Select the `Ansible` plugin and then click `Download now and install after resta
 screen tick `Restart Jenkins when installation is complete and no jobs are running`. Jenkins should
 download the plugin and then restart.
 
+== Checkout a new branch
+
+Check out the `controller` branch for the whatcheese-web repository.
+
+rename noJenkinsfile to Jenkinsfile.
+
+== Load up the service
+
+----
+$ siege -f ~/siege-web.txt -i -d=5 -c 10
+----
+
 <<task7.adoc#,Next Task>>

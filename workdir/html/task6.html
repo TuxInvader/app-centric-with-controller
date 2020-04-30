@@ -426,6 +426,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_introduction">Introduction</a></li>
 <li><a href="#_configure_jenkins_to_use_ansible">Configure Jenkins to use Ansible</a></li>
+<li><a href="#_checkout_a_new_branch">Checkout a new branch</a></li>
+<li><a href="#_load_up_the_service">Load up the service</a></li>
 </ul>
 </div>
 </div>
@@ -489,6 +491,27 @@ to <code>Manage Jenkins</code> &#8594; <code>Manage Plugins</code> and change to
 screen tick <code>Restart Jenkins when installation is complete and no jobs are running</code>. Jenkins should
 download the plugin and then restart.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_checkout_a_new_branch"><a class="link" href="#_checkout_a_new_branch">Checkout a new branch</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Check out the <code>controller</code> branch for the whatcheese-web repository.</p>
+</div>
+<div class="paragraph">
+<p>rename noJenkinsfile to Jenkinsfile.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_load_up_the_service"><a class="link" href="#_load_up_the_service">Load up the service</a></h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>$ siege -f ~/siege-web.txt -i -d=5 -c 10</pre>
+</div>
+</div>
 <div class="paragraph">
 <p><a href="task7.html">Next Task</a></p>
 </div>
@@ -497,7 +520,7 @@ download the plugin and then restart.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-28 14:29:33 BST
+Last updated 2020-04-30 19:32:03 BST
 </div>
 </div>
 </body>
