@@ -100,12 +100,19 @@
         group: ubuntu
         src: "secrets/license.txt"
 
+    # Syncrhonize complains about missing python when run from my mac on first attempt
+    #- name: Copy over workdir
+    #  synchronize:
+    #    src: ../workdir/
+    #    dest: /home/ubuntu/
+    #    archive: yes
+    #    delete: no
+    #  become: ubuntu
+
     - name: Copy over workdir
-      synchronize:
+      copy:
         src: ../workdir/
         dest: /home/ubuntu/
-        archive: yes
-        delete: no
       become: ubuntu
 
     - name: create the node_setup playbook
