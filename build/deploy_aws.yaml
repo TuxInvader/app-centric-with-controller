@@ -118,6 +118,6 @@
       become: no
       delegate_to: localhost
 
-#- name: Deploy the workshop files to the gateways
-#  import_playbook: deploy_workshop.yaml
+- name: Deploy the workshop files to the gateways
+  import_playbook: deploy_workshop.yaml
 
