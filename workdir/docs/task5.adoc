@@ -11,7 +11,7 @@
 <<task6.adoc#,Next Task>> +
 ****
 
-== Introduction
+== 5.1 Introduction
 
 From NetOps to DevOps, modern app teams need a self‑service, API‑driven platform that integrates easily
 into CI/CD workflows to accelerate app deployment – whether your app has a hybrid or microservices
@@ -28,7 +28,7 @@ with your new controller. We'll also take a tour of the User Interface, and disc
 Controller 3.x.
 
 '''
-== Install the Controller
+== 5.2 Install the Controller
 
 We're going to install NGINX Controller using an Ansible playbook. Please change to your Ansible folder, and
 take a look at the variables for this deployment.
@@ -92,7 +92,7 @@ $ cd ~/ansible
 $ ansible-playbook playbooks/controller/deploy.yaml
 ----
 
-=== Helper Script
+=== 5.3 Helper Script
 
 To start, stop, restart, and check the status of the NGINX Controller process, use the helper.sh script found at /opt/nginx-controller/:
 
@@ -104,7 +104,7 @@ To start, stop, restart, and check the status of the NGINX Controller process, u
 ----
 
 '''
-== Controller Architecture
+== 5.4 Controller Architecture
 
 The controller platform is built using a microservice architecture. The installer sets up a local 
 https://kubernetes.io[Kubernetes] cluster on the controller, and then deploys a number of containers and 
@@ -149,10 +149,18 @@ WAF Module and Service Module coming summer 2020
 TIP: Once the controller is running, all documentation can be accessed at https://<fqdn>/docs/
 
 '''
-== Controller Licensing
+== 5.5 Controller Licensing
 
-When the ansible playbook has finished, please log into your controller at https://ctrl.<your_workshop>/ using
-the email address `admin@nginx.com` and the password as saved in `~/secrets/controller.passwd`
+++++
+<p>When the ansible playbook has finished, please log into your controller at <a id="ctrl1"></a></p>
+<script>
+  var ctrl='https://ctrl.' + location.hostname + '/';
+  document.getElementById("ctrl1").innerHTML = ctrl;
+  document.getElementById("ctrl1").href = ctrl;
+</script>
+++++
+
+The user email address is `admin@nginx.com` and the password is saved in `~/secrets/controller.passwd`
 
 You should see a warning that the controller is not yet licensed. There is a license file in the home folder
 of your gateway machine, you can either upload it manually through the UI, or use Ansible to apply the license.
@@ -165,7 +173,7 @@ The NGINX button in the top left of the screen is the main navigation control fo
 `platform` section, along with the RBAC settings (Users and Roles), and the audit log.
 
 '''
-== Controller Agent
+== 5.6 Controller Agent
 
 In the UI if you click the NGINX Button and change to the `Infrastructure` section, you will see a pop-up advising
 you how to add an NGINX Plus instance.
@@ -187,7 +195,7 @@ now view analytics for these nodes from an infrastructure perspective in the gra
 analysis from the Analyzer.
 
 '''
-== Complete the UI Tour
+== 5.7 Complete the UI Tour
 
 If you click on the NGINX Button again, there are two more areas for us to explore: `Analytics` and `Services`
 
@@ -202,10 +210,10 @@ We can also create custom dashboards, which enable you to combine various metric
 application into a single page. Why not try creating a Dashboard comparing `NGINX Performance Metrics` from the
 Whatcheese website, Jenkins, and other services to see how they compare.
 
-You will need to generate some traffic. A simple curl script from the gateway would work
+You will need to generate some traffic. We have siege installed on the gateway machine, run the follwing:
 
 ----
-$ while :; do curl -s https://www.fqdn/ > /dev/null ; curl -s --resolve jenkins.fqdn:443:127.0.0.1  https://jenkins.fqdn/ > /dev/null; sleep 0.1 ; done
+$ siege -f ~/siege-web.txt -i -d=5 -c 10
 ----
 
 When you create the daashboard, you can use the `New Set`, `New Graph`, and `New Value` buttons to pick the metrics

@@ -11,15 +11,15 @@
 <<task3.adoc#,Next Task>> +
 ****
 
-== Introduction
+== 2.1 Introduction
 In this lesson we will be getting our hands dirty by deploying your first NGINX Plus system using
 Ansible.  
 
-NGINX will be installed on your gateway node, and it will act as a simple TCP/UDP gateway for  
+NGINX Plus will be installed on your gateway node, and it will act as a simple TCP/UDP gateway for  
 the services being deployed during this workshop
 
 '''
-== Check out the playbook
+== 2.2 Check out the playbook
 
 You'll find the playbook in _~/ansible/playbooks/nginx_workshop_gw/install.yaml_
 
@@ -48,7 +48,7 @@ than `tasks`, and we're setting a number of variables in a new `vars` section.
 ...
 ----
 
-So we import the `role` _nginxinc.nginx_ that we downloaded from *Ansible Galaxy* and provide it
+This playbook imports the `role` _nginxinc.nginx_ that we downloaded from *Ansible Galaxy* and provides it
 with a set of `vars`. The Variables tell the role how we want NGINX configured. 
 
 When the role is loaded, it will run through various tasks depending on which variables we have
@@ -58,7 +58,7 @@ API on port 4321, and installing the NJS module.
 TIP: The NGINX role can also install the *NGINX Controller Agent*, as well as *NGINX Unit*
 
 '''
-== Apply the install playbook
+== 2.3 Run the install playbook
 
 Ensure that you are in the ansible folder and apply the _nginx_workshop_gw/install.yaml_ playbook:
 
@@ -78,7 +78,38 @@ $ sudo nginx -t
 ----
 
 '''
-== Imperative vs Declarative
+== 2.4 What is NGINX Plus
+
+Most people are familiar with the extremely popular NGINX Open Source project. NGINX runs most of
+the worlds websites, and it is the most downloaded container on Docker Hub. You may not be aware
+that NGINX also build a commercial version of NGINX which comes with additional features and an
+enterprise support agreement. The commercial version is called NGINX Plus.
+
+NGINX Plus provides many additional features in the data plane where it manages traffic, and also
+includes some control plane functionality in the form of a REST API for _upstream_ management, a
+key/valure store for dynamic ADC use-cases, and metrics collection.
+
+NGINX Plus is required if you want to manage your NGINX instances with NGINX Controller, 
+or utilize the NGINX App Protect WAF.
+
+image:img/app-platform.png[NGINX Application Platform]
+
+Other NGINX Plus enhancements include:
+
+ * Service Discovery using DNS SRV or A/AAAA records
+ * JWT Support for OATH2 or OpenID Connect (OIDC)
+ * ModSecurity WAF
+ * App Protect WAF (Based on F5s market leading WAF technology)
+ * Active Application Health Monitoring
+ * Cache Management API
+ * High Availability
+ * Live Activity monitoring dashboard
+ * Dynamic Configuration
+
+NGINX Plus is used in many organizations for ADC/Load Balancing use-cases and also API Gateway.
+
+'''
+== 2.5 Imperative vs Declarative
 
 If we compare the two playbooks that we've looked at so far, _node_setup_playbook.yaml_ and
 _nginx_workshop_gw/install.yaml_ we can see that they have very different approaches. The node setup
@@ -98,7 +129,7 @@ Obviously Ansible supports both approaches.
 
 
 '''
-== Adding Additional tasks
+== 2.6 Adding Additional tasks
 
 The _install.yaml_ playbook only concerned itself with installing NGNIX using the _nginxinc.nginx_ role. +
 The role abstracted away the steps required to install and setup NGINX, and provided us with a declarative
@@ -134,7 +165,7 @@ Ansible makes it possible to combine roles with additional tasks in a single pla
 combination of imperative and declarative styles in a single playbook.
 
 '''
-== Apply the setup playbook
+== 2.7 Apply the setup playbook
 
 Again, ensure that you are in the ansible folder and apply the _nginx_workshop_gw/setup.yaml_ playbook:
 
@@ -146,12 +177,52 @@ $ ansible-playbook playbooks/nginx_workshop_gw/setup.yaml
 You now have the gateway setup and ready to provide access to the rest of the workshop servers. You should
 now be able to point your web browser at your gateway and see these documents in beautiful HTML5.
 
-Try accessing `https://<yourfqdn>/tasks`
+++++
+<p>Try accessing your workshop -> <a id='task_link'></a></p>
+<script>
+  var tl='https://' + location.host + '/tasks';
+  document.getElementById("task_link").innerHTML = tl;
+  document.getElementById("task_link").href = tl;
+</script>
+++++
+
+== 2.8 NGINX Plus Dashboard
+
+You should also be able to access your NGINX Plus dashboard, and API using the password created and stored
+in your secrets folder and the username 'nginx'. Check that now:
+
+----
+$ cat ~/secrets/basic_auth.passwd
+----
+
+And then try to access these URLs (username is nginx):
+
+++++
+<p>Try accessing your NGINX Plus dashboard -> <a id='db_link'></a></p>
+<p>Try accessing your NGINX Plus API -> <a id='api_link'></a></p>
+<p>Try accessing your NGINX Plus Swagger Spec -> <a id='oas_link'></a></p>
+<script>
+  var db='https://' + location.host + '/dashboard.html';
+  var api='https://' + location.host + '/api/6';
+  var oas='https://' + location.host + '/swagger-ui';
+  document.getElementById("db_link").innerHTML = db;
+  document.getElementById("db_link").href = db;
+  document.getElementById("api_link").innerHTML = api;
+  document.getElementById("api_link").href = api;
+  document.getElementById("oas_link").innerHTML = oas;
+  document.getElementById("oas_link").href = oas;
+</script>
+++++
+
+You will notice that the dashboard has many failed backends. This is because we haven't deployed them yet, and
+the active health monitoring feature of NGINX has detected them as failed.
+
+You can keep an eye on the gateway dashboard as deploy services to ensure that they are running correctly.
 
 '''
-== Finally setup the NGINX backends
+== 2.9 Setup the NGINX backends
 
-Okay, so we have installed NGINX on the gateway machine and configured to serve content from our HTML folder
+Okay, so we have installed NGINX on the gateway machine and configured it to serve content from our HTML folder
 and to load balance onto the services we're going to deploy later. Before moving on lets run a final playbook
 to install NGINX onto our backend NGINX instances (nginx1 and nginx2). Please run:
 

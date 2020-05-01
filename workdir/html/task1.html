@@ -424,14 +424,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction">Introduction</a></li>
-<li><a href="#_running_ansible">Running Ansible</a></li>
-<li><a href="#_take_a_look_at_your_ansible_configuration">Take a look at your ansible configuration</a></li>
-<li><a href="#_ansible_ad_hoc_mode">Ansible Ad-hoc mode</a></li>
-<li><a href="#_ansible_facts">Ansible Facts</a></li>
-<li><a href="#_ansible_playbooks">Ansible Playbooks</a></li>
-<li><a href="#_finishing_our_configuration">Finishing our configuration</a></li>
-<li><a href="#_ansible_roles">Ansible Roles</a></li>
+<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
+<li><a href="#_1_2_running_ansible">1.2 Running Ansible</a></li>
+<li><a href="#_1_3_review_the_ansible_config">1.3 Review the Ansible config</a></li>
+<li><a href="#_1_4_ansible_ad_hoc_mode">1.4 Ansible Ad-hoc mode</a></li>
+<li><a href="#_1_5_ansible_facts">1.5 Ansible Facts</a></li>
+<li><a href="#_1_6_ansible_playbooks">1.6 Ansible Playbooks</a></li>
+<li><a href="#_1_7_finishing_our_configuration">1.7 Finishing our configuration</a></li>
+<li><a href="#_1_8_ansible_roles">1.8 Ansible Roles</a></li>
 </ul>
 </div>
 </div>
@@ -450,7 +450,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction"><a class="link" href="#_introduction">Introduction</a></h2>
+<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Ansible is an automation tool from RedHat which supports agentless configuration of remote systems.
@@ -487,7 +487,7 @@ This machine is your Ansible Control Node, and your "frontend" for all other sys
 </div>
 </div>
 <div class="sect1">
-<h2 id="_running_ansible"><a class="link" href="#_running_ansible">Running Ansible</a></h2>
+<h2 id="_1_2_running_ansible"><a class="link" href="#_1_2_running_ansible">1.2 Running Ansible</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In your home directory, you have a directory called ansible. We will be executing all of your ansible
@@ -502,7 +502,7 @@ in the local folder first, followed by various other locations, finally falling 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_take_a_look_at_your_ansible_configuration"><a class="link" href="#_take_a_look_at_your_ansible_configuration">Take a look at your ansible configuration</a></h2>
+<h2 id="_1_3_review_the_ansible_config"><a class="link" href="#_1_3_review_the_ansible_config">1.3 Review the Ansible config</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The ansible.cfg file in your ansible folder contains all of the ansible defaults.
@@ -520,10 +520,10 @@ stdout_callback = yaml</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>We set the remote user to be <strong>"ubuntu"</strong>, so when ansible attempts to execute a command it will try to ssh
-to the remote system as ubuntu. We set nocows to 1, which disables cowsay, but feel free to re-enable it
-if you find it comforting. We also tell ansible to use the "yaml" output plugin, this is so we get nicely
-formatted output, especially useful when things go wrong.</p>
+<p>We set the remote user to be <em>ubuntu</em>, so when ansible attempts to execute a command it will try to ssh
+to the remote system as ubuntu. We set <em>nocows</em> to 1, which disables cowsay, but feel free to re-enable it
+if you find it comforting. We also tell ansible to use the "yaml" output plugin in <em>stdout_callback</em>,
+this is so we get nicely formatted output, especially useful when things go wrong.</p>
 </div>
 <div class="paragraph">
 <p>The inventory file can be a script to generate hosts/groups dynamically, but in our case a simple static text
@@ -550,44 +550,55 @@ nginx1
 nginx2
 unit1
 unit2
-cicd1</pre>
+cicd1
+
+[all:vars]
+wsid=mb01
+domain=workshop.nginxlab.net</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Ansible uses the inventory to match hosts and groups of hosts on which to execute tasks or playbooks.</p>
+<p>Ansible uses the inventory to match hosts and groups of hosts on which to execute tasks or playbooks.
+The inventory uses <em>"ini file"</em> like syntax, and groups are indicated by surrounding them in square brackets <em>[]</em>.</p>
+</div>
+<div class="paragraph">
+<p>Variables can also be applied to hosts, by including them after a host entry on the same line, or for a group
+by referencing the group name with a <code>:vars</code> suffix. The special group <code>[all]</code> matches all hosts.</p>
 </div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_ansible_ad_hoc_mode"><a class="link" href="#_ansible_ad_hoc_mode">Ansible Ad-hoc mode</a></h2>
+<h2 id="_1_4_ansible_ad_hoc_mode"><a class="link" href="#_1_4_ansible_ad_hoc_mode">1.4 Ansible Ad-hoc mode</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Ansible allows you to execute tasks in an ad-hoc way. Try executing the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ansible -m ping ctrl1
+<pre>$ cd ~/ansible
+$ ansible -m ping ctrl1
 $ ansible -m ping nginx</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The above command line executed the 'ping' module against the provided inventory item.
-The first ping command was execute on a single host 'ctrl1', while the second was executed on
-all hosts in the group 'nginx'</p>
+<p>The above command line executed the <em>ping</em> module against the provided inventory item.
+The first ping command was execute on a single host <em>ctrl1</em>, while the second was executed on
+all hosts in the group <em>nginx</em></p>
 </div>
 <div class="paragraph">
-<p>The ansible 'ping' module is a very simple module and it simply confirms that you can connect to the
+<p>The ansible <em>ping</em> module is a very simple module and it simply confirms that you can connect to the
 host in the inventory, and execute a command.
 Most modules take additional arguments, try running:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ansible -m copy localhost -a "src=/etc/hosts dest=/home/ubuntu/hosts"</pre>
+<pre>$ cd ~/ansible
+$ ansible -m copy localhost -a "src=/etc/hosts dest=/home/ubuntu/hosts"</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The above uses the copy module, which requires additional arguments. The <em>dest</em> argumnet is mandatory
+<p>The above uses the <em>copy</em> module, which requires additional arguments. The <em>dest</em> argumnet is mandatory
 and tells ansible where to copy the given content.
 The content can be read from a file in which case the <em>src</em> argument is used. Or it may be given to
 the module directly with the <em>content</em> argument.</p>
@@ -599,7 +610,7 @@ the module directly with the <em>content</em> argument.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_ansible_facts"><a class="link" href="#_ansible_facts">Ansible Facts</a></h2>
+<h2 id="_1_5_ansible_facts"><a class="link" href="#_1_5_ansible_facts">1.5 Ansible Facts</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Ansible can also gather facts about the nodes on which it executes. These facts include the
@@ -610,7 +621,8 @@ Operating System details, information on network interfaces, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ansible -m setup localhost</pre>
+<pre>$ cd ~/ansible
+$ ansible -m setup localhost</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -621,14 +633,15 @@ Operating System details, information on network interfaces, etc.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ansible -m setup nginx -a "filter=ansible_dist*"</pre>
+<pre>$ cd ~/ansible
+$ ansible -m setup nginx -a "filter=ansible_dist*"</pre>
 </div>
 </div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_ansible_playbooks"><a class="link" href="#_ansible_playbooks">Ansible Playbooks</a></h2>
+<h2 id="_1_6_ansible_playbooks"><a class="link" href="#_1_6_ansible_playbooks">1.6 Ansible Playbooks</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In the previous section we used ansible to execute single tasks using the specified modules.
@@ -642,7 +655,7 @@ It has several advantages over Ad-Hoc mode:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>You can include variables either directly or from extertnal sources.</p>
+<p>You can include variables either directly or from external sources.</p>
 </li>
 <li>
 <p>You can use loops to perform tasks multiple times (eg iterate over a list of users)</p>
@@ -662,7 +675,7 @@ It has several advantages over Ad-Hoc mode:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_finishing_our_configuration"><a class="link" href="#_finishing_our_configuration">Finishing our configuration</a></h2>
+<h2 id="_1_7_finishing_our_configuration"><a class="link" href="#_1_7_finishing_our_configuration">1.7 Finishing our configuration</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The machines that you are connecting to for this workshop have all been deployed using Ansible.<br>
@@ -715,7 +728,7 @@ the next line, and is usually followed by a series of <code>module</code> specif
 may be defined for storing output, or looping through the task multiple times, etc.</p>
 </div>
 <div class="paragraph">
-<p>If you look through the node_setup_playbook you will see that it is doing three things on each of the
+<p>If you look through the node_setup_playbook you will see that it is doing several things on each of the
 machines listed in the <code>remote</code> group of our ansible inventory <code>~/ansible/inventory</code>.</p>
 </div>
 <div class="ulist">
@@ -728,6 +741,9 @@ machines listed in the <code>remote</code> group of our ansible inventory <code>
 </li>
 <li>
 <p>install a script <code>/etc/rc.ansible</code> and configure systemd to run it.</p>
+</li>
+<li>
+<p>update the apt package cache</p>
 </li>
 </ul>
 </div>
@@ -742,7 +758,8 @@ configuration on your gateways which responds authoritatively for your workshops
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ansible-playbook node_setup_playbook.yaml</pre>
+<pre>$ cd ~/ansible
+$ ansible-playbook node_setup_playbook.yaml</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -754,7 +771,7 @@ an ansible role to help us.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_ansible_roles"><a class="link" href="#_ansible_roles">Ansible Roles</a></h2>
+<h2 id="_1_8_ansible_roles"><a class="link" href="#_1_8_ansible_roles">1.8 Ansible Roles</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>An Ansible Role is a group of tasks and variables which have been built in a standard way to enable reuse.
@@ -766,7 +783,7 @@ a webserver, or installing a system such as jenkins. Unlike a playbook a role is
 </div>
 <div class="paragraph">
 <p>Ansible includes a tool to search and install community published roles called <em>ansible-galaxy</em>.
-Lets use ansible-galaxy to install the NGINX role published by F5/NGINX.</p>
+Lets use <em>ansible-galaxy</em> to install the NGINX role published by F5/NGINX.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -781,7 +798,7 @@ Lets use ansible-galaxy to install the NGINX role published by F5/NGINX.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-03 10:34:22 BST
+Last updated 2020-05-01 10:48:27 BST
 </div>
 </div>
 </body>

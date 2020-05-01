@@ -424,13 +424,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction">Introduction</a></li>
-<li><a href="#_install_the_controller">Install the Controller</a>
+<li><a href="#_5_1_introduction">5.1 Introduction</a></li>
+<li><a href="#_5_2_install_the_controller">5.2 Install the Controller</a>
 <ul class="sectlevel2">
-<li><a href="#_helper_script">Helper Script</a></li>
+<li><a href="#_5_3_helper_script">5.3 Helper Script</a></li>
 </ul>
 </li>
-<li><a href="#_controller_architecture">Controller Architecture</a>
+<li><a href="#_5_4_controller_architecture">5.4 Controller Architecture</a>
 <ul class="sectlevel2">
 <li><a href="#_analytics">Analytics</a></li>
 <li><a href="#_api_management">API Management</a></li>
@@ -438,9 +438,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_coming_soon">Coming Soon</a></li>
 </ul>
 </li>
-<li><a href="#_controller_licensing">Controller Licensing</a></li>
-<li><a href="#_controller_agent">Controller Agent</a></li>
-<li><a href="#_complete_the_ui_tour">Complete the UI Tour</a>
+<li><a href="#_5_5_controller_licensing">5.5 Controller Licensing</a></li>
+<li><a href="#_5_6_controller_agent">5.6 Controller Agent</a></li>
+<li><a href="#_5_7_complete_the_ui_tour">5.7 Complete the UI Tour</a>
 <ul class="sectlevel2">
 <li><a href="#_analytics_section">Analytics Section</a></li>
 <li><a href="#_services_section">Services Section</a></li>
@@ -464,7 +464,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction"><a class="link" href="#_introduction">Introduction</a></h2>
+<h2 id="_5_1_introduction"><a class="link" href="#_5_1_introduction">5.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>From NetOps to DevOps, modern app teams need a self‑service, API‑driven platform that integrates easily
@@ -490,7 +490,7 @@ Controller 3.x.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_install_the_controller"><a class="link" href="#_install_the_controller">Install the Controller</a></h2>
+<h2 id="_5_2_install_the_controller"><a class="link" href="#_5_2_install_the_controller">5.2 Install the Controller</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>We&#8217;re going to install NGINX Controller using an Ansible playbook. Please change to your Ansible folder, and
@@ -585,7 +585,7 @@ $ ansible-playbook playbooks/controller/deploy.yaml</pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_helper_script"><a class="link" href="#_helper_script">Helper Script</a></h3>
+<h3 id="_5_3_helper_script"><a class="link" href="#_5_3_helper_script">5.3 Helper Script</a></h3>
 <div class="paragraph">
 <p>To start, stop, restart, and check the status of the NGINX Controller process, use the helper.sh script found at /opt/nginx-controller/:</p>
 </div>
@@ -602,7 +602,7 @@ $ ansible-playbook playbooks/controller/deploy.yaml</pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_controller_architecture"><a class="link" href="#_controller_architecture">Controller Architecture</a></h2>
+<h2 id="_5_4_controller_architecture"><a class="link" href="#_5_4_controller_architecture">5.4 Controller Architecture</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The controller platform is built using a microservice architecture. The installer sets up a local
@@ -696,11 +696,16 @@ Once the controller is running, all documentation can be accessed at <a href="ht
 </div>
 </div>
 <div class="sect1">
-<h2 id="_controller_licensing"><a class="link" href="#_controller_licensing">Controller Licensing</a></h2>
+<h2 id="_5_5_controller_licensing"><a class="link" href="#_5_5_controller_licensing">5.5 Controller Licensing</a></h2>
 <div class="sectionbody">
+<p>When the ansible playbook has finished, please log into your controller at <a id="ctrl1"></a></p>
+<script>
+  var ctrl='https://ctrl.' + location.hostname + '/';
+  document.getElementById("ctrl1").innerHTML = ctrl;
+  document.getElementById("ctrl1").href = ctrl;
+</script>
 <div class="paragraph">
-<p>When the ansible playbook has finished, please log into your controller at <a href="https://ctrl.&lt;your_workshop&gt;/" class="bare">https://ctrl.&lt;your_workshop&gt;/</a> using
-the email address <code>admin@nginx.com</code> and the password as saved in <code>~/secrets/controller.passwd</code></p>
+<p>The user email address is <code>admin@nginx.com</code> and the password as saved in <code>~/secrets/controller.passwd</code></p>
 </div>
 <div class="paragraph">
 <p>You should see a warning that the controller is not yet licensed. There is a license file in the home folder
@@ -720,7 +725,7 @@ of your gateway machine, you can either upload it manually through the UI, or us
 </div>
 </div>
 <div class="sect1">
-<h2 id="_controller_agent"><a class="link" href="#_controller_agent">Controller Agent</a></h2>
+<h2 id="_5_6_controller_agent"><a class="link" href="#_5_6_controller_agent">5.6 Controller Agent</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In the UI if you click the NGINX Button and change to the <code>Infrastructure</code> section, you will see a pop-up advising
@@ -751,7 +756,7 @@ analysis from the Analyzer.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_complete_the_ui_tour"><a class="link" href="#_complete_the_ui_tour">Complete the UI Tour</a></h2>
+<h2 id="_5_7_complete_the_ui_tour"><a class="link" href="#_5_7_complete_the_ui_tour">5.7 Complete the UI Tour</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>If you click on the NGINX Button again, there are two more areas for us to explore: <code>Analytics</code> and <code>Services</code></p>
@@ -800,7 +805,7 @@ you are interested in. You can then apply a <code>vhost</code> filter to limit t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-03 10:34:22 BST
+Last updated 2020-05-01 13:07:16 BST
 </div>
 </div>
 </body>

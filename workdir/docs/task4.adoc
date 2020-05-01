@@ -11,24 +11,31 @@
 <<task5.adoc#,Next Task>> +
 ****
 
-== Introduction
+== 4.1 Introduction
 
 In this task we are going to login in to our newly deployed Jenkins automation server, and 
 create a new CI/CD pipeline.
 
 '''
-== Setup Credentials
+== 4.2 Setup Credentials
 
-Log into the Jenkins instance running in your workshop eg: `https://jenkins.ws99.<your_workshop_domain>` +
+++++
+<p>Log into the Jenkins instance running in your workshop <a id="jen1"></a></p>
+<script>
+  var jen='https://jenkins.' + location.host + '/';
+  document.getElementById("jen1").innerHTML = jen;
+  document.getElementById("jen1").href = jen;
+</script>
+++++
+
 The username is `nginx` and the password can be found in `~/secrets/jenkins.cicd.password`
 
 ----
 $ cat secrets/jenkins.cicd.passwd
-aGUzj4Avlh:8
 ----
 
 '''
-=== Credentials for SSH access
+=== 4.3 Credentials for SSH access
 
 The purpose of our first pipeline will be to deploy NGINX configuration to our NGINX web
 servers. We shall acomplish this using SSH, and so Jenkins needs to be given the same
@@ -45,7 +52,7 @@ to access the workshop instances into the private key field.
 Once complete, click `OK` to save.
 
 '''
-=== Credentials for Gitea access
+=== 4.4 Credentials for Gitea access
 
 Jenkins also needs to be able to access our source code repositories stored in Gitea. We will need
 to provide a set of credentials for that access next.
@@ -57,25 +64,33 @@ a `username` of "nginx", and the `password` as found in `~/secrets/git.cicd.pass
 Once complete, click `OK` to save.
 
 '''
-== Connecting Jenkins and Gitea
+== 4.5 Connecting Jenkins and Gitea
 
 Your Jenkins server has a Gitea plugin, which enables Jenkins to be able to enumerate Organizations
 and source repositories on the Gitea server. The plugin also enables a webhook end point so that
 we can automatically trigger a build pipeline when changes are commited to Git.
 
 '''
-=== Create a Gitea reference
+=== 4.6 Create a Gitea reference
 
 Login to Jenkins and select `Manage Jenkins` from the side menu, and then `Configure System` in
-the management menu. Scroll down to the `Gitea Servers` section. Add a new server named "gitea"
-and in the server URL you should enter `http://git.<yourdomain>:3000`
+the management menu. Scroll down to the `Gitea Servers` section. 
+
+++++
+<p>Add a new server with the name <code>gitea</code> and the URL <code id="git1"></code></p>
+<script>
+  var git='http://git.' + location.hostname + ':3000';
+  document.getElementById("git1").innerHTML = git;
+  document.getElementById("git1").href = git;
+</script>
+++++
 
 image:img/add-gitea-server.png[Add Gitea Server]
 
 If the connection infomation is correct, then you should see a 403/Forbidden error. Click Save.
 
 '''
-=== Create a Gitea Item
+=== 4.7 Create a Gitea Item
 
 Go back to the Jenkins home page, and click `New Item`. Call the item "whatcheese" and scroll down
 and select the `Gitea Organization` as the type. Click Ok
@@ -85,12 +100,18 @@ see that the `Server` is linked to the server you added above. Select the Creden
 previously, and the owner box should set to "whatcheese". Click Save.
 
 You will see Jenkins automatically scan the Gitea Organization, looking for Jenksinfile pipeline
-configurations. Return to the Jenkins home page.
+configurations. 
+
+It will check all repositories owned by the whatcheese organization, _whatcheese-app_ _whatcheese-api_
+and _whatcheese-web_. It is looking for a pipeline configuration file called `Jenkinsfile`. It should
+discover that the _whatchees-web_ repository has a `Jenkinsfile` on its master branch.
+
+Return to the Jenkins home page.
 
 image:img/jenkins-home.png[Gitea Whatcheese Org]
 
 '''
-== View the Pipeline 
+== 4.8 View the Pipeline 
 
 Navigate back to your Jenkins home page, and then follow the link in the side menu `Open Blue Ocean` +
 
@@ -102,13 +123,21 @@ Click on Whatcheese web and then the latest build number to view the pipeline.
 
 image:img/blue-ocean-pipe.png[Latest Pipeline Status]
 
-Hopefully it's all green. Open a new browser window on `https://git.<your_domain>/` and login using
-the username "nginx" and the same password you provided to Jenkins earlier. Find the 
-_WhatCheese/whatcheese-web_ repoisitory and take a look at the Jenkinsfile. The pipeline presented
-in Blue Ocean is a visual representation of the CI/CD pipeline described in this file.
+++++
+<p>Hopefully it's all green. Open a new browser window on <a id="git2"></a> and login using
+the username "nginx" and the same password you provided to Jenkins earlier.</p>
+<script>
+  var git='http://git.' + location.host + '/';
+  document.getElementById("git2").innerHTML = git;
+  document.getElementById("git2").href = git;
+</script>
+++++
+
+Find the _WhatCheese/whatcheese-web_ repoisitory and take a look at the Jenkinsfile. The pipeline
+presented in Blue Ocean is a visual representation of the CI/CD pipeline described in this file.
 
 '''
-== Setup an Automated Webhook
+== 4.9 Setup an Automated Webhook
 
 Jenkins can be set up to periodically poll Gitea for changes, but it would be better if we could
 make Gitea notify Jenkins whenever a repository is updated. To do that, we need to create a webhook.
@@ -120,7 +149,16 @@ on the right hand side of the menu bar. Go to webhooks and click the `Add Webhoo
 image:img/gitea-add-webhook.png[automation using webhooks]
 
 We need to tell Gitea where to send the webhook event. So in the `Target URL` field enter the
-jenkins URL of your server. It should be: `http://jenkins.<yourdomain>:8080/gitea-webhook/post`
+jenkins URL of your server. 
+
+++++
+<p>It should be: <code id="jen2"></code></p>
+<script>
+  var jen='http://jenkins.' + location.host + ':8080/gitea-webhook/post';
+  document.getElementById("jen2").innerHTML = jen;
+  document.getElementById("jen2").href = jen;
+</script>
+++++
 
 The `HTTP Method` should be set to "POST", and the `Post Content Type` should be
 "application/json". The `Secret` should be blank. Click `Add Webhook`.
@@ -130,15 +168,22 @@ see the hook you just created. Click on the webhook, and scroll down to the bott
 find a test section. Run a test of your new webhook.
 
 '''
-== WhatCheese Demo site
+== 4.10 WhatCheese Demo site
 
 In this section we have linked our Git server (gitea) and our CI/CD automation platform (Jenkins)
 together. We told Jenkins about the WhatCheese organization on Gitea, and Jenkins will now scan the
 WhatCheese organization periodically looking for new projects. We also created a Webhook in Gitea
 to poke Jenkins whenever a changed is committed. 
-
-The Whatcheese-web pipeline should have deployed our whatcheese demo site for us. Take a look at
-`http://www.<yourdomain>/` and see if it's working. 
+ 
+++++
+<p>The Whatcheese-web pipeline should have deployed our whatcheese demo site for us.
+Take a look at: <a id="www"></a> and see if it's working</p>
+<script>
+  var web='https://www.' + location.host + '/';
+  document.getElementById("www").innerHTML = web;
+  document.getElementById("www").href = web;
+</script>
+++++
 
 ****
 If you see the default "Welcome to nginx" page then it's not working :-(

@@ -11,14 +11,14 @@
 <<task4.adoc#,Next Task>> +
 ****
 
-== Introduction
+== 3.1 Introduction
 
 Now we're going to deploy some tools for CI/CD automation. We'll be using a free Open Source Git repository
 server with a github like HTTP interface called https://gitea.io/en-us/[Gitea], and for orchestration automation
 we'll be using https://jenkins.io/[Jenkins]
 
 '''
-== Install a role to help install Jenkins
+== 3.2 Install Jenkins Role
 
 Jenkins is a beast of a system with a whole bunch of plugins. We're going to use an Ansible Galaxy role to help
 us get it all set up. So first install the `geerlinguy.jenkins` role on your gateway machine.
@@ -28,7 +28,7 @@ ansible-galaxy install geerlingguy.jenkins`
 ----
 
 '''
-== Run the playbook
+== 3.3 Run the playbook
 
 Take a look at the playbook with your favourite text editor if your curious to see what it does.
 The playbook is in `playbooks/cicd/deploy.yaml` and this one file covers installing the jenkins
@@ -36,24 +36,43 @@ server using the role you downloaded. Once Jenkins is installed it then includes
 manifest in the same directory. This second manifest handles installing the gitea service.
 
 ----
+cd ~/ansible
 ansible-playbook playbooks/cicd/deploy.yaml
 ----
 
 '''
-== Check Gitea is running
+== 3.4 Check Gitea is running
 
 You should now be able to access your Gitea server at `https://git.<yourdomain>`
+
+++++
+<p>Try accessing your Gitea Service -> <a id='git_link'></a></p>
+<script>
+  var git='https://git.' + location.host + '/';
+  document.getElementById("git_link").innerHTML = git;
+  document.getElementById("git_link").href = git;
+</script>
+++++
 
 image:img/gitea.png[Gitea]
 
 '''
-== Check Jenkins is running
+== 3.5 Check Jenkins is running
 
 You should also be able to access your Jenkins server at `https://jenkins.<yourdomain>`
 
+++++
+<p>Try accessing your Jenkins Service -> <a id='jen_link'></a></p>
+<script>
+  var jen='https://jenkins.' + location.host + '/';
+  document.getElementById("jen_link").innerHTML = jen;
+  document.getElementById("jen_link").href = jen;
+</script>
+++++
+
 image:img/jenkins.png[Jenkins]
 
-== Introducing NGINX Unit
+== 3.6 Introducing NGINX Unit
 
 NGINX runs approximately 37% of the worlds websites, that's some 470 million sites
 globally. NGINX has been in active development for many years, so when it was first

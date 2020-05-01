@@ -424,12 +424,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction">Introduction</a></li>
-<li><a href="#_install_a_role_to_help_install_jenkins">Install a role to help install Jenkins</a></li>
-<li><a href="#_run_the_playbook">Run the playbook</a></li>
-<li><a href="#_check_gitea_is_running">Check Gitea is running</a></li>
-<li><a href="#_check_jenkins_is_running">Check Jenkins is running</a></li>
-<li><a href="#_introducing_nginx_unit">Introducing NGINX Unit</a>
+<li><a href="#_3_1_introduction">3.1 Introduction</a></li>
+<li><a href="#_3_2_install_jenkins_role">3.2 Install Jenkins Role</a></li>
+<li><a href="#_3_3_run_the_playbook">3.3 Run the playbook</a></li>
+<li><a href="#_3_4_check_gitea_is_running">3.4 Check Gitea is running</a></li>
+<li><a href="#_3_5_check_jenkins_is_running">3.5 Check Jenkins is running</a></li>
+<li><a href="#_3_6_introducing_nginx_unit">3.6 Introducing NGINX Unit</a>
 <ul class="sectlevel2">
 <li><a href="#_about_unit">About Unit</a></li>
 <li><a href="#_key_features">Key Features</a></li>
@@ -455,7 +455,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction"><a class="link" href="#_introduction">Introduction</a></h2>
+<h2 id="_3_1_introduction"><a class="link" href="#_3_1_introduction">3.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Now we&#8217;re going to deploy some tools for CI/CD automation. We&#8217;ll be using a free Open Source Git repository
@@ -466,7 +466,7 @@ we&#8217;ll be using <a href="https://jenkins.io/">Jenkins</a></p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_install_a_role_to_help_install_jenkins"><a class="link" href="#_install_a_role_to_help_install_jenkins">Install a role to help install Jenkins</a></h2>
+<h2 id="_3_2_install_jenkins_role"><a class="link" href="#_3_2_install_jenkins_role">3.2 Install Jenkins Role</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Jenkins is a beast of a system with a whole bunch of plugins. We&#8217;re going to use an Ansible Galaxy role to help
@@ -481,7 +481,7 @@ us get it all set up. So first install the <code>geerlinguy.jenkins</code> role 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_run_the_playbook"><a class="link" href="#_run_the_playbook">Run the playbook</a></h2>
+<h2 id="_3_3_run_the_playbook"><a class="link" href="#_3_3_run_the_playbook">3.3 Run the playbook</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Take a look at the playbook with your favourite text editor if your curious to see what it does.
@@ -491,18 +491,25 @@ manifest in the same directory. This second manifest handles installing the gite
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>ansible-playbook playbooks/cicd/deploy.yaml</pre>
+<pre>cd ~/ansible
+ansible-playbook playbooks/cicd/deploy.yaml</pre>
 </div>
 </div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_check_gitea_is_running"><a class="link" href="#_check_gitea_is_running">Check Gitea is running</a></h2>
+<h2 id="_3_4_check_gitea_is_running"><a class="link" href="#_3_4_check_gitea_is_running">3.4 Check Gitea is running</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You should now be able to access your Gitea server at <code><a href="https://git.&lt;yourdomain&gt" class="bare">https://git.&lt;yourdomain&gt</a>;</code></p>
 </div>
+<p>Try accessing your Gitea Service -> <a id='git_link'></a></p>
+<script>
+  var git='https://git.' + location.host + '/';
+  document.getElementById("git_link").innerHTML = git;
+  document.getElementById("git_link").href = git;
+</script>
 <div class="paragraph">
 <p><span class="image"><img src="img/gitea.png" alt="Gitea"></span></p>
 </div>
@@ -510,18 +517,24 @@ manifest in the same directory. This second manifest handles installing the gite
 </div>
 </div>
 <div class="sect1">
-<h2 id="_check_jenkins_is_running"><a class="link" href="#_check_jenkins_is_running">Check Jenkins is running</a></h2>
+<h2 id="_3_5_check_jenkins_is_running"><a class="link" href="#_3_5_check_jenkins_is_running">3.5 Check Jenkins is running</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You should also be able to access your Jenkins server at <code><a href="https://jenkins.&lt;yourdomain&gt" class="bare">https://jenkins.&lt;yourdomain&gt</a>;</code></p>
 </div>
+<p>Try accessing your Jenkins Service -> <a id='jen_link'></a></p>
+<script>
+  var jen='https://jenkins.' + location.host + '/';
+  document.getElementById("jen_link").innerHTML = jen;
+  document.getElementById("jen_link").href = jen;
+</script>
 <div class="paragraph">
 <p><span class="image"><img src="img/jenkins.png" alt="Jenkins"></span></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introducing_nginx_unit"><a class="link" href="#_introducing_nginx_unit">Introducing NGINX Unit</a></h2>
+<h2 id="_3_6_introducing_nginx_unit"><a class="link" href="#_3_6_introducing_nginx_unit">3.6 Introducing NGINX Unit</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>NGINX runs approximately 37% of the worlds websites, that&#8217;s some 470 million sites
@@ -635,7 +648,7 @@ $ ansible-playbook playbooks/unit/deploy.yaml</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-21 21:13:16 BST
+Last updated 2020-05-01 11:50:34 BST
 </div>
 </div>
 </body>
