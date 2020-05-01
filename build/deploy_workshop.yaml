@@ -116,6 +116,20 @@
         local_follow: no
       become: ubuntu
 
+    - name: create the siege-web loadtest file
+      template:
+        dest: /home/ubuntu/siege-web.txt
+        src: files/siege-web.j2
+        owner: ubuntu
+        group: ubuntu
+
+    - name: create the siege-full loadtest file
+      template:
+        dest: /home/ubuntu/siege-full.txt
+        src: files/siege-full.j2
+        owner: ubuntu
+        group: ubuntu
+
     - name: create the node_setup playbook
       template:
         dest: /home/ubuntu/ansible/node_setup_playbook.yaml
