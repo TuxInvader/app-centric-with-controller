@@ -54,7 +54,7 @@ rename noJenkinsfile to Jenkinsfile.
 == Load up the service
 
 ----
-$ siege -f ~/siege-web.txt -i -d=5 -c 10
+$ siege -f ~/siege-full.txt -i -d 5 -c 5 -v
 ----
 
 <<task7.adoc#,Next Task>>

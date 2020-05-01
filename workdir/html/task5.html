@@ -705,7 +705,7 @@ Once the controller is running, all documentation can be accessed at <a href="ht
   document.getElementById("ctrl1").href = ctrl;
 </script>
 <div class="paragraph">
-<p>The user email address is <code>admin@nginx.com</code> and the password as saved in <code>~/secrets/controller.passwd</code></p>
+<p>The user email address is <code>admin@nginx.com</code> and the password is saved in <code>~/secrets/controller.passwd</code></p>
 </div>
 <div class="paragraph">
 <p>You should see a warning that the controller is not yet licensed. There is a license file in the home folder
@@ -776,11 +776,11 @@ application into a single page. Why not try creating a Dashboard comparing <code
 Whatcheese website, Jenkins, and other services to see how they compare.</p>
 </div>
 <div class="paragraph">
-<p>You will need to generate some traffic. A simple curl script from the gateway would work</p>
+<p>You will need to generate some traffic. We have siege installed on the gateway machine, run the follwing:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ while :; do curl -s https://www.fqdn/ &gt; /dev/null ; curl -s --resolve jenkins.fqdn:443:127.0.0.1  https://jenkins.fqdn/ &gt; /dev/null; sleep 0.1 ; done</pre>
+<pre>$ siege -f ~/siege-web.txt -i -d 5 -c 5 -v</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -805,7 +805,7 @@ you are interested in. You can then apply a <code>vhost</code> filter to limit t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-01 13:07:16 BST
+Last updated 2020-05-01 16:32:41 BST
 </div>
 </div>
 </body>

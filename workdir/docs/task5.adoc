@@ -213,7 +213,7 @@ Whatcheese website, Jenkins, and other services to see how they compare.
 You will need to generate some traffic. We have siege installed on the gateway machine, run the follwing:
 
 ----
-$ siege -f ~/siege-web.txt -i -d=5 -c 10
+$ siege -f ~/siege-web.txt -i -d 5 -c 5 -v
 ----
 
 When you create the daashboard, you can use the `New Set`, `New Graph`, and `New Value` buttons to pick the metrics
