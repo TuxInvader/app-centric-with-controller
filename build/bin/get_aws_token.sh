@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 account=$(grep aws_account_id secrets/aws_config.yaml | awk '{ print $2 }')
 role=$(grep aws_user_role secrets/aws_config.yaml | awk '{ print $2 }')
@@ -40,7 +41,7 @@ echo "Secret_key: $secret_key"
 echo "Session:    $session_key"
 
 # Update tokens
-sed -ie "s#aws_access_key: .*#aws_access_key: $access_key#" secrets/aws_config.yaml
-sed -ie "s#aws_secret_key: .*#aws_secret_key: $secret_key#" secrets/aws_config.yaml
-sed -ie "s#aws_sts_token: .*#aws_sts_token: $session_key#" secrets/aws_config.yaml
+sed -i -e "s#aws_access_key: .*#aws_access_key: $access_key#" secrets/aws_config.yaml
+sed -i -e "s#aws_secret_key: .*#aws_secret_key: $secret_key#" secrets/aws_config.yaml
+sed -i -e "s#aws_sts_token: .*#aws_sts_token: $session_key#" secrets/aws_config.yaml
 
