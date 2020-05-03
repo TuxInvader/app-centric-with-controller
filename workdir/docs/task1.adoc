@@ -4,6 +4,7 @@
 :sectlinks:
 :prev_section: index
 :next_section: task2
+:source-highlighter: pygments
 
 ****
 <<index.adoc#,Top>> +
@@ -99,7 +100,7 @@ domain=workshop.nginxlab.net
 ----
 
 Ansible uses the inventory to match hosts and groups of hosts on which to execute tasks or playbooks.
-The inventory uses _"ini file"_ like syntax, and groups are indicated by surrounding them in square brackets _[]_.
+The inventory uses _"ini file"_ like syntax, and groups are indicated by surrounding them with square brackets _[]_.
 
 Variables can also be applied to hosts, by including them after a host entry on the same line, or for a group
 by referencing the group name with a `:vars` suffix. The special group `[all]` matches all hosts.
@@ -119,8 +120,7 @@ The first ping command was execute on a single host _ctrl1_, while the second wa
 all hosts in the group _nginx_
 
 The ansible _ping_ module is a very simple module and it simply confirms that you can connect to the
-host in the inventory, and execute a command.
-Most modules take additional arguments, try running:
+host in the inventory and execute a command. Most modules take additional arguments, try running:
 
 ----
 $ cd ~/ansible
@@ -133,6 +133,10 @@ The content can be read from a file in which case the _src_ argument is used. Or
 the module directly with the _content_ argument.
 
 Here we simply copied the /etc/hosts file into your home directory.
+
+Ansible should have output a _changed_ status because the file didn't exist before and the execution
+resulted in a change. If you run the same ansible command again you will see a _success_ outcome which
+indicates the module ran without error, but nothing changed in the system.
 
 '''
 == 1.5 Ansible Facts
@@ -156,6 +160,9 @@ $ cd ~/ansible
 $ ansible -m setup nginx -a "filter=ansible_dist*"
 ----
 
+This time the results were filtered to output only facts which matched the filter. You should see
+a collection of facts about the Operating System in use on the _nginx_ instances.
+
 '''
 == 1.6 Ansible Playbooks
 
@@ -172,6 +179,9 @@ It has several advantages over Ad-Hoc mode:
  * You can start a task asynchronously and poll for completion
  * You can use other tasks from Ansible Roles.
 
+In section 1.7 we'll look through an Ansible playbook and introduce you to the `ansible-playbook`
+command.
+
 '''
 == 1.7 Finishing our configuration
 
@@ -187,6 +197,7 @@ $ less node_setup_playbook.yaml
 Ansible configuration uses YAML extensivley. You are now looking at an ansible playbook, the three dashes
 denote this is a yaml file.
 
+[source,yaml]
 ----
 ---
 - hosts: remote
@@ -202,6 +213,7 @@ information about the hosts first.
 
 Next follows a list of tasks for the playbook to perform. They essentially all use the same format:
 
+[source,yaml]
 ----
   - name: A friendly description of the task
     module:
@@ -234,6 +246,11 @@ Let's run the playbook
 $ cd ~/ansible
 $ ansible-playbook node_setup_playbook.yaml
 ----
+
+Hopefully those tasks all completed successfully, and the final output from Ansible is a _PLAY RECAP_
+containing only changed and ok statuses.
+
+image:img/node-setup-result.png[playbook recap]
 
 With that done, we're a step closer to having a useful workshop envionment. In task 2 we'll install NGINX on the
 gateway to open up access to the nodes you just configured. But before we can do that, we need to install

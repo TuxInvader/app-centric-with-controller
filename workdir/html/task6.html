@@ -424,10 +424,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction">Introduction</a></li>
-<li><a href="#_configure_jenkins_to_use_ansible">Configure Jenkins to use Ansible</a></li>
-<li><a href="#_checkout_a_new_branch">Checkout a new branch</a></li>
-<li><a href="#_load_up_the_service">Load up the service</a></li>
+<li><a href="#_6_1_introduction">6.1 Introduction</a></li>
+<li><a href="#_6_2_the_controller_api">6.2 The Controller API</a>
+<ul class="sectlevel2">
+<li><a href="#_object_model">Object Model</a></li>
+<li><a href="#_resource_properties">Resource Properties</a></li>
+</ul>
+</li>
+<li><a href="#_6_3_interacting_with_controller">6.3 Interacting with Controller</a></li>
+<li><a href="#_6_4_configure_jenkins_to_use_ansible">6.4 Configure Jenkins to use Ansible</a></li>
+<li><a href="#_6_5_the_whatcheese_api">6.5 The WhatCheese API</a></li>
+<li><a href="#_6_6_deploy_the_new_branch">6.6 Deploy the new branch</a></li>
+<li><a href="#_6_7_take_a_look_around">6.7 Take a look around</a></li>
 </ul>
 </div>
 </div>
@@ -446,12 +454,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction"><a class="link" href="#_introduction">Introduction</a></h2>
+<h2 id="_6_1_introduction"><a class="link" href="#_6_1_introduction">6.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In the previous section we setup Jenkins with our demo sites git repository, and we created
+<p>In the previous sections we setup Jenkins with our demo sites git repository, and we created
 a webhook on the git repository to poke Jenkins whenever a change was committed to git. Jenkins
-executes the pipeline configured in the <code>Jenkinsfile</code> whenever a deployment is triggered.</p>
+executed the pipeline configured in the <code>Jenkinsfile</code> whenever a deployment was triggered.</p>
 </div>
 <div class="paragraph">
 <p>The <code>Jenkinsfile</code> used previously was simply using SSH to connect to the remote machines
@@ -460,16 +468,178 @@ of plugins whch help it accomplish these tasks. The SSH tasks were performed by 
 <a href="https://plugins.jenkins.io/ssh-steps/">SSH Pipeline Steps</a> plugin.</p>
 </div>
 <div class="paragraph">
-<p>In this section we&#8217;re going to manage the NGINX Load Balancing configuration with NGINX Controller</p>
+<p>In this section we&#8217;re going to manage the NGINX Load Balancing configuration with NGINX Controller.</p>
 </div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_configure_jenkins_to_use_ansible"><a class="link" href="#_configure_jenkins_to_use_ansible">Configure Jenkins to use Ansible</a></h2>
+<h2 id="_6_2_the_controller_api"><a class="link" href="#_6_2_the_controller_api">6.2 The Controller API</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to use a new <code>Jenkinsfile</code> which uses the <a href="https://plugins.jenkins.io/ansible/">Ansible
+<p>NGINX Controller follows an “API-first” approach, which means that all NGINX Controller functionality
+is exclusively exposed through declarative and resource-oriented APIs. Even the user interface (UI) uses
+our REST API!
+You’ll find examples of REST request bodies in the UI. You can rest assured that the example you see is
+correct, because that is the call that the UI is going to make to apply your requested configuration.</p>
+</div>
+<div class="sect2">
+<h3 id="_object_model"><a class="link" href="#_object_model">Object Model</a></h3>
+<div class="paragraph">
+<p>The NGINX Controller API - as well as the UI and the product documentation - is organized
+into four top-level areas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Analytics: Enables data visualization for NGINX Controller.</p>
+</li>
+<li>
+<p>Infrastructure: Lets you manage your NGINX Plus instances and certain aspects of the host machines on
+which NGINX Controller and NGINX Plus instances run.</p>
+</li>
+<li>
+<p>Platform: Lets you manage NGINX Controller options and configurations, including Users, Roles, Licenses,
+and Global Settings.</p>
+</li>
+<li>
+<p>Services: Lets you manage your applications and APIs.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The diagrams below demonstrate how the different objects at the Service level relate to each other.
+All Service objects are part of an Environment:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/services-object-model-example.png" alt="Services"></span></p>
+</div>
+<div class="paragraph">
+<p>Gateways and Certs can be defined at the Environment level -or- at the App Component Level.
+The diagram below shows an example of how traffic flows through a Gateway to the App Components that
+represent your application’s back-end servers. Certs can be added to the Gateway or to an App Component.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/traffic-flow-example-1.png" alt="Traffic Flow"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resource_properties"><a class="link" href="#_resource_properties">Resource Properties</a></h3>
+<div class="paragraph">
+<p>All NGINX Controller API resources contain the following properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+  "metadata": {
+  },
+  "desiredState": {
+  },
+  "currentStatus": {
+  }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>desiredState</code> property is a representation of the state that you want to apply to the system.
+The properties within <code>desiredState</code> are the API representation of data. While changes to <code>desiredState</code> may
+trigger eventually consistent operations, the object itself is “immediately consistent”. Consumers of the API
+can “read their own writes” and should always be able to retrieve the current desired state, no matter
+where the system is in the process of applying the state change.</p>
+</div>
+<div class="paragraph">
+<p>The <code>currentStatus</code> property represents the current state of the system. Its purpose is to communicate the
+progress of achieving eventual consistency to the API consumer. As such, currentStatus is a read-only property.</p>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_3_interacting_with_controller"><a class="link" href="#_6_3_interacting_with_controller">6.3 Interacting with Controller</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to make a change through controller you make a write call to the REST API providing the <code>desiredState</code>
+that you want to see implemented. If your request is valid, the controller will accept the change and set about
+the task of making it happen.</p>
+</div>
+<div class="paragraph">
+<p>There are various ways we could talk to the controller API, but in this course we&#8217;re going to use an Ansible
+playbook which has been configured to take a service represented in YAML format and convert that service
+description into a number of API calls.</p>
+</div>
+<div class="paragraph">
+<p>You can see an example service definition and playbook in your ansible folder on the gateway.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ less envs/f1_prod.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above is for an F1 API hosted at ergast.com, and it defines an OAS3 (OpenAPI Spec v3) definition
+which is in <code>~/ansible/specs</code> and goes on to define the environment. An excerpt from the envs file is below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">envs:
+
+  f1_prod:
+    config:
+      metadata:
+        name: f1_prod
+        displayName: "F1 [ Production ]"
+        tags: []
+      desiredState: {}
+
+    # Certificates:
+    certs:
+      ergast.nginx:
+        config:
+          metadata:
+            name: ergast.nginx
+          desiredState:
+            type: PEM
+            publicCert: "{{ pem.public[ 'ergast.nginx' ] | default('') }}"
+            privateKey: "{{ pem.private[ 'ergast.nginx' ] | default('') }}"
+            caCerts: "{{ pem.chain[ 'ergast.nginx' ] | default([]) }}"
+
+    gateways:
+      nginx_gw:
+        config:
+          metadata:
+            name: nginx_gw
+          desiredState:
+            ingress:
+              uris:
+                "http://api.mb01.ukws.nginxlab.net": {}
+              placement:
+                instanceRefs:
+                  - ref: "/infrastructure/locations/unspecified/instances/2"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The playbook which processes this yaml is in <code>~/ansible/playbooks/apps/deploy_application.yaml</code>. When
+executed it runs through several code blocks, setting up the <em>environment</em>, setting up the <em>application</em>,
+setting up the <em>components</em>, etc.</p>
+</div>
+<div class="paragraph">
+<p>There is a similar configuration file stored in the whatcheese-web git repository. It implements the
+<strong>WhatCheese API</strong></p>
+</div>
+<div class="paragraph">
+<p>In a moment we&#8217;re going to get Jenkins to deploy the WhatCheese API with controller, but first we have
+to enable Jenkins to run Ansible.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_4_configure_jenkins_to_use_ansible"><a class="link" href="#_6_4_configure_jenkins_to_use_ansible">6.4 Configure Jenkins to use Ansible</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We have a new <code>Jenkinsfile</code> which uses the <a href="https://plugins.jenkins.io/ansible/">Ansible
 Plugin</a>, but we first need to install Ansible onto the machine running jenkins. To do that, run:</p>
 </div>
 <div class="listingblock">
@@ -491,26 +661,107 @@ to <code>Manage Jenkins</code> &#8594; <code>Manage Plugins</code> and change to
 screen tick <code>Restart Jenkins when installation is complete and no jobs are running</code>. Jenkins should
 download the plugin and then restart.</p>
 </div>
+<hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_checkout_a_new_branch"><a class="link" href="#_checkout_a_new_branch">Checkout a new branch</a></h2>
+<h2 id="_6_5_the_whatcheese_api"><a class="link" href="#_6_5_the_whatcheese_api">6.5 The WhatCheese API</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Check out the <code>controller</code> branch for the whatcheese-web repository.</p>
+<p>Take a look at your gitea server and the whatcheese-web repository. You should see that the summary box
+tells you there are <code>nn commits</code> and <code>2 Branches</code>. Beneath the summary it says <code>Branch: master</code>, clicking
+on that link will allow you to switch to the other branch <code>Branch: controller</code>.</p>
 </div>
 <div class="paragraph">
-<p>rename noJenkinsfile to Jenkinsfile.</p>
+<p><span class="image"><img src="img/whatcheese-branch.png" alt="Whatcheese controller branch"></span></p>
 </div>
+<div class="paragraph">
+<p>You&#8217;ll see that this branch has a <code>ansible</code> folder, inside which is a <code>envs/cheese_prod.yaml</code> file which
+defines our service for controller, and also a <code>specs/whatcheese.yaml</code> file which is an OAS 3 document
+describing the whatcheese API.</p>
 </div>
+<div class="paragraph">
+<p>In the root of this branch is a file called <code>noJenkinsfile</code>. This is a pipeline file, but it&#8217;s hidden from
+Jenkins because it doesn&#8217;t have the correct name. Inside the file it still has tasks to deploy the site
+on unit, but this version includes an API. And the NGINX deployment no longer writes nginx configuration
+files to disk, instead it runs Ansible to talk to controller.</p>
 </div>
-<div class="sect1">
-<h2 id="_load_up_the_service"><a class="link" href="#_load_up_the_service">Load up the service</a></h2>
-<div class="sectionbody">
+<div class="paragraph">
+<p>This is the satge in question:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre>$ siege -f ~/siege-full.txt -i -d 5 -c 5 -v</pre>
+<pre>stage('Ansible deploy to controller') {
+  parallel {
+    stage('Run Playbook') {
+      steps {
+          ansiblePlaybook(
+            playbook: 'ansible/playbooks/deploy-application.yaml',
+            hostKeyChecking: false,
+            disableHostKeyChecking: true,
+            credentialsId: 'sshUser',
+            inventoryContent: inventory
+          )
+      }
+    }
+  }
+}</pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_6_deploy_the_new_branch"><a class="link" href="#_6_6_deploy_the_new_branch">6.6 Deploy the new branch</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you checked out the repository using <em>git</em> ealier, then you can switch branches by running, and rename the
+<code>noJenkinsfile</code> by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/source/whatcheese-web
+$ git checkout controller
+$ mv noJenkinsfile Jenkinsfile
+$ git add noJenkinsfile Jenkinsfile
+$ git commit -m "enable pipeline"
+$ git push origin controller</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you didn&#8217;t you can edit the <code>noJenkinsFile</code> in your web browser, and simply rename it to <code>JenkinsFile</code></p>
+</div>
+<div class="paragraph">
+<p>Switch to your Jenkins server, and you should see it&#8217;s running the pipeline from your controller branch. Also
+keep an eye on the "Services" section of your NGINX Controller, you should see an API Spec appear under <code>APIs</code>
+and an <code>environment</code>, followed by an <code>application</code> and finally the application <code>components</code>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/whatcheese-deployed.png" alt="The Whatcheese APP"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_7_take_a_look_around"><a class="link" href="#_6_7_take_a_look_around">6.7 Take a look around</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the Apps section you will see your new <code>WhatCheese</code> application, which has several components. The <code>web</code>
+component is the old website which we had deployed previously, but there are also several others for <code>cheese</code>,
+<code>pickle</code>, <code>wine</code>, <code>beer</code>, and <code>links</code>, they all relate to the Cheese API imported from its OAS3 spec.</p>
+</div>
+<div class="paragraph">
+<p>You can see the API endpoints in the <code>APIs</code> section.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/whatcheese-api-def.png" alt="API Definition"></span></p>
+</div>
+<div class="paragraph">
+<p>In this area there&#8217;s also an <code>Identity Provider</code> section which contains an <em>API Key</em> based IDp configuration.
+All of the POST endpoints in the WhatCheese API are protected by the <code>Whatcheese Admin Keys</code> identity provider.
+The NGINX Controller also supports JWT authenication for OAUTH2 and OIDC authentication.</p>
+</div>
+<div class="paragraph">
+<p>In the next section we&#8217;re going to generate some load again, and take a look at the analytics the controller
+can provide.</p>
 </div>
 <div class="paragraph">
 <p><a href="task7.html">Next Task</a></p>
@@ -520,7 +771,7 @@ download the plugin and then restart.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-01 16:32:48 BST
+Last updated 2020-05-03 15:14:12 BST
 </div>
 </div>
 </body>

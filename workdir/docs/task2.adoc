@@ -4,6 +4,7 @@
 :toc: left
 :prev_section: task1
 :next_section: task3
+:source-highlighter: pygments
 
 ****
 <<index.adoc#,Top>> +
@@ -27,6 +28,7 @@ This is similar in some ways to the _node_setup_playbook.yaml_ that we looked at
 however you'll notice some pretty significant differences. This playbook is using `roles` rather
 than `tasks`, and we're setting a number of variables in a new `vars` section.
 
+[source,yaml]
 ----
 ---
 - hosts: localhost
@@ -68,14 +70,20 @@ $ ansible-playbook playbooks/nginx_workshop_gw/install.yaml
 ----
 
 You will see Ansible skipping a lot of steps as the play book runs. This is because the role is  
-capable of installing NGINX on many different Operation Systems. It only executes the tasks which  
-are relevant for Ubuntu.
+capable of installing NGINX on many different Operating Systems. It only executes the tasks which  
+are relevant for Debian/Ubuntu.
 
 Once the playbook has completed, you can check that NGINX is installed by executing
 
 ----
 $ sudo nginx -t
 ----
+
+If all went well, then you should see this output.
+
+image:img/nginx-t.png[nginx -t output]
+
+Congratulations, you just installed NGINX Plus and enabled it's REST API using Ansible.
 
 '''
 == 2.4 What is NGINX Plus
@@ -140,6 +148,7 @@ in order to get the system to a desired state. This is much more of an imperativ
 add the CertBot PPA to the system, then we install certbot and the NGINX plugin, we check if we've registered
 certs before, and then pick either SSL enabled or disabled versions of NGINX configuration files.
 
+[source,yaml]
 ----
 ---
 - hosts: localhost
@@ -188,8 +197,28 @@ now be able to point your web browser at your gateway and see these documents in
 
 == 2.8 NGINX Plus Dashboard
 
-You should also be able to access your NGINX Plus dashboard, and API using the password created and stored
-in your secrets folder and the username 'nginx'. Check that now:
+If you look at the _setup.yaml_ playbook used in the previous section, you will find there is a section
+which creates a password for access to the API and Dashboard.
+
+[source,yaml,,highlight='5']
+----
+  - name: Setup Basic Auth File for API/Dash/Swagger access
+    htpasswd:
+      path: /home/ubuntu/secrets/htpasswd
+      name: nginx
+      password: "{{ lookup('password', '/home/ubuntu/secrets/basic_auth.passwd length=12') }}"
+      owner: root
+      group: nginx
+      mode: 0640
+----
+
+The way we provide the _password_ for the _htpasswd_ module is a pattern which is used extensively
+for password generation in this course. The _password_ is set using the Jinja lookup module.
+The module will attempt to open the provided file and use its content as the password, but
+if the file does not exist it will create a new password and store it there.
+
+You should now be able to access your NGINX Plus dashboard, and API using the password created and stored
+in your secrets folder and the username 'nginx'. Grab the password now:
 
 ----
 $ cat ~/secrets/basic_auth.passwd
@@ -198,9 +227,9 @@ $ cat ~/secrets/basic_auth.passwd
 And then try to access these URLs (username is nginx):
 
 ++++
-<p>Try accessing your NGINX Plus dashboard -> <a id='db_link'></a></p>
-<p>Try accessing your NGINX Plus API -> <a id='api_link'></a></p>
-<p>Try accessing your NGINX Plus Swagger Spec -> <a id='oas_link'></a></p>
+<p>Try accessing your NGINX Plus dashboard -> <a id='db_link'></a><br/>
+Try accessing your NGINX Plus API -> <a id='api_link'></a><br/>
+Try accessing your NGINX Plus Swagger Spec -> <a id='oas_link'></a></p>
 <script>
   var db='https://' + location.host + '/dashboard.html';
   var api='https://' + location.host + '/api/6';
@@ -215,21 +244,31 @@ And then try to access these URLs (username is nginx):
 ++++
 
 You will notice that the dashboard has many failed backends. This is because we haven't deployed them yet, and
-the active health monitoring feature of NGINX has detected them as failed.
+the active health monitoring feature of NGINX Plus has detected them as failed.
 
-You can keep an eye on the gateway dashboard as deploy services to ensure that they are running correctly.
+You can keep an eye on the gateway dashboard as we deploy services to ensure that they are running correctly.
 
 '''
 == 2.9 Setup the NGINX backends
 
-Okay, so we have installed NGINX on the gateway machine and configured it to serve content from our HTML folder
-and to load balance onto the services we're going to deploy later. Before moving on lets run a final playbook
-to install NGINX onto our backend NGINX instances (nginx1 and nginx2). Please run:
+Okay, so we have installed NGINX Plus on the gateway machine and configured it to serve content from our HTML
+folder and to load balance onto the services we're going to deploy later. 
+
+Before moving on lets run a final playbook to install NGINX Plus onto our backend NGINX instances (nginx1 
+and nginx2). Please run:
 
 ----
 $ cd ~/ansible
 $ ansible-playbook playbooks/nginx_workshop_gw/install_backends.yaml
 ----
+
+If you check back on your NGINX Plus dashboard you should see that the _nginx_api_, _nginx_app_, and 
+_nginx_web_ upstream zones become healthy as they begin responding to the health probes.
+
+image:img/nginx-dash.png[NGINX Plus Dashboard]
+
+In the next task we'll install our CI/CD platform so that we can automate deployments to our new NGINX
+servers.
 
 <<task3.adoc#,Next Task>> 
 

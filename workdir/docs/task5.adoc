@@ -184,9 +184,12 @@ As with the licensing above, there is an ansible playbook in the controller fold
 your two NGINX Plus instances, you can either run the `deploy_nginx.yaml` playbook. Or follow the instructions
 in the UI to install a controller agent onto both `nginx1` and `nginx2`.
 
-I recommend you add the two nginx instances using the playbook, and once you have done that. Follow the manual
-instructions to add your gateway instance. If the pop-up closes for any reason, you will find a `+ Create` button
-in the top right of the interface.
+I recommend you add the two nginx instances using the playbook, and once you have done that and they have
+appeared in your infrastructure tab as instance 2 and 4, then add the gateway manually. In the next task we'll
+deploy code to the managed instances 2 and 4, so it's important that those instances aren't your gateway
+machine.
+
+If the pop-up closes for any reason, you will find a `+ Create` button in the top right of the interface.
 
 image:img/ctrl-instances.png[NGINX Instances]
 

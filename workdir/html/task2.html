@@ -417,6 +417,77 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
+<style>
+.listingblock .pygments .hll { background-color: #ffffcc }
+.listingblock .pygments, .listingblock .pygments code { background: #f8f8f8; }
+.listingblock .pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+.listingblock .pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+.listingblock .pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+.listingblock .pygments .tok-o { color: #666666 } /* Operator */
+.listingblock .pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.listingblock .pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.listingblock .pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+.listingblock .pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.listingblock .pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+.listingblock .pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+.listingblock .pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+.listingblock .pygments .tok-ge { font-style: italic } /* Generic.Emph */
+.listingblock .pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+.listingblock .pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.listingblock .pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+.listingblock .pygments .tok-go { color: #888888 } /* Generic.Output */
+.listingblock .pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.listingblock .pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+.listingblock .pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.listingblock .pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+.listingblock .pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.listingblock .pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.listingblock .pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.listingblock .pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+.listingblock .pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.listingblock .pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+.listingblock .pygments .tok-m { color: #666666 } /* Literal.Number */
+.listingblock .pygments .tok-s { color: #BA2121 } /* Literal.String */
+.listingblock .pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+.listingblock .pygments .tok-nb { color: #008000 } /* Name.Builtin */
+.listingblock .pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.listingblock .pygments .tok-no { color: #880000 } /* Name.Constant */
+.listingblock .pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+.listingblock .pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+.listingblock .pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.listingblock .pygments .tok-nf { color: #0000FF } /* Name.Function */
+.listingblock .pygments .tok-nl { color: #A0A000 } /* Name.Label */
+.listingblock .pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.listingblock .pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+.listingblock .pygments .tok-nv { color: #19177C } /* Name.Variable */
+.listingblock .pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.listingblock .pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+.listingblock .pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+.listingblock .pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+.listingblock .pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+.listingblock .pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+.listingblock .pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+.listingblock .pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+.listingblock .pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+.listingblock .pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+.listingblock .pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+.listingblock .pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.listingblock .pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+.listingblock .pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.listingblock .pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+.listingblock .pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.listingblock .pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+.listingblock .pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+.listingblock .pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+.listingblock .pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+.listingblock .pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+.listingblock .pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+.listingblock .pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+.listingblock .pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+.listingblock .pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+.listingblock .pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+.listingblock .pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -477,24 +548,24 @@ than <code>tasks</code>, and we&#8217;re setting a number of variables in a new 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>---
-- hosts: localhost
-  become: true
-  gather_facts: yes
-  connection: local
-  roles:
-    - role: nginxinc.nginx
-  vars:
-    nginx_type: plus
-    nginx_rest_api_enable: true
-    nginx_rest_api_port: 4321
-    nginx_rest_api_write: true
-    nginx_license:
-      certificate: "/etc/ssl/nginx/nginx-repo.crt"
-      key: "/etc/ssl/nginx/nginx-repo.key"
-    nginx_modules:
-      njs: true
-...</pre>
+<pre class="pygments highlight"><code data-lang="yaml"><span class="tok-nn">---</span>
+<span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">hosts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">localhost</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">become</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">gather_facts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">yes</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">connection</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">local</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">roles</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">role</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginxinc.nginx</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">vars</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_type</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">plus</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_rest_api_enable</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_rest_api_port</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">4321</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_rest_api_write</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_license</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">certificate</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;/etc/ssl/nginx/nginx-repo.crt&quot;</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">key</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;/etc/ssl/nginx/nginx-repo.key&quot;</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_modules</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">njs</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+<span class="tok-nn">...</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -535,8 +606,8 @@ $ ansible-playbook playbooks/nginx_workshop_gw/install.yaml</pre>
 </div>
 <div class="paragraph">
 <p>You will see Ansible skipping a lot of steps as the play book runs. This is because the role is
-capable of installing NGINX on many different Operation Systems. It only executes the tasks which
-are relevant for Ubuntu.</p>
+capable of installing NGINX on many different Operating Systems. It only executes the tasks which
+are relevant for Debian/Ubuntu.</p>
 </div>
 <div class="paragraph">
 <p>Once the playbook has completed, you can check that NGINX is installed by executing</p>
@@ -545,6 +616,15 @@ are relevant for Ubuntu.</p>
 <div class="content">
 <pre>$ sudo nginx -t</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>If all went well, then you should see this output.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/nginx-t.png" alt="nginx -t output"></span></p>
+</div>
+<div class="paragraph">
+<p>Congratulations, you just installed NGINX Plus and enabled it&#8217;s REST API using Ansible.</p>
 </div>
 <hr>
 </div>
@@ -656,23 +736,23 @@ certs before, and then pick either SSL enabled or disabled versions of NGINX con
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>---
-- hosts: localhost
-  become: true
-  gather_facts: yes
-  connection: local
+<pre class="pygments highlight"><code data-lang="yaml"><span class="tok-nn">---</span>
+<span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">hosts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">localhost</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">become</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">gather_facts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">yes</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">connection</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">local</span>
 
-  tasks:
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">tasks</span><span class="tok-p tok-p-Indicator">:</span>
 
-  - name: Setup the certbot repository
-    apt_repository:
-      repo: ppa:certbot/certbot
-      update_cache: yes
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">Setup the certbot repository</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apt_repository</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">repo</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">ppa:certbot/certbot</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">update_cache</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">yes</span>
 
-  - name: Install certbot package
-    apt:
-      name:
-        - python-certbot-nginx</pre>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">Install certbot package</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apt</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span>
+        <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">python-certbot-nginx</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -710,8 +790,30 @@ now be able to point your web browser at your gateway and see these documents in
 <h2 id="_2_8_nginx_plus_dashboard"><a class="link" href="#_2_8_nginx_plus_dashboard">2.8 NGINX Plus Dashboard</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You should also be able to access your NGINX Plus dashboard, and API using the password created and stored
-in your secrets folder and the username 'nginx'. Check that now:</p>
+<p>If you look at the <em>setup.yaml</em> playbook used in the previous section, you will find there is a section
+which creates a password for access to the API and Dashboard.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml">  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">Setup Basic Auth File for API/Dash/Swagger access</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">htpasswd</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">path</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/home/ubuntu/secrets/htpasswd</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx</span>
+<span class="hll">      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">password</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">lookup(&#39;password&#39;,</span><span class="tok-nv"> </span><span class="tok-s">&#39;/home/ubuntu/secrets/basic_auth.passwd</span><span class="tok-nv"> </span><span class="tok-s">length=12&#39;)</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span>
+</span>      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">owner</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">root</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">group</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">mode</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">0640</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The way we provide the <em>password</em> for the <em>htpasswd</em> module is a pattern which is used extensively
+for password generation in this course. The <em>password</em> is set using the Jinja lookup module.
+The module will attempt to open the provided file and use its content as the password, but
+if the file does not exist it will create a new password and store it there.</p>
+</div>
+<div class="paragraph">
+<p>You should now be able to access your NGINX Plus dashboard, and API using the password created and stored
+in your secrets folder and the username 'nginx'. Grab the password now:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -721,9 +823,9 @@ in your secrets folder and the username 'nginx'. Check that now:</p>
 <div class="paragraph">
 <p>And then try to access these URLs (username is nginx):</p>
 </div>
-<p>Try accessing your NGINX Plus dashboard -> <a id='db_link'></a></p>
-<p>Try accessing your NGINX Plus API -> <a id='api_link'></a></p>
-<p>Try accessing your NGINX Plus Swagger Spec -> <a id='oas_link'></a></p>
+<p>Try accessing your NGINX Plus dashboard -> <a id='db_link'></a><br/>
+Try accessing your NGINX Plus API -> <a id='api_link'></a><br/>
+Try accessing your NGINX Plus Swagger Spec -> <a id='oas_link'></a></p>
 <script>
   var db='https://' + location.host + '/dashboard.html';
   var api='https://' + location.host + '/api/6';
@@ -737,10 +839,10 @@ in your secrets folder and the username 'nginx'. Check that now:</p>
 </script>
 <div class="paragraph">
 <p>You will notice that the dashboard has many failed backends. This is because we haven&#8217;t deployed them yet, and
-the active health monitoring feature of NGINX has detected them as failed.</p>
+the active health monitoring feature of NGINX Plus has detected them as failed.</p>
 </div>
 <div class="paragraph">
-<p>You can keep an eye on the gateway dashboard as deploy services to ensure that they are running correctly.</p>
+<p>You can keep an eye on the gateway dashboard as we deploy services to ensure that they are running correctly.</p>
 </div>
 <hr>
 </div>
@@ -749,15 +851,29 @@ the active health monitoring feature of NGINX has detected them as failed.</p>
 <h2 id="_2_9_setup_the_nginx_backends"><a class="link" href="#_2_9_setup_the_nginx_backends">2.9 Setup the NGINX backends</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Okay, so we have installed NGINX on the gateway machine and configured it to serve content from our HTML folder
-and to load balance onto the services we&#8217;re going to deploy later. Before moving on lets run a final playbook
-to install NGINX onto our backend NGINX instances (nginx1 and nginx2). Please run:</p>
+<p>Okay, so we have installed NGINX Plus on the gateway machine and configured it to serve content from our HTML
+folder and to load balance onto the services we&#8217;re going to deploy later.</p>
+</div>
+<div class="paragraph">
+<p>Before moving on lets run a final playbook to install NGINX Plus onto our backend NGINX instances (nginx1
+and nginx2). Please run:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre>$ cd ~/ansible
 $ ansible-playbook playbooks/nginx_workshop_gw/install_backends.yaml</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>If you check back on your NGINX Plus dashboard you should see that the <em>nginx_api</em>, <em>nginx_app</em>, and
+<em>nginx_web</em> upstream zones become healthy as they begin responding to the health probes.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/nginx-dash.png" alt="NGINX Plus Dashboard"></span></p>
+</div>
+<div class="paragraph">
+<p>In the next task we&#8217;ll install our CI/CD platform so that we can automate deployments to our new NGINX
+servers.</p>
 </div>
 <div class="paragraph">
 <p><a href="task3.html">Next Task</a></p>
@@ -767,7 +883,7 @@ $ ansible-playbook playbooks/nginx_workshop_gw/install_backends.yaml</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-01 11:44:42 BST
+Last updated 2020-05-03 12:41:50 BST
 </div>
 </div>
 </body>

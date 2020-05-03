@@ -20,7 +20,7 @@ create a new CI/CD pipeline.
 == 4.2 Setup Credentials
 
 ++++
-<p>Log into the Jenkins instance running in your workshop <a id="jen1"></a></p>
+<p>Login to the Jenkins instance running in your workshop <a id="jen1"></a></p>
 <script>
   var jen='https://jenkins.' + location.host + '/';
   document.getElementById("jen1").innerHTML = jen;
@@ -35,7 +35,7 @@ $ cat secrets/jenkins.cicd.passwd
 ----
 
 '''
-=== 4.3 Credentials for SSH access
+=== 4.2-1 Credentials for SSH access
 
 The purpose of our first pipeline will be to deploy NGINX configuration to our NGINX web
 servers. We shall acomplish this using SSH, and so Jenkins needs to be given the same
@@ -47,12 +47,16 @@ image:img/jenkins-add-creds.png[Add Credentials]
 
 You will need to change the `Kind` to be "SSH username with private key", and the `ID` should be set
 to "sshUser". The `Username` needs to be "ubuntu", and you should copy the private key that you use
-to access the workshop instances into the private key field.
+to access the workshop instances into the private key field. The key also exists on your gateway
+
+----
+$ cat ~/.ssh/id_rsa
+----
 
 Once complete, click `OK` to save.
 
 '''
-=== 4.4 Credentials for Gitea access
+=== 4.2-2 Credentials for Gitea access
 
 Jenkins also needs to be able to access our source code repositories stored in Gitea. We will need
 to provide a set of credentials for that access next.
@@ -64,14 +68,14 @@ a `username` of "nginx", and the `password` as found in `~/secrets/git.cicd.pass
 Once complete, click `OK` to save.
 
 '''
-== 4.5 Connecting Jenkins and Gitea
+== 4.3 Connecting Jenkins and Gitea
 
 Your Jenkins server has a Gitea plugin, which enables Jenkins to be able to enumerate Organizations
 and source repositories on the Gitea server. The plugin also enables a webhook end point so that
 we can automatically trigger a build pipeline when changes are commited to Git.
 
 '''
-=== 4.6 Create a Gitea reference
+=== 4.3-1 Create a Gitea reference
 
 Login to Jenkins and select `Manage Jenkins` from the side menu, and then `Configure System` in
 the management menu. Scroll down to the `Gitea Servers` section. 
@@ -90,16 +94,16 @@ image:img/add-gitea-server.png[Add Gitea Server]
 If the connection infomation is correct, then you should see a 403/Forbidden error. Click Save.
 
 '''
-=== 4.7 Create a Gitea Item
+=== 4.3-2 Create a Gitea Item
 
 Go back to the Jenkins home page, and click `New Item`. Call the item "whatcheese" and scroll down
 and select the `Gitea Organization` as the type. Click Ok
 
 You will arrive at the new Items properties page. Scroll down to the `Projects` section. You should
 see that the `Server` is linked to the server you added above. Select the Credentials we added
-previously, and the owner box should set to "whatcheese". Click Save.
+previously, and the owner box should be set to "whatcheese". Click Save.
 
-You will see Jenkins automatically scan the Gitea Organization, looking for Jenksinfile pipeline
+You will see Jenkins automatically scan the Gitea Organization, looking for `Jenksinfile` pipeline
 configurations. 
 
 It will check all repositories owned by the whatcheese organization, _whatcheese-app_ _whatcheese-api_
@@ -111,7 +115,7 @@ Return to the Jenkins home page.
 image:img/jenkins-home.png[Gitea Whatcheese Org]
 
 '''
-== 4.8 View the Pipeline 
+== 4.4 View the Pipeline 
 
 Navigate back to your Jenkins home page, and then follow the link in the side menu `Open Blue Ocean` +
 
@@ -137,10 +141,14 @@ Find the _WhatCheese/whatcheese-web_ repoisitory and take a look at the Jenkinsf
 presented in Blue Ocean is a visual representation of the CI/CD pipeline described in this file.
 
 '''
-== 4.9 Setup an Automated Webhook
+== 4.5 Setup an Automated Webhook
 
 Jenkins can be set up to periodically poll Gitea for changes, but it would be better if we could
 make Gitea notify Jenkins whenever a repository is updated. To do that, we need to create a webhook.
+
+A `webhook` is an automated HTTP call that can be configured in response to a change. In our case
+we will configure Gitea to make a HTTP Post to the Jenkins server whenever a change is committed
+to the repository.
 
 Navigate to the _WhatCheese/whatcheese-web_ repoisitory in gitea, and click the `Settings` button
 on the right hand side of the menu bar. Go to webhooks and click the `Add Webhook` and then the
@@ -167,8 +175,12 @@ You will be taken back to the WebHook settings for the WhatCheese repository, an
 see the hook you just created. Click on the webhook, and scroll down to the bottom, where you will
 find a test section. Run a test of your new webhook.
 
+image:img/webhook-test.png[Gitea Test Delivery]
+
+If everything went well then you should see _200_ response with `Processed` in the body.
+
 '''
-== 4.10 WhatCheese Demo site
+== 4.6 WhatCheese Demo site
 
 In this section we have linked our Git server (gitea) and our CI/CD automation platform (Jenkins)
 together. We told Jenkins about the WhatCheese organization on Gitea, and Jenkins will now scan the

@@ -740,9 +740,13 @@ your two NGINX Plus instances, you can either run the <code>deploy_nginx.yaml</c
 in the UI to install a controller agent onto both <code>nginx1</code> and <code>nginx2</code>.</p>
 </div>
 <div class="paragraph">
-<p>I recommend you add the two nginx instances using the playbook, and once you have done that. Follow the manual
-instructions to add your gateway instance. If the pop-up closes for any reason, you will find a <code>+ Create</code> button
-in the top right of the interface.</p>
+<p>I recommend you add the two nginx instances using the playbook, and once you have done that and they have
+appeared in your infrastructure tab as instance 2 and 4, then add the gateway manually. In the next task we&#8217;ll
+deploy code to the managed instances 2 and 4, so it&#8217;s important that those instances aren&#8217;t your gateway
+machine.</p>
+</div>
+<div class="paragraph">
+<p>If the pop-up closes for any reason, you will find a <code>+ Create</code> button in the top right of the interface.</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="img/ctrl-instances.png" alt="NGINX Instances"></span></p>
@@ -805,7 +809,7 @@ you are interested in. You can then apply a <code>vhost</code> filter to limit t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-01 16:32:41 BST
+Last updated 2020-05-03 13:49:27 BST
 </div>
 </div>
 </body>

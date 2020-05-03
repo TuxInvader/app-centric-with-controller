@@ -24,7 +24,7 @@ Jenkins is a beast of a system with a whole bunch of plugins. We're going to use
 us get it all set up. So first install the `geerlinguy.jenkins` role on your gateway machine.
 
 ----
-ansible-galaxy install geerlingguy.jenkins`
+$ ansible-galaxy install geerlingguy.jenkins
 ----
 
 '''
@@ -36,8 +36,8 @@ server using the role you downloaded. Once Jenkins is installed it then includes
 manifest in the same directory. This second manifest handles installing the gitea service.
 
 ----
-cd ~/ansible
-ansible-playbook playbooks/cicd/deploy.yaml
+$ cd ~/ansible
+$ ansible-playbook playbooks/cicd/deploy.yaml
 ----
 
 '''
@@ -56,6 +56,8 @@ You should now be able to access your Gitea server at `https://git.<yourdomain>`
 
 image:img/gitea.png[Gitea]
 
+Check that you can login using the username _ngnix_ and the password found in `~/secrets/git.cicd.passwd`
+
 '''
 == 3.5 Check Jenkins is running
 
@@ -72,6 +74,9 @@ You should also be able to access your Jenkins server at `https://jenkins.<yourd
 
 image:img/jenkins.png[Jenkins]
 
+Check that you can login using the username _ngnix_ and the password found in `~/secrets/jenkins.cicd.passwd`
+
+'''
 == 3.6 Introducing NGINX Unit
 
 NGINX runs approximately 37% of the worlds websites, that's some 470 million sites

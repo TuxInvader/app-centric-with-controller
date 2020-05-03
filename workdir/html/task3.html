@@ -474,7 +474,7 @@ us get it all set up. So first install the <code>geerlinguy.jenkins</code> role 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>ansible-galaxy install geerlingguy.jenkins`</pre>
+<pre>$ ansible-galaxy install geerlingguy.jenkins</pre>
 </div>
 </div>
 <hr>
@@ -491,8 +491,8 @@ manifest in the same directory. This second manifest handles installing the gite
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>cd ~/ansible
-ansible-playbook playbooks/cicd/deploy.yaml</pre>
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/cicd/deploy.yaml</pre>
 </div>
 </div>
 <hr>
@@ -513,6 +513,9 @@ ansible-playbook playbooks/cicd/deploy.yaml</pre>
 <div class="paragraph">
 <p><span class="image"><img src="img/gitea.png" alt="Gitea"></span></p>
 </div>
+<div class="paragraph">
+<p>Check that you can login using the username <em>ngnix</em> and the password found in <code>~/secrets/git.cicd.passwd</code></p>
+</div>
 <hr>
 </div>
 </div>
@@ -531,6 +534,10 @@ ansible-playbook playbooks/cicd/deploy.yaml</pre>
 <div class="paragraph">
 <p><span class="image"><img src="img/jenkins.png" alt="Jenkins"></span></p>
 </div>
+<div class="paragraph">
+<p>Check that you can login using the username <em>ngnix</em> and the password found in <code>~/secrets/jenkins.cicd.passwd</code></p>
+</div>
+<hr>
 </div>
 </div>
 <div class="sect1">
@@ -648,7 +655,7 @@ $ ansible-playbook playbooks/unit/deploy.yaml</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-01 11:50:34 BST
+Last updated 2020-05-03 12:56:24 BST
 </div>
 </div>
 </body>

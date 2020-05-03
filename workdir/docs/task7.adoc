@@ -1,4 +1,4 @@
-= Task 7: Automate API Management with Controller
+= Task 7: Application Insights
 :showtitle:
 :sectlinks:
 :toc: left
@@ -11,11 +11,14 @@
 <<task8.adoc#,Next Task>> +
 ****
 
-== Introduction
+== 7.1 Generate some load
 
+----
+$ siege -f ~/siege-full.txt -i -d 5 -c 5 -v
+----
 
 '''
-== First Section
+== 7.2 Component level metrics
 
 
 <<task8.adoc#,Next Task>>
