@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 account=$(grep aws_account_id secrets/aws_config.yaml | awk '{ print $2 }')
 role=$(grep aws_user_role secrets/aws_config.yaml | awk '{ print $2 }')
