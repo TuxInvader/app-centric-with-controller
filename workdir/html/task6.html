@@ -431,11 +431,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_resource_properties">Resource Properties</a></li>
 </ul>
 </li>
-<li><a href="#_6_3_interacting_with_controller">6.3 Interacting with Controller</a></li>
-<li><a href="#_6_4_configure_jenkins_to_use_ansible">6.4 Configure Jenkins to use Ansible</a></li>
-<li><a href="#_6_5_the_whatcheese_api">6.5 The WhatCheese API</a></li>
-<li><a href="#_6_6_deploy_the_new_branch">6.6 Deploy the new branch</a></li>
-<li><a href="#_6_7_take_a_look_around">6.7 Take a look around</a></li>
+<li><a href="#_6_3_browse_the_controller_api">6.3 Browse the Controller API</a></li>
+<li><a href="#_6_4_jenkins_ansible_and_controller">6.4 Jenkins, Ansible, and Controller</a></li>
+<li><a href="#_6_5_configure_jenkins_to_use_ansible">6.5 Configure Jenkins to use Ansible</a></li>
+<li><a href="#_6_6_the_whatcheese_api">6.6 The WhatCheese API</a></li>
+<li><a href="#_6_7_deploy_the_new_branch">6.7 Deploy the new branch</a></li>
+<li><a href="#_6_8_take_a_look_around">6.8 Take a look around</a></li>
 </ul>
 </div>
 </div>
@@ -445,7 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
-<p><a href="index.html">Top</a><br>
+<p><a href="index.html">Contents</a><br>
 <a href="task5.html">Previous Task</a><br>
 <a href="task7.html">Next Task</a><br></p>
 </div>
@@ -556,7 +557,28 @@ progress of achieving eventual consistency to the API consumer. As such, current
 </div>
 </div>
 <div class="sect1">
-<h2 id="_6_3_interacting_with_controller"><a class="link" href="#_6_3_interacting_with_controller">6.3 Interacting with Controller</a></h2>
+<h2 id="_6_3_browse_the_controller_api"><a class="link" href="#_6_3_browse_the_controller_api">6.3 Browse the Controller API</a></h2>
+<div class="sectionbody">
+<p>The API is fully documented on the NGINX Controller. <a id="ctrl1"></a></p>
+<script>
+  var ctrl='https://ctrl.' + location.hostname + '/docs/api/api-reference/';
+  document.getElementById("ctrl1").innerHTML = ctrl;
+  document.getElementById("ctrl1").href = ctrl;
+</script>
+<div class="paragraph">
+<p>It&#8217;s worthwhile spending a few minutes browsing the API documentation to see how applications and
+components are created. We&#8217;re not going to be talking to the API directly, we&#8217;ll use Jenkins with
+Ansible to make the API calls, but it&#8217;s important to understand that these are the calls that are
+happening in the background.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/controller-api-ref.png" alt="Controller API Reference"></span></p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_4_jenkins_ansible_and_controller"><a class="link" href="#_6_4_jenkins_ansible_and_controller">6.4 Jenkins, Ansible, and Controller</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In order to make a change through controller you make a write call to the REST API providing the <code>desiredState</code>
@@ -636,7 +658,7 @@ to enable Jenkins to run Ansible.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_6_4_configure_jenkins_to_use_ansible"><a class="link" href="#_6_4_configure_jenkins_to_use_ansible">6.4 Configure Jenkins to use Ansible</a></h2>
+<h2 id="_6_5_configure_jenkins_to_use_ansible"><a class="link" href="#_6_5_configure_jenkins_to_use_ansible">6.5 Configure Jenkins to use Ansible</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>We have a new <code>Jenkinsfile</code> which uses the <a href="https://plugins.jenkins.io/ansible/">Ansible
@@ -665,7 +687,7 @@ download the plugin and then restart.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_6_5_the_whatcheese_api"><a class="link" href="#_6_5_the_whatcheese_api">6.5 The WhatCheese API</a></h2>
+<h2 id="_6_6_the_whatcheese_api"><a class="link" href="#_6_6_the_whatcheese_api">6.6 The WhatCheese API</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Take a look at your gitea server and the whatcheese-web repository. You should see that the summary box
@@ -687,7 +709,7 @@ on unit, but this version includes an API. And the NGINX deployment no longer wr
 files to disk, instead it runs Ansible to talk to controller.</p>
 </div>
 <div class="paragraph">
-<p>This is the satge in question:</p>
+<p>This is the stage in question:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -711,10 +733,10 @@ files to disk, instead it runs Ansible to talk to controller.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_6_6_deploy_the_new_branch"><a class="link" href="#_6_6_deploy_the_new_branch">6.6 Deploy the new branch</a></h2>
+<h2 id="_6_7_deploy_the_new_branch"><a class="link" href="#_6_7_deploy_the_new_branch">6.7 Deploy the new branch</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>If you checked out the repository using <em>git</em> ealier, then you can switch branches by running, and rename the
+<p>If you checked out the repository using <em>git</em> ealier, then you can switch branches and rename the
 <code>noJenkinsfile</code> by running:</p>
 </div>
 <div class="listingblock">
@@ -728,7 +750,7 @@ $ git push origin controller</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you didn&#8217;t you can edit the <code>noJenkinsFile</code> in your web browser, and simply rename it to <code>JenkinsFile</code></p>
+<p>If you didn&#8217;t you can edit the <code>noJenkinsfile</code> in your web browser, and simply rename it to <code>Jenkinsfile</code></p>
 </div>
 <div class="paragraph">
 <p>Switch to your Jenkins server, and you should see it&#8217;s running the pipeline from your controller branch. Also
@@ -741,11 +763,12 @@ and an <code>environment</code>, followed by an <code>application</code> and fin
 </div>
 </div>
 <div class="sect1">
-<h2 id="_6_7_take_a_look_around"><a class="link" href="#_6_7_take_a_look_around">6.7 Take a look around</a></h2>
+<h2 id="_6_8_take_a_look_around"><a class="link" href="#_6_8_take_a_look_around">6.8 Take a look around</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In the Apps section you will see your new <code>WhatCheese</code> application, which has several components. The <code>web</code>
-component is the old website which we had deployed previously, but there are also several others for <code>cheese</code>,
+<p>In the Apps section you will see new <code>WhatCheese</code> and <code>WhatCheeseAPI</code> applications, which have several
+components. The <code>web</code> component in <code>WhatCheese</code> is the old website which we had deployed previously,
+and there are also several other components in <code>WhatCheeseAPI</code> for each API Service, including <code>cheese</code>,
 <code>pickle</code>, <code>wine</code>, <code>beer</code>, and <code>links</code>, they all relate to the Cheese API imported from its OAS3 spec.</p>
 </div>
 <div class="paragraph">
@@ -763,15 +786,24 @@ The NGINX Controller also supports JWT authenication for OAUTH2 and OIDC authent
 <p>In the next section we&#8217;re going to generate some load again, and take a look at the analytics the controller
 can provide.</p>
 </div>
-<div class="paragraph">
-<p><a href="task7.html">Next Task</a></p>
-</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task5.html">Previous Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task7.html">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-03 15:14:12 BST
+Last updated 2020-05-04 15:00:57 BST
 </div>
 </div>
 </body>

@@ -33,5 +33,5 @@ During this workshop, we'll be looking at various ways to automate NGINX. Includ
 * <<task5.adoc#,Task 5: Setup NGINX Controller>>
 * <<task6.adoc#,Task 6: Automate NGINX with CI/CD and Controller>>
 * <<task7.adoc#,Task 7: Application Insights>>
-* <<task8.adoc#,Task 8: Play time and Wrap Up>>
+* <<task8.adoc#,Task 8: Wrap Up>>
 

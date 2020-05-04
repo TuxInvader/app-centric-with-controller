@@ -6,7 +6,7 @@
 :next_section: task6
 
 ****
-<<index.adoc#,Top>> +
+<<index.adoc#,Contents>> +
 <<task4.adoc#,Previous Task>> +
 <<task6.adoc#,Next Task>> +
 ****
@@ -228,5 +228,5 @@ In Analytics we can also set up Alerts and Events based on the metrics which Con
 
 The Services Section is where the controller becomes truely Application Centric...
 
-
-<<task6.adoc#,Next Task>>
+|===
+|<<task4.adoc#,Previous Task>>|<<task6.adoc#,Next Task>>

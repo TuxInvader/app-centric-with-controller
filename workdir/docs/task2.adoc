@@ -7,7 +7,7 @@
 :source-highlighter: pygments
 
 ****
-<<index.adoc#,Top>> +
+<<index.adoc#,Contents>> +
 <<task1.adoc#,Previous Task>> +
 <<task3.adoc#,Next Task>> +
 ****
@@ -270,5 +270,6 @@ image:img/nginx-dash.png[NGINX Plus Dashboard]
 In the next task we'll install our CI/CD platform so that we can automate deployments to our new NGINX
 servers.
 
-<<task3.adoc#,Next Task>> 
+|===
+|<<task1.adoc#,Previous Task>>|<<task3.adoc#,Next Task>> 
 

@@ -7,7 +7,7 @@
 :source-highlighter: pygments
 
 ****
-<<index.adoc#,Top>> +
+<<index.adoc#,Contents>> +
 <<task1.adoc#,Previous Task>> +
 <<task2.adoc#,Next Task>> +
 ****
@@ -274,4 +274,6 @@ $ ansible-galaxy install nginxinc.nginx
 
 We'll make use of this role in <<task2.adoc#,Task 2>> 
 
+|===
+|<<index.adoc#,Contents>>|<<task2.adoc#,Next Task>>
 

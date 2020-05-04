@@ -1,18 +1,56 @@
-= Task 8: Play time and Wrap Up
+= Task 8: Wrap Up
 :showtitle:
 :sectlinks:
 :toc: left
 :prev_section: task7
 
 ****
-<<index.adoc#,Top>> +
+<<index.adoc#,Contents>> +
 <<task7.adoc#,Previous Task>> +
 ****
 
-== Introduction
+== 8.1 Conclusion
 
+NGINX Plus can be automated by two primary methods.
 
-'''
-== First Section
+ * Store nginx.conf files directly in source control and have them written to disk
+   via a CI/CD pipeline.
+ * Manage NGINX Plus configuration through NGINX Contoller API. Intergrate Controller
+   with CI/CD directly or via an automation tool such as Ansible.
 
+There are pros and cons to each approach. The configuration file approach enables you 
+to create exotic NGINX Plus configuration with access to all the features of 
+NGINX Plus, but you need to understand the nginx configuration directives to a greater
+extent.
 
+The alternative approach using controller means you need less knowlege about the NGINX
+directives, but you are limited to the features which controller exposes. On the plus side, 
+you get access to API Management features, Role Based Access control of your environments,
+and better insights through application centric metrics. 
+
+== 8.2 Further Reading
+
+=== Devportal 
+The NGINX Controller can publish information about the APIs you publish to a `Developer Portal`,
+we haven't done it in this course, but you can tag some of your NGINX instances with a `devportal`
+tag and Controller will configure them to perform that duty automatically.
+
+=== Role Based Access Controler
+We used a single account here, but you can create groups and users in the `platform` section to
+enable RBAC controls over your environments and applications managed by controller.
+
+=== Analytics Only deployment
+We have been writing configuration to our NGINX instances, but controller is also useful as an
+analytics only platform collecting metrics from "unmanaged instances".
+
+=== Configuration Analyzer
+There is also a config analyzer tool in the Infrastructure section which can give you an analysis
+of the configuration running on any NGNIX instances. When Controller writes a config it uses best
+practice, but the tool is useful for "unmanaged instances".
+
+== 8.3 Thank you
+
+Thank you for attending this virtual workshop. We hope you found it useful.
+
+|===
+|<<task7.adoc#,Previous Task>>|<<index.adoc#,Contents>>

@@ -6,7 +6,7 @@
 :next_section: task5
 
 ****
-<<index.adoc#,Top>> +
+<<index.adoc#,Contents>> +
 <<task3.adoc#,Previous Task>> +
 <<task5.adoc#,Next Task>> +
 ****
@@ -238,4 +238,5 @@ now be accessable in your browser. Well done!
 
 image:img/whatcheese-web.png[WhatCheese Website]
 
-<<task5.adoc#,Next Task>>
+|===
+|<<task3.adoc#,Previous Task>>|<<task5.adoc#,Next Task>>

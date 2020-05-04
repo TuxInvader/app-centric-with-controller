@@ -6,7 +6,7 @@
 :next_section: task7
 
 ****
-<<index.adoc#,Top>> +
+<<index.adoc#,Contents>> +
 <<task5.adoc#,Previous Task>> +
 <<task7.adoc#,Next Task>> +
 ****
@@ -81,7 +81,27 @@ The `currentStatus` property represents the current state of the system. Its pur
 progress of achieving eventual consistency to the API consumer. As such, currentStatus is a read-only property.
 
 '''
-== 6.3 Interacting with Controller
+== 6.3 Browse the Controller API
+
+++++
+<p>The API is fully documented on the NGINX Controller. <a id="ctrl1"></a></p>
+<script>
+  var ctrl='https://ctrl.' + location.hostname + '/docs/api/api-reference/';
+  document.getElementById("ctrl1").innerHTML = ctrl;
+  document.getElementById("ctrl1").href = ctrl;
+</script>
+++++
+
+It's worthwhile spending a few minutes browsing the API documentation to see how applications and
+components are created. We're not going to be talking to the API directly, we'll use Jenkins with
+Ansible to make the API calls, but it's important to understand that these are the calls that are
+happening in the background.
+
+image:img/controller-api-ref.png[Controller API Reference]
+
+
+'''
+== 6.4 Jenkins, Ansible, and Controller
 
 In order to make a change through controller you make a write call to the REST API providing the `desiredState`
 that you want to see implemented. If your request is valid, the controller will accept the change and set about
@@ -151,7 +171,7 @@ In a moment we're going to get Jenkins to deploy the WhatCheese API with control
 to enable Jenkins to run Ansible.
 
 '''
-== 6.4 Configure Jenkins to use Ansible
+== 6.5 Configure Jenkins to use Ansible
 
 We have a new `Jenkinsfile` which uses the https://plugins.jenkins.io/ansible/[Ansible
 Plugin], but we first need to install Ansible onto the machine running jenkins. To do that, run:
@@ -172,7 +192,7 @@ screen tick `Restart Jenkins when installation is complete and no jobs are runni
 download the plugin and then restart.
 
 '''
-== 6.5 The WhatCheese API
+== 6.6 The WhatCheese API
 
 Take a look at your gitea server and the whatcheese-web repository. You should see that the summary box
 tells you there are `nn commits` and `2 Branches`. Beneath the summary it says `Branch: master`, clicking
@@ -189,7 +209,7 @@ Jenkins because it doesn't have the correct name. Inside the file it still has t
 on unit, but this version includes an API. And the NGINX deployment no longer writes nginx configuration
 files to disk, instead it runs Ansible to talk to controller.
 
-This is the satge in question:
+This is the stage in question:
 
 ----
 stage('Ansible deploy to controller') {
@@ -209,9 +229,9 @@ stage('Ansible deploy to controller') {
 }
 ----
 
-== 6.6 Deploy the new branch
+== 6.7 Deploy the new branch
 
-If you checked out the repository using _git_ ealier, then you can switch branches by running, and rename the
+If you checked out the repository using _git_ ealier, then you can switch branches and rename the
 `noJenkinsfile` by running:
 
 ----
@@ -223,7 +243,7 @@ $ git commit -m "enable pipeline"
 $ git push origin controller
 ----
 
-If you didn't you can edit the `noJenkinsFile` in your web browser, and simply rename it to `JenkinsFile`
+If you didn't you can edit the `noJenkinsfile` in your web browser, and simply rename it to `Jenkinsfile`
 
 Switch to your Jenkins server, and you should see it's running the pipeline from your controller branch. Also
 keep an eye on the "Services" section of your NGINX Controller, you should see an API Spec appear under `APIs`
@@ -231,10 +251,11 @@ and an `environment`, followed by an `application` and finally the application `
 
 image:img/whatcheese-deployed.png[The Whatcheese APP]
 
-== 6.7 Take a look around
+== 6.8 Take a look around
 
-In the Apps section you will see your new `WhatCheese` application, which has several components. The `web`
-component is the old website which we had deployed previously, but there are also several others for `cheese`,
+In the Apps section you will see new `WhatCheese` and `WhatCheeseAPI` applications, which have several
+components. The `web` component in `WhatCheese` is the old website which we had deployed previously, 
+and there are also several other components in `WhatCheeseAPI` for each API Service, including `cheese`,
 `pickle`, `wine`, `beer`, and `links`, they all relate to the Cheese API imported from its OAS3 spec.
 
 You can see the API endpoints in the `APIs` section.
@@ -248,4 +269,6 @@ The NGINX Controller also supports JWT authenication for OAUTH2 and OIDC authent
 In the next section we're going to generate some load again, and take a look at the analytics the controller
 can provide.
 
-<<task7.adoc#,Next Task>>
+|===
+|<<task5.adoc#,Previous Task>>|<<task7.adoc#,Next Task>>
+
