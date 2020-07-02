@@ -2,7 +2,7 @@
 
 - hosts: controllers
   become: yes
-  gather_facts: no
+  gather_facts: yes
   vars_files:
     - secrets/aws_config.yaml
     - vars.yaml
@@ -187,4 +187,24 @@
         backrefs: true
         line: "\\1\"http://api.{{ wsid }}.{{ ws.route53.zone }}\": {}"
         src: "secrets/letsencrypt-{{ wsid }}.tar.gz"
+
+    - name: Install and setup NGINX on the gateway
+      block:
+    
+      - name: Install the NGINX Inc Role
+        command:
+          cmd: ansible-galaxy install nginxinc.nginx
+
+      - name: Execute the NGINX Install on the gateway
+        command:
+          chdir: /home/ubuntu/ansible
+          cmd: ansible-playbook playbooks/nginx_workshop_gw/install.yaml
+          creates: /usr/sbin/nginx
+
+      - name: Execute the NGINX Setup on the gateway
+        command:
+          chdir: /home/ubuntu/ansible
+          cmd: ansible-playbook playbooks/nginx_workshop_gw/setup.yaml
+
+      become: ubuntu
 
