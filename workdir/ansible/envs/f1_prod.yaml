@@ -6,10 +6,11 @@ oas3:
   f1_api:
     config:
       metadata:
-        name: f1_api
+        name: v1
         displayName: Ergast F1 API
       desiredState:
-        spec: "{{ specs.ergast | default({}) }}"
+        specs:
+          REST: "{{ specs.ergast | default({}) }}"
 
 # Identity Providers...
 idps:
@@ -78,18 +79,18 @@ envs:
             privateKey: "{{ pem.private[ 'ergast.nginx' ] | default('') }}"
             caCerts: "{{ pem.chain[ 'ergast.nginx' ] | default([]) }}"
 
-    gateways: 
-      nginx_gw:
+    gateways:
+      f1_gw:
         config:
           metadata:
-            name: nginx_gw
+            name: f1_gw
           desiredState:
             ingress:
               uris:
-                workship_fe_placeholder: {}
+                workshop_fe_placeholder: {}
               placement:
                 instanceRefs:
-                  - ref: "/infrastructure/locations/unspecified/instances/2"
+                  - ref: "/infrastructure/locations/unspecified/instances/nginx1"
               # Enable TLS for the API
               tls:
                 certRef:
@@ -118,13 +119,11 @@ envs:
             name: f1_api
             displayName: F1 API
           desiredState:
-            apiDefinitionRef:
-              ref: /services/api-definitions/f1_api
+            apiDefinitionVersionRef:
+              ref: /services/api-definitions/f1_api/versions/v1
             gatewayRefs:
-            - ref: /services/environments/f1_prod/gateways/nginx_gw
-            componentRefs:
-            - ref: /services/environments/f1_prod/apps/f1com/components/drivers
-            - ref: /services/environments/f1_prod/apps/f1com/components/seasons
+            - ref: /services/environments/f1_prod/gateways/f1_gw
+            basepath: /api/f1
 
     components:
       blog:
@@ -137,7 +136,7 @@ envs:
           desiredState:
             ingress:
               gatewayRefs:
-              - ref: /services/environments/f1_prod/gateways/nginx_gw
+              - ref: /services/environments/f1_prod/gateways/f1_gw
               uris:
                 /blog: {}
                 /: {}
@@ -172,15 +171,101 @@ envs:
             displayName: drivers
             tags: []
           desiredState:
-            ingress:
-              gatewayRefs:
-              - ref: /services/environments/f1_prod/gateways/nginx_gw
-              uris:
-                /api/f1/drivers:
-                  matchMethod: PREFIX
             publishedApiRefs:
               - ref: /services/environments/f1_prod/apps/f1com/published-apis/f1_api
-             
+            ingress:
+              gatewayRefs:
+              - ref: /services/environments/f1_prod/gateways/f1_gw
+              uris:
+                /drivers:
+                  get:
+                    operationId: listDrivers
+                    parameters:
+                    - description: How many items to return at one time (max 100)
+                      in: query
+                      name: limit
+                      required: false
+                      schema:
+                        format: int32
+                        type: integer
+                    responses:
+                      "200":
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/ResultDriverList'
+                        description: A paged array of drivers
+                        headers:
+                          x-next:
+                            description: A link to the next page of responses
+                            schema:
+                              type: string
+                      default:
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/Error'
+                        description: unexpected error
+                    summary: List all drivers
+                    tags:
+                    - drivers
+                /drivers/{driverId}:
+                  get:
+                    operationId: showDriverById
+                    parameters:
+                    - description: The id of the driver to retrieve
+                      in: path
+                      name: driverId
+                      required: true
+                      schema:
+                        type: string
+                    responses:
+                      "200":
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/ResultDriver'
+                        description: Expected response to a valid request
+                      default:
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/Error'
+                        description: unexpected error
+                    summary: Info for a specific driver
+                    tags:
+                    - drivers
+                /drivers/{driverId}/seasons:
+                  get:
+                    operationId: listDriverSeasons
+                    parameters:
+                    - description: The id of the driver to retrieve
+                      in: path
+                      name: driverId
+                      required: true
+                      schema:
+                        type: string
+                    responses:
+                      "200":
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/ResultDriverSeasonList'
+                        description: Expected response to a valid request
+                      default:
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/Error'
+                        description: unexpected error
+                    summary: A paged array of seasons where driver raced
+                    tags:
+                    - drivers
+
+            # Return json errors
+            errorSetRef:
+              ref: /services/errorsets/default-json
+
             # Security Section
             security:
 
@@ -230,26 +315,101 @@ envs:
             displayName: seasons
             tags: []
           desiredState:
-            ingress:
-              gatewayRefs:
-              - ref: /services/environments/f1_prod/gateways/nginx_gw
-              uris:
-                /api/f1/seasons:
-                  matchMethod: PREFIX
-                '/api/f1/{seasonYear}':
-                  matchMethod: PREFIX
+
             publishedApiRefs:
               - ref: /services/environments/f1_prod/apps/f1com/published-apis/f1_api
-          
+
+            ingress:
+              gatewayRefs:
+              - ref: /services/environments/f1_prod/gateways/f1_gw
+              uris:
+                /seasons:
+                  get:
+                    operationId: listSeasons
+                    responses:
+                      "200":
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/ResultSeasonList'
+                        description: Expected response to a valid request
+                      default:
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/Error'
+                        description: unexpected error
+                    summary: A paged array of seasons
+                    tags:
+                    - seasons
+                /{seasonYear}:
+                  get:
+                    operationId: listRaces
+                    parameters:
+                    - description: The year of the season to retrieve
+                      in: path
+                      name: seasonYear
+                      required: true
+                      schema:
+                        type: string
+                    responses:
+                      "200":
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/ResultRaceList'
+                        description: Expected response to a valid request
+                      default:
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/Error'
+                        description: unexpected error
+                    summary: A paged array of races in a season
+                    tags:
+                    - seasons
+                /{seasonYear}{raceNumber}:
+                  get:
+                    operationId: getRace
+                    parameters:
+                    - description: The year of the season
+                      in: path
+                      name: seasonYear
+                      required: true
+                      schema:
+                        type: string
+                    - description: The race in that season to retrieve
+                      in: path
+                      name: raceNumber
+                      required: true
+                      schema:
+                        type: string
+                    responses:
+                      "200":
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/ResultRace'
+                        description: Expected response to a valid request
+                      default:
+                        content:
+                          application/json:
+                            schema:
+                              $ref: '#/components/schemas/Error'
+                        description: unexpected error
+                    summary: Get details of a specific race in season/race number
+                    tags:
+                    - seasons
+
             # Security Section
             security:
 
               # Rate shaping definition
-              rateLimit:
-                defaultLimit:
+              rateLimits:
+                season_limit:
                   key: $binary_remote_addr    # Default $binary_remote_addr, can be any NGINX variable
-                  rate: 1
-                  rateMeasure: SECONDS        # SECONDS or MINUTES
+                  rate: 1r/s
+                  burstBeforeReject: 0
                   statusCode: 429
 
             backend:

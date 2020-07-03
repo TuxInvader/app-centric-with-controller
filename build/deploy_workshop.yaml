@@ -183,10 +183,9 @@
     - name: Patch the Ergast F1 environment
       lineinfile:
         dest: "/home/ubuntu/ansible/envs/f1_prod.yaml"
-        regexp: "(\ *)workship_fe_placeholder: {}"
+        regexp: "(\ *)workshop_fe_placeholder: {}"
         backrefs: true
         line: "\\1\"http://api.{{ wsid }}.{{ ws.route53.zone }}\": {}"
-        src: "secrets/letsencrypt-{{ wsid }}.tar.gz"
 
     - name: Install and setup NGINX on the gateway
       block:
