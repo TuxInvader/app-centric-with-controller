@@ -265,14 +265,15 @@ a webserver, or installing a system such as jenkins. Unlike a playbook a role is
 
 We're going to be making use of a few ansible roles during this course.
 
-Ansible includes a tool to search and install community published roles called _ansible-galaxy_.
-Lets use _ansible-galaxy_ to install the NGINX role published by F5/NGINX.
+In fact we used a role during the deployment of your workshop to install NGINX onto your gateway host.
+The role used was `nginxinc.nginx` which can install and configure NGINX and NGINX Plus software.
+You can see the installed roles by executing the following `ansible-galaxy` command.
 
 ----
-$ ansible-galaxy install nginxinc.nginx
+$ ansible-galaxy list
 ----
 
-We'll make use of this role in <<task2.adoc#,Task 2>> 
+Now let's move on to <<task2.adoc#,Task 2>> 
 
 |===
 |<<index.adoc#,Contents>>|<<task2.adoc#,Next Task>>
