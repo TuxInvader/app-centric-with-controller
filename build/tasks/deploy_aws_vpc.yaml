@@ -21,7 +21,7 @@
       vpc_id: "{{ vpc_id }}"
       cidr: "{{  ws.ec2.cidr_block ~ '.' ~ ws.ec2.subnets.public.third ~ '.0/' ~ ws.ec2.subnets.public.bits }}"
       tags:
-        Name: "{{ ws.stack_name }}_public"
+        Name: "{{ ws.prefix }}00_public"
         public: "yes"
         stack: "{{ ws.stack_name }}"
         UK-SE: "{{ ws.uk_se_name }}"
@@ -93,7 +93,7 @@
         Name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_route"
         stack: "{{ ws.stack_name }}"
         UK-SE: "{{ ws.uk_se_name }}"
-      subnets: "{{ vpc_public_subnet_ids.values() + vpc_private_subnet_ids.values() }}"
+      subnets: "{{ ( vpc_public_subnet_ids.values() | list ) + ( vpc_private_subnet_ids.values() | list ) }}"
       #subnets: "{{ vpc_public_subnet_ids.values() }}"
       routes:
         - dest: 0.0.0.0/0

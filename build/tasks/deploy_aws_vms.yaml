@@ -13,7 +13,7 @@
       image: "{{ ami_id }}"
       #group: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
       group_id: "{{ nginx_sg.group_id }}"
-      vpc_subnet_id: "{{ vpc_public_subnet_ids.public }}"
+      vpc_subnet_id: "{{ vpc_public_subnet_ids[ ws.prefix ~ '00_public' ] }}"
       key_name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
       assign_public_ip: "{{ machine.value.public }}"
       volumes:
@@ -32,7 +32,7 @@
       - ec2_instances[ item ~ '-' ~ machine.key ] is not defined
       - machine.value.public == true
 
-  - name: "Create the public machines for {{ item }}"
+  - name: "Create the private machines for {{ item }}"
     ec2:
       instance_tags:
         Name: "{{ item }}-{{ machine.key }}"
