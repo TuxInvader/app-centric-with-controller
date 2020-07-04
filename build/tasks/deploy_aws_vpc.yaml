@@ -21,7 +21,7 @@
       vpc_id: "{{ vpc_id }}"
       cidr: "{{  ws.ec2.cidr_block ~ '.' ~ ws.ec2.subnets.public.third ~ '.0/' ~ ws.ec2.subnets.public.bits }}"
       tags:
-        Name: "public"
+        Name: "{{ ws.stack_name }}_public"
         public: "yes"
         stack: "{{ ws.stack_name }}"
         UK-SE: "{{ ws.uk_se_name }}"
