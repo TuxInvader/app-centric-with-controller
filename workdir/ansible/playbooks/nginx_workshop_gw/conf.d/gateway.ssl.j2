@@ -1,16 +1,26 @@
 server {
 
     server_name  {{ wsid }}.{{ domain }};
+    default_type text/plain;
 
     #access_log  /var/log/nginx/host.access.log  main_ext;
 
     location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
+      root   /usr/share/nginx/html;
+      index  index.html index.htm;
     }
 
     location /tasks {
-        alias  /home/ubuntu/html;
+      alias  /home/ubuntu/html;
+      auth_basic "nginx restricted";
+      auth_basic_user_file /home/ubuntu/secrets/htpasswd;
+    }
+
+    location /secrets {
+      alias  /home/ubuntu/secrets;
+      autoindex on;
+      auth_basic "nginx restricted";
+      auth_basic_user_file /home/ubuntu/secrets/htpasswd;
     }
 
     location /api {
@@ -40,7 +50,7 @@ server {
 
 server {
     if ($host = {{ wsid }}.{{ domain }}) {
-        return 301 https://$host$request_uri;
+      return 301 https://$host$request_uri;
     } # managed by Certbot
 
     listen       80;
