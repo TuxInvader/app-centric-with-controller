@@ -19,6 +19,7 @@
         - rsync
         - python-passlib
         - siege
+        - putty-tools
       state: latest
 
   - name: Configure the dnsmasq daemon

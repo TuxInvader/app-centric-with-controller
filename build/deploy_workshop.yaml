@@ -205,5 +205,18 @@
           chdir: /home/ubuntu/ansible
           cmd: ansible-playbook playbooks/nginx_workshop_gw/setup.yaml
 
+      - name: place ssh key in secrets folder
+        copy:
+          src: secrets/user.pem
+          dest: /home/ubuntu/secrets/ssh_key.pem
+          owner: ubuntu
+          group: ubuntu
+          mode: 0444
+
+      - name: Generate a putty key from the SSH PEM
+        shell:
+          chdir: /home/ubuntu/secrets
+          cmd: puttygen ssh_key.pem -o ssh_key.ppk -O private && chmod 444 ssh_key.ppk
+
       become: ubuntu
 
