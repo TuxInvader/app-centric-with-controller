@@ -217,6 +217,22 @@
         shell:
           chdir: /home/ubuntu/secrets
           cmd: puttygen ssh_key.pem -o ssh_key.ppk -O private && chmod 444 ssh_key.ppk
+        ignore_errors: yes
+
+      - name: Get the gateway basic_auth password
+        command:
+          cmd: cat /home/ubuntu/secrets/basic_auth.passwd
+        register: basic_auth
 
       become: ubuntu
+
+    - name: Store password
+      local_action:
+        module: lineinfile
+        path: secrets/workshops.txt
+        state: present
+        create: yes
+        line: "https://{{ wsid }}.{{ ws.route53.zone }} nginx {{ basic_auth.stdout }}"
+      become: no
+      connection: local
 

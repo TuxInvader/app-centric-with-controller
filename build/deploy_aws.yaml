@@ -26,6 +26,11 @@
 
         dest: inventory
 
+    - name: Reset workshop file
+      file:
+        path: secrets/workshops.txt
+        state: absent
+
     - name: locate and register the AMI ID
       include_tasks: tasks/find_ami_id.yaml
 
