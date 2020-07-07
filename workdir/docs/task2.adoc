@@ -16,13 +16,17 @@
 In this lesson we will be getting our hands dirty by deploying your first NGINX Plus system using
 Ansible.  
 
-NGINX Plus will be installed on your gateway node, and it will act as a simple TCP/UDP gateway for  
+NGINX Plus is already installed on your gateway node, and it acts as a simple TCP/UDP gateway for  
 the services being deployed during this workshop
+
+Remember the network layout looks like this:
+
+image:img/workshop-diagram.png[network,align="center"]
 
 '''
 == 2.2 Check out the playbook
 
-You'll find the playbook in _~/ansible/playbooks/nginx_workshop_gw/install.yaml_
+You'll find the playbook used to deploy the gateway config in _~/ansible/playbooks/nginx_workshop_gw/install.yaml_
 
 This is similar in some ways to the _node_setup_playbook.yaml_ that we looked at in the previous lesson,
 however you'll notice some pretty significant differences. This playbook is using `roles` rather
@@ -62,6 +66,7 @@ TIP: The NGINX role can also install the *NGINX Controller Agent*, as well as *N
 '''
 == 2.3 Run the install playbook
 
+The playbook has already been executed for you, but there is no harm in running it again...
 Ensure that you are in the ansible folder and apply the _nginx_workshop_gw/install.yaml_ playbook:
 
 ----
@@ -173,31 +178,12 @@ certs before, and then pick either SSL enabled or disabled versions of NGINX con
 Ansible makes it possible to combine roles with additional tasks in a single playbook. So you can have a
 combination of imperative and declarative styles in a single playbook.
 
+We don't need to run this playbook because it has already been executed during the workshop build.
+
 '''
-== 2.7 Apply the setup playbook
+== 2.7 NGINX Plus Dashboard
 
-Again, ensure that you are in the ansible folder and apply the _nginx_workshop_gw/setup.yaml_ playbook:
-
-----
-$ cd ~/ansible
-$ ansible-playbook playbooks/nginx_workshop_gw/setup.yaml
-----
-
-You now have the gateway setup and ready to provide access to the rest of the workshop servers. You should
-now be able to point your web browser at your gateway and see these documents in beautiful HTML5.
-
-++++
-<p>Try accessing your workshop -> <a id='task_link'></a></p>
-<script>
-  var tl='https://' + location.host + '/tasks';
-  document.getElementById("task_link").innerHTML = tl;
-  document.getElementById("task_link").href = tl;
-</script>
-++++
-
-== 2.8 NGINX Plus Dashboard
-
-If you look at the _setup.yaml_ playbook used in the previous section, you will find there is a section
+If you scroll through the _setup.yaml_ playbook used in the previous section, you will find there is a section
 which creates a password for access to the API and Dashboard.
 
 [source,yaml,,highlight='5']
@@ -249,9 +235,9 @@ the active health monitoring feature of NGINX Plus has detected them as failed.
 You can keep an eye on the gateway dashboard as we deploy services to ensure that they are running correctly.
 
 '''
-== 2.9 Setup the NGINX backends
+== 2.8 Setup the NGINX backends
 
-Okay, so we have installed NGINX Plus on the gateway machine and configured it to serve content from our HTML
+Okay, so we have NGINX Plus installed on the gateway machine and it's configured to serve content from our HTML
 folder and to load balance onto the services we're going to deploy later. 
 
 Before moving on lets run a final playbook to install NGINX Plus onto our backend NGINX instances (nginx1 

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
-<title>Application Centric Automation Workshop</title>
+<title>Task 0: Welcome to the workshop</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -417,96 +417,163 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
+<style>
+.listingblock .pygments .hll { background-color: #ffffcc }
+.listingblock .pygments, .listingblock .pygments code { background: #f8f8f8; }
+.listingblock .pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+.listingblock .pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+.listingblock .pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+.listingblock .pygments .tok-o { color: #666666 } /* Operator */
+.listingblock .pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.listingblock .pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.listingblock .pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+.listingblock .pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.listingblock .pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+.listingblock .pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+.listingblock .pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+.listingblock .pygments .tok-ge { font-style: italic } /* Generic.Emph */
+.listingblock .pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+.listingblock .pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.listingblock .pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+.listingblock .pygments .tok-go { color: #888888 } /* Generic.Output */
+.listingblock .pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.listingblock .pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+.listingblock .pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.listingblock .pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+.listingblock .pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.listingblock .pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.listingblock .pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.listingblock .pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+.listingblock .pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.listingblock .pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+.listingblock .pygments .tok-m { color: #666666 } /* Literal.Number */
+.listingblock .pygments .tok-s { color: #BA2121 } /* Literal.String */
+.listingblock .pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+.listingblock .pygments .tok-nb { color: #008000 } /* Name.Builtin */
+.listingblock .pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.listingblock .pygments .tok-no { color: #880000 } /* Name.Constant */
+.listingblock .pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+.listingblock .pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+.listingblock .pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.listingblock .pygments .tok-nf { color: #0000FF } /* Name.Function */
+.listingblock .pygments .tok-nl { color: #A0A000 } /* Name.Label */
+.listingblock .pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.listingblock .pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+.listingblock .pygments .tok-nv { color: #19177C } /* Name.Variable */
+.listingblock .pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.listingblock .pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+.listingblock .pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+.listingblock .pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+.listingblock .pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+.listingblock .pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+.listingblock .pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+.listingblock .pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+.listingblock .pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+.listingblock .pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+.listingblock .pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+.listingblock .pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.listingblock .pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+.listingblock .pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.listingblock .pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+.listingblock .pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.listingblock .pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+.listingblock .pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+.listingblock .pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+.listingblock .pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+.listingblock .pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+.listingblock .pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+.listingblock .pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+.listingblock .pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+.listingblock .pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+.listingblock .pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+.listingblock .pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>Application Centric Automation Workshop</h1>
+<h1>Task 0: Welcome to the workshop</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_0_1_introduction">0.1 Introduction</a></li>
+<li><a href="#_0_2_getting_shell_access">0.2 Getting Shell Access</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none spread">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this course on NGINX Automation. <br>
-We&#8217;ll be covering Automation of NGINX Plus and NGINX Controller using Ansible, <br>
-and also integrating NGINX/Controller with CI/CD pipelines.</p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>During this workshop, we&#8217;ll be looking at various ways to automate NGINX. Including:</p>
+<p><a href="index.html">Contents</a><br>
+<a href="index.html">Previous Task</a><br>
+<a href="task1.html">Next Task</a><br></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Install and use the NGINX Ansible role to deploy NGINX software</p>
-</li>
-<li>
-<p>Deploy NGINX configuration files with Ansible (Simple IaC use-case)</p>
-</li>
-<li>
-<p>Introduction to NGINX Controller 3.x</p>
-</li>
-<li>
-<p>Deploy NGINX Controller Agent with Ansible</p>
-</li>
-<li>
-<p>Configure an Application in Controller and assign NGINX instance gateways (recommended IaC usage)</p>
-</li>
-<li>
-<p>Store NGINX configuration in Version Control, and deploy changes using CI/CD (Jenkins) Pipelines</p>
-</li>
-</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tasks">Tasks</h2>
+<h2 id="_0_1_introduction"><a class="link" href="#_0_1_introduction">0.1 Introduction</a></h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="task0.html">Task 0: Welcome to the workshop</a></p>
-</li>
-<li>
-<p><a href="task1.html">Task 1: Introduction to Ansible</a></p>
-</li>
-<li>
-<p><a href="task2.html">Task 2: Deploy a simple NGNIX Configuration</a></p>
-</li>
-<li>
-<p><a href="task3.html">Task 3: Deploy Your CI/CD Infrastructure</a></p>
-</li>
-<li>
-<p><a href="task4.html">Task 4: Automate NGINX with CI/CD Pipeline</a></p>
-</li>
-<li>
-<p><a href="task5.html">Task 5: Setup NGINX Controller</a></p>
-</li>
-<li>
-<p><a href="task6.html">Task 6: Automate NGINX with CI/CD and Controller</a></p>
-</li>
-<li>
-<p><a href="task7.html">Task 7: Application Insights</a></p>
-</li>
-<li>
-<p><a href="task8.html">Task 8: Wrap Up</a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Welcome to this NGINX Application Centric Automation workshop.</p>
 </div>
+<div class="paragraph">
+<p>We&#8217;ll start off by deploying NGINX configuration using Ansible to deploy configuration files
+to the servers, later we&#8217;ll move onto deploying the same files using a CI/CD pipeline, and finish up
+switching to the NGINX Controllers declarative API.</p>
+</div>
+<div class="paragraph">
+<p>Ansible is used extensively in both the course and in the deployment of the workshop. In our first
+task we&#8217;ll cover Ansible basics, but first lets take a look at the environment you&#8217;ll be working with.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/workshop-diagram.png" alt="network"></span></p>
+</div>
+<div class="paragraph">
+<p>Each individual in the workshop has been given access to a gateway instance, the gateway is multi-homed
+with a public interface in a routeable public network, and a secondary inteface in a private network.</p>
+</div>
+<div class="paragraph">
+<p>All other machines in the course reside in the private network and will be accessed through the NGINX
+Plus instance running on the gateway.</p>
+</div>
+<div class="paragraph">
+<p>If you&#8217;re reading this then the gateway itself is already setup, and your instructor has supplied you
+with it&#8217;s hostname and password.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_0_2_getting_shell_access"><a class="link" href="#_0_2_getting_shell_access">0.2 Getting Shell Access</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The private key for gaining access to your workshop can be downloaded <a href="/secrets/">Here</a>
+You should find the SSH private key in both OpenSSH PEM and Putty PPK file formats.</p>
+</div>
+<div class="paragraph">
+<p>Once you have both HTTPS and SSH access to the workshop please continue with <a href="task1.html">Task 1</a></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Contents</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task1.html">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-07 18:38:12 BST
+Last updated 2020-07-07 18:46:41 BST
 </div>
 </div>
 </body>

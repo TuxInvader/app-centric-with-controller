@@ -8,7 +8,7 @@
 
 ****
 <<index.adoc#,Contents>> +
-<<task1.adoc#,Previous Task>> +
+<<task0.adoc#,Previous Task>> +
 <<task2.adoc#,Next Task>> +
 ****
 
@@ -273,8 +273,14 @@ You can see the installed roles by executing the following `ansible-galaxy` comm
 $ ansible-galaxy list
 ----
 
+You can search for roles using the same command line tool or using the link:https://galaxy.ansible.com/[Galaxy website]
+
+----
+$ ansible-galaxy search nginxinc
+----
+
 Now let's move on to <<task2.adoc#,Task 2>> 
 
 |===
-|<<index.adoc#,Contents>>|<<task2.adoc#,Next Task>>
+|<<task0.adoc#,Previous>>|<<task2.adoc#,Next Task>>
 

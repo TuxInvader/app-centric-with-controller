@@ -13,8 +13,6 @@ and also integrating NGINX/Controller with CI/CD pipelines.
 
 '''
 
-== Course Content
-
 During this workshop, we'll be looking at various ways to automate NGINX. Including:
 
  * Install and use the NGINX Ansible role to deploy NGINX software
@@ -26,8 +24,9 @@ During this workshop, we'll be looking at various ways to automate NGINX. Includ
 
 == Tasks
 
-* <<task1.adoc#,Task 1: Familiarize yourself with Ansible>>
-* <<task2.adoc#,Task 2: Deploy a simple NGINX Configuration>>
+* <<task0.adoc#,Task 0: Welcome to the workshop>>
+* <<task1.adoc#,Task 1: Introduction to Ansible>>
+* <<task2.adoc#,Task 2: Deploy a simple NGNIX Configuration>>
 * <<task3.adoc#,Task 3: Deploy Your CI/CD Infrastructure>>
 * <<task4.adoc#,Task 4: Automate NGINX with CI/CD Pipeline>>
 * <<task5.adoc#,Task 5: Setup NGINX Controller>>

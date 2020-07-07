@@ -501,9 +501,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_2_4_what_is_nginx_plus">2.4 What is NGINX Plus</a></li>
 <li><a href="#_2_5_imperative_vs_declarative">2.5 Imperative vs Declarative</a></li>
 <li><a href="#_2_6_adding_additional_tasks">2.6 Adding Additional tasks</a></li>
-<li><a href="#_2_7_apply_the_setup_playbook">2.7 Apply the setup playbook</a></li>
-<li><a href="#_2_8_nginx_plus_dashboard">2.8 NGINX Plus Dashboard</a></li>
-<li><a href="#_2_9_setup_the_nginx_backends">2.9 Setup the NGINX backends</a></li>
+<li><a href="#_2_7_nginx_plus_dashboard">2.7 NGINX Plus Dashboard</a></li>
+<li><a href="#_2_8_setup_the_nginx_backends">2.8 Setup the NGINX backends</a></li>
 </ul>
 </div>
 </div>
@@ -529,8 +528,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 Ansible.</p>
 </div>
 <div class="paragraph">
-<p>NGINX Plus will be installed on your gateway node, and it will act as a simple TCP/UDP gateway for
+<p>NGINX Plus is already installed on your gateway node, and it acts as a simple TCP/UDP gateway for
 the services being deployed during this workshop</p>
+</div>
+<div class="paragraph">
+<p>Remember the network layout looks like this:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="img/workshop-diagram.png" alt="network"></span></p>
 </div>
 <hr>
 </div>
@@ -539,7 +544,7 @@ the services being deployed during this workshop</p>
 <h2 id="_2_2_check_out_the_playbook"><a class="link" href="#_2_2_check_out_the_playbook">2.2 Check out the playbook</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You&#8217;ll find the playbook in <em>~/ansible/playbooks/nginx_workshop_gw/install.yaml</em></p>
+<p>You&#8217;ll find the playbook used to deploy the gateway config in <em>~/ansible/playbooks/nginx_workshop_gw/install.yaml</em></p>
 </div>
 <div class="paragraph">
 <p>This is similar in some ways to the <em>node_setup_playbook.yaml</em> that we looked at in the previous lesson,
@@ -596,7 +601,8 @@ The NGINX role can also install the <strong>NGINX Controller Agent</strong>, as 
 <h2 id="_2_3_run_the_install_playbook"><a class="link" href="#_2_3_run_the_install_playbook">2.3 Run the install playbook</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Ensure that you are in the ansible folder and apply the <em>nginx_workshop_gw/install.yaml</em> playbook:</p>
+<p>The playbook has already been executed for you, but there is no harm in running it again&#8230;&#8203;
+Ensure that you are in the ansible folder and apply the <em>nginx_workshop_gw/install.yaml</em> playbook:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -759,38 +765,17 @@ certs before, and then pick either SSL enabled or disabled versions of NGINX con
 <p>Ansible makes it possible to combine roles with additional tasks in a single playbook. So you can have a
 combination of imperative and declarative styles in a single playbook.</p>
 </div>
+<div class="paragraph">
+<p>We don&#8217;t need to run this playbook because it has already been executed during the workshop build.</p>
+</div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2_7_apply_the_setup_playbook"><a class="link" href="#_2_7_apply_the_setup_playbook">2.7 Apply the setup playbook</a></h2>
+<h2 id="_2_7_nginx_plus_dashboard"><a class="link" href="#_2_7_nginx_plus_dashboard">2.7 NGINX Plus Dashboard</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Again, ensure that you are in the ansible folder and apply the <em>nginx_workshop_gw/setup.yaml</em> playbook:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook playbooks/nginx_workshop_gw/setup.yaml</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You now have the gateway setup and ready to provide access to the rest of the workshop servers. You should
-now be able to point your web browser at your gateway and see these documents in beautiful HTML5.</p>
-</div>
-<p>Try accessing your workshop -> <a id='task_link'></a></p>
-<script>
-  var tl='https://' + location.host + '/tasks';
-  document.getElementById("task_link").innerHTML = tl;
-  document.getElementById("task_link").href = tl;
-</script>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_2_8_nginx_plus_dashboard"><a class="link" href="#_2_8_nginx_plus_dashboard">2.8 NGINX Plus Dashboard</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>If you look at the <em>setup.yaml</em> playbook used in the previous section, you will find there is a section
+<p>If you scroll through the <em>setup.yaml</em> playbook used in the previous section, you will find there is a section
 which creates a password for access to the API and Dashboard.</p>
 </div>
 <div class="listingblock">
@@ -848,10 +833,10 @@ the active health monitoring feature of NGINX Plus has detected them as failed.<
 </div>
 </div>
 <div class="sect1">
-<h2 id="_2_9_setup_the_nginx_backends"><a class="link" href="#_2_9_setup_the_nginx_backends">2.9 Setup the NGINX backends</a></h2>
+<h2 id="_2_8_setup_the_nginx_backends"><a class="link" href="#_2_8_setup_the_nginx_backends">2.8 Setup the NGINX backends</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Okay, so we have installed NGINX Plus on the gateway machine and configured it to serve content from our HTML
+<p>Okay, so we have NGINX Plus installed on the gateway machine and it&#8217;s configured to serve content from our HTML
 folder and to load balance onto the services we&#8217;re going to deploy later.</p>
 </div>
 <div class="paragraph">
@@ -892,7 +877,7 @@ servers.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-04 15:00:23 BST
+Last updated 2020-07-07 18:46:57 BST
 </div>
 </div>
 </body>

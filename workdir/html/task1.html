@@ -513,7 +513,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="#">Previous Task</a><br>
+<a href="task0.html">Previous Task</a><br>
 <a href="task2.html">Next Task</a><br></p>
 </div>
 </div>
@@ -872,16 +872,25 @@ a webserver, or installing a system such as jenkins. Unlike a playbook a role is
 <p>We&#8217;re going to be making use of a few ansible roles during this course.</p>
 </div>
 <div class="paragraph">
-<p>Ansible includes a tool to search and install community published roles called <em>ansible-galaxy</em>.
-Lets use <em>ansible-galaxy</em> to install the NGINX role published by F5/NGINX.</p>
+<p>In fact we used a role during the deployment of your workshop to install NGINX onto your gateway host.
+The role used was <code>nginxinc.nginx</code> which can install and configure NGINX and NGINX Plus software.
+You can see the installed roles by executing the following <code>ansible-galaxy</code> command.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ansible-galaxy install nginxinc.nginx</pre>
+<pre>$ ansible-galaxy list</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>We&#8217;ll make use of this role in <a href="task2.html">Task 2</a></p>
+<p>You can search for roles using the same command line tool or using the <a href="https://galaxy.ansible.com/">Galaxy website</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ansible-galaxy search nginxinc</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -890,7 +899,7 @@ Lets use <em>ansible-galaxy</em> to install the NGINX role published by F5/NGINX
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Contents</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
 </tr>
 </tbody>
@@ -900,7 +909,7 @@ Lets use <em>ansible-galaxy</em> to install the NGINX role published by F5/NGINX
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-04 16:21:55 BST
+Last updated 2020-07-07 18:37:13 BST
 </div>
 </div>
 </body>
