@@ -271,4 +271,5 @@ can provide.
 
 |===
 |<<task5.adoc#,Previous Task>>|<<task7.adoc#,Next Task>>
+|===
 

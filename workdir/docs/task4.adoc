@@ -28,7 +28,7 @@ create a new CI/CD pipeline.
 </script>
 ++++
 
-The username is `nginx` and the password can be found in `~/secrets/jenkins.cicd.password`
+The username is `nginx` and the password can be found in `~/secrets/jenkins.cicd.passwd`
 
 ----
 $ cat secrets/jenkins.cicd.passwd
@@ -62,7 +62,7 @@ Jenkins also needs to be able to access our source code repositories stored in G
 to provide a set of credentials for that access next.
 
 Using the same `add Credentials` dialog, set the `Kind` to be "username with password" and enter
-a `username` of "nginx", and the `password` as found in `~/secrets/git.cicd.password`. Set the `ID` to
+a `username` of "nginx", and the `password` as found in `~/secrets/git.cicd.passwd`. Set the `ID` to
 "gitea" so you remember what it is for.
 
 Once complete, click `OK` to save.
@@ -240,3 +240,4 @@ image:img/whatcheese-web.png[WhatCheese Website]
 
 |===
 |<<task3.adoc#,Previous Task>>|<<task5.adoc#,Next Task>>
+|===

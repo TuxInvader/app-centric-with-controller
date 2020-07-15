@@ -43,4 +43,5 @@ Once you have both HTTPS and SSH access to the workshop please continue with <<t
 
 |===
 |<<index.adoc#,Contents>>|<<task1.adoc#,Next Task>> 
+|===
 

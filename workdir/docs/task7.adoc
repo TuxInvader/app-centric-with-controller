@@ -147,4 +147,5 @@ When your changes are commited, a Jenkins pipeline will start and redeploy the a
 
 |===
 |<<task6.adoc#,Next Task>>|<<task8.adoc#,Next Task>>
+|===
 

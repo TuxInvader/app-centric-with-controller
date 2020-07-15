@@ -283,4 +283,5 @@ Now let's move on to <<task2.adoc#,Task 2>>
 
 |===
 |<<task0.adoc#,Previous>>|<<task2.adoc#,Next Task>>
+|===
 

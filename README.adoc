@@ -20,7 +20,7 @@ $ git config --global submodule.recurse true
 === Setup the build dir
 
 Next you need to change to the build folder, and copy the example inventory and vars.yaml files
-from `example` folder.
+from the `example` folder.
 
 ----
 $ cp example/* .
