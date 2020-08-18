@@ -40,11 +40,15 @@
       become: no
       connection: local
 
+    - name: generate salt
+      set_fact:
+        password_salt: "{{ 'abcdefghijklmnopqrstuvwxyz' | random ~ 'abcdefghijklmnopqrstuvwxyz' | random ~ 999 | random}}"
+
     - name: set user password
       user:
         name: ec2-user
         update_password: always
-        password: "{{ workshop_pass.stdout | password_hash('sha512', 'f5ws') }}"
+        password: "{{ workshop_pass.stdout | password_hash('sha512', password_salt) }}"
 
     - name: Store password
       local_action:

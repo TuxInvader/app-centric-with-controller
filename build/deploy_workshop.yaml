@@ -232,7 +232,7 @@
         path: secrets/workshops.txt
         state: present
         create: yes
-        line: "https://{{ wsid }}.{{ ws.route53.zone }} nginx {{ basic_auth.stdout }}"
+        line: "https://{{ wsid }}.{{ ws.route53.zone }}/tasks nginx {{ basic_auth.stdout }}"
       become: no
       connection: local
 

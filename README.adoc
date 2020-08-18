@@ -293,9 +293,24 @@ Eg:
 $ ssh -i secrets/user.pem ubuntu@ws01.ukws.nginxlab.net
 ----
 
+All stack information is recorded in `secrets/workshops.txt`, you'll have an entry for each workshop
+and each jumphost. Eg:
+
+----
+$ cat secrets/workshops.txt
+https://ws01.ukws.somedomain.com/tasks <user> <password>
+rdp://jump01.ukws.somedomain.com <user> <password>
+----
+
+The https line is to access the documentation for the course, which is protected with basic-auth and
+the user/password. The rdp line is the uri for the jumphost with the RDP user/password. You can also
+SSH to the jumphost using the same ssh key as the workshop gateway, but the username is `ec2-user`.
+
 The _deploy_aws.yaml_ playbook sets up the VPC, and then includes _deploy_workshop.yaml_ to handle
 setting up the workshop (ie the gateway instance). The gateway is set up to provide DNS for the
 other machines, and also act as a default gateway. 
+
+If jumphosts are enabled then a playbook is run to setup the jumphosts too.
 
 == S3 Prerequisites
 
