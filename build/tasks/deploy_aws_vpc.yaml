@@ -133,6 +133,10 @@
           from_port: 8443
           to_port: 8443
           cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 3389
+          to_port: 3389
+          cidr_ip: 0.0.0.0/0
   #      - proto: all
   #        #group_name: "{{ ws.aws_account_id ~ '/' ~ nginx_sg.group_id ~ '/' ~ ws.uk_se_name ~ '_' ~  ws.stack_name ~ '_sg' }}"
   #        group_name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"

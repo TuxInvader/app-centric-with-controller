@@ -1,0 +1,55 @@
+---
+  - name: debug
+    debug:
+      msg: "{{ vpc_private_subnet_ids }}"
+
+  - name: "Create the Jumphost for {{ item }}"
+    ec2:
+      instance_tags:
+        Name: "{{ item }}-jump"
+        stack: "{{ ws.stack_name }}"
+        UK-SE: "{{ ws.uk_se_name }}"
+      instance_type: "{{ ws.ec2.jumphost.type }}"
+      image: "{{ jump_ami_id }}"
+      #group: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_sg"
+      group_id: "{{ nginx_sg.group_id }}"
+      vpc_subnet_id: "{{ vpc_public_subnet_ids[ ws.prefix ~ '00_public' ] }}"
+      key_name: "{{ ws.uk_se_name }}_{{ ws.stack_name }}_key"
+      assign_public_ip: "{{ ws.ec2.jumphost.public }}"
+      volumes:
+        - device_name: "{{ ws.ec2.jumphost.disk_name | default('/dev/sda1') }}"
+          volume_size: "{{ ws.ec2.jumphost.disk_size | default(10) }}"
+          delete_on_termination: yes
+      state: present
+      wait: yes
+    when: ec2_instances[ item ~ '-jump' ] is not defined
+
+  - name: "Retrieve EC2 Instance Information for {{ item }}"
+    ec2_instance_facts:
+      filters:
+        "tag:Name": "{{ item }}-jump"
+        "tag:stack": "{{ ws.stack_name }}"
+        "tag:UK-SE": "{{ ws.uk_se_name }}"
+        "instance-state-name": "running"
+    register: ec2_jump_result
+
+  - name: debug
+    debug:
+      msg: "{{ ec2_jump_result }}"
+
+  - block:
+
+    - name: "Store the host information for {{ item }}"
+      set_fact:
+        deployed: "{{  deployed | default({}) | combine({ item: { 'jumphost':  ec2_jump_result.instances.0 }}, recursive=True) }}"
+
+    - name: "Update hosts file for this user"
+      lineinfile:
+        line: "{{ ec2_jump_result.instances.0.private_ip_address }}\tjumphost jumphost.{{ item }}.ukws.nginxlab.net"
+        regexp: ".*\tjumphost"
+        path: "secrets/hosts.{{ item }}"
+        state: present
+        create: true
+
+    when: ec2_jump_result is defined
+

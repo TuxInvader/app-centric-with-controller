@@ -21,8 +21,14 @@
 
           [controllers]
 
+          [jumphosts]
+
           [controllers:vars]
           ansible_ssh_private_key_file=secrets/user.pem
+
+          [jumphosts:vars]
+          ansible_ssh_private_key_file=secrets/user.pem
+          ansible_user=ec2-user
 
         dest: inventory
 
@@ -64,6 +70,11 @@
       include_tasks: tasks/deploy_aws_vms.yaml
       with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
 
+    - name: Deploy the Jumphost Machines Task
+      include_tasks: tasks/deploy_aws_jumphosts.yaml
+      with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
+      when: ws.jumphosts == true
+
     - name: Dump the deployments information
       debug:
         msg: "Stack: {{item}} {{ deployed[item].gateway.public_dns_name }}"
@@ -75,6 +86,14 @@
               '.' ~ (( ws.ec2.subnets.private.third | int ) + ( item | int )) }} privmask={{ ws.ec2.subnets.private.bits
               }} privip={{ deployed[ ws.prefix ~ item ].gateway.secondary_ip }}"
         insertafter: "\\[controllers\\]"
+        path: inventory
+        state: present
+      with_sequence: "count={{ ws.stacks }} format=%02d"
+
+    - name: Add jumphosts to local inventory
+      lineinfile:
+        line: "{{ deployed[ ws.prefix ~ item ].jumphost.public_dns_name }} wsid={{ ws.prefix }}{{ item }} jumpid=jump{{ item }}"
+        insertafter: "\\[jumphosts\\]"
         path: inventory
         state: present
       with_sequence: "count={{ ws.stacks }} format=%02d"
@@ -91,6 +110,15 @@
         privip: "{{ deployed[ ws.prefix ~ item ].gateway.secondary_ip }}"
       with_sequence: "count={{ ws.stacks }} format=%02d"
 
+    - name: add the jumphosts to the current playbook too
+      add_host:
+        name: "{{ deployed[ ws.prefix ~ item ].jumphost.public_dns_name }}"
+        groups:
+          - jumphosts
+        ansible_ssh_private_key_file: secrets/user.pem
+        wsid: "{{ ws.prefix }}{{ item }}"
+      with_sequence: "count={{ ws.stacks }} format=%02d"
+
     - name: Add controller host record to Route53 DNS
       route53:
         state: present
@@ -101,6 +129,18 @@
         value: "{{ deployed[item].gateway.public_ip_address }}"
         overwrite: yes
       with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
+
+    - name: Add jump host record to Route53 DNS
+      route53:
+        state: present
+        hosted_zone_id: "{{ ws.route53.zone_id }}"
+        record: "{{ 'jump' ~ item ~ '.' ~ ws.route53.zone }}"
+        type: A
+        ttl: 120
+        value: "{{ deployed[ ws.prefix ~ item ].jumphost.public_ip_address }}"
+        overwrite: yes
+      with_sequence: "count={{ ws.stacks }} format=%02d"
+      when: ws.jumphosts == true
 
     - name: Add controller wildcard record to Route53 DNS
       route53:
@@ -125,4 +165,8 @@
 
 - name: Deploy the workshop files to the gateways
   import_playbook: deploy_workshop.yaml
+
+- name: setup the jumphost passwords
+  import_playbook: deploy_jumphosts.yaml
+  when: ws.jumphosts == true
 

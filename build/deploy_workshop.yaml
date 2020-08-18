@@ -18,7 +18,7 @@
       become: no
     
     - name: Ensure python symlink exists
-      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      raw: test -e /usr/bin/python || (apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yq install python-minimal )
 
     - name: Set the gateway machines hostname
       command:

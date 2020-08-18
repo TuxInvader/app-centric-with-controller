@@ -53,6 +53,7 @@ You'll need to have the following python modules available on your system to run
 * botocore
 * nose
 * tornado
+* passlib (required on macos for setting jumphost passwords)
 
 So depending on how you installed ansible, an apt-get, yum or pip may be in oder
 
@@ -76,6 +77,7 @@ ws:
   prefix: ws
   stacks: 1
   save_certbot_configs: yes
+  jumphosts: yes
 
   aws_access_key: "{{ secrets.aws_access_key }}"
   aws_secret_key: "{{ secrets.aws_secret_key }}"
@@ -118,6 +120,12 @@ The `aws_region` should obviously be set to the region in which you want to depl
 If the `save_certbot_configs` setting is yes|true then the undeploy script will tar up the letsencrypt
 certificates from the workshop instances and store them in your local `secrets` folder during shutdown.
 
+=== Jumphosts
+
+If jumphosts is set to `yes` then each workshop will also get a basic linux jumphost accessable via RDP.
+The jumphost is using Amazon Linux and the user will be `ec2-user@jump{{stack}}`. See also the jumphosts
+section in the `ec2` vars to set the machine type.
+
 === S3 Vars
 
 The _vars.yaml_ continues with an S3 section...
@@ -149,6 +157,10 @@ The _vars.yaml_ continues with an ec2 section...
 ----
   ec2:
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
+
+    jumphosts:
+      type: t3.small
+      public: yes
 
     machines:
       gateway:

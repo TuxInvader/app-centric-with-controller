@@ -1,0 +1,58 @@
+---
+
+- hosts: jumphosts
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - secrets/aws_config.yaml
+    - vars.yaml
+
+  tasks:
+
+    - name: Wait for jumphost to be reachable
+      wait_for:
+        port: 22
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+        sleep: 5
+        timeout: 60
+      become: no
+    
+    - name: Copy over the ssh key
+      copy:
+        src: secrets/user.pem
+        dest: /home/ec2-user/.ssh/id_rsa
+        owner: ec2-user
+        group: ec2-user
+        mode: 0400
+
+    - name: Copy over controller license key
+      copy:
+        dest: /home/ec2-user/
+        owner: ec2-user
+        group: ec2-user
+        src: "secrets/license.txt"
+
+    - name: retrieve the basic auth user password
+      local_action:
+        module: shell
+        cmd: "awk '{ if ( $0 ~ /{{ wsid }}.*/ ) { print $3 } }' secrets/workshops.txt"
+      register: workshop_pass
+      become: no
+      connection: local
+
+    - name: set user password
+      user:
+        name: ec2-user
+        update_password: always
+        password: "{{ workshop_pass.stdout | password_hash('sha512', 'f5ws') }}"
+
+    - name: Store password
+      local_action:
+        module: lineinfile
+        path: secrets/workshops.txt
+        state: present
+        create: yes
+        line: "rdp://{{ jumpid }}.{{ ws.route53.zone }} ec2-user {{ workshop_pass.stdout }}"
+      become: no
+      connection: local
+
