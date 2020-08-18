@@ -5,6 +5,7 @@ ws:
   prefix: mb
   stacks: 1
   save_certbot_configs: yes
+  jumphosts: yes
 
   aws_access_key: "{{ secrets.aws_access_key }}"
   aws_secret_key: "{{ secrets.aws_secret_key }}"
@@ -26,6 +27,10 @@ ws:
 
   ec2:
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
+
+    jumphosts:
+      type: t3.small
+      public: yes
 
     machines:
       gateway:
