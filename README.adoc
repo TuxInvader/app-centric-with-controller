@@ -159,7 +159,7 @@ The _vars.yaml_ continues with an ec2 section...
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
 
     jumphost:
-      type: t3.small
+      type: t3.medium
       public: yes
 
     machines:
