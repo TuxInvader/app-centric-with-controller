@@ -37,6 +37,11 @@
         path: secrets/workshops.txt
         state: absent
 
+    - name: Reset jumphosts file
+      file:
+        path: secrets/jumphosts.txt
+        state: absent
+
     - name: locate and register the AMI ID
       include_tasks: tasks/find_ami_id.yaml
 

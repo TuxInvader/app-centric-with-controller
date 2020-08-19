@@ -48,7 +48,7 @@
     - name: Store password
       local_action:
         module: lineinfile
-        path: secrets/workshops.txt
+        path: secrets/jumphosts.txt
         state: present
         create: yes
         line: "rdp://{{ jumpid }}.{{ ws.route53.zone }} ec2-user {{ workshop_pass.stdout }}"
