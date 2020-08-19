@@ -182,11 +182,11 @@
     set_fact:
       vpc_key: "{{ vpc_key_result }}"
     when: vpc_key_result.key.private_key is defined
-  
+
   - name: Store key in secrets folder
     copy:
       dest: secrets/user.pem
-      content: "{{ vpc_key.key.private_key }}"
+      content: "{{ vpc_key.key.private_key }}\n"
       mode: 0400
     when: vpc_key.key.private_key is defined
 

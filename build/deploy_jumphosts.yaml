@@ -3,6 +3,8 @@
 - hosts: jumphosts
   become: yes
   gather_facts: yes
+  vars:
+    ansible_user: ec2-user
   vars_files:
     - secrets/aws_config.yaml
     - vars.yaml

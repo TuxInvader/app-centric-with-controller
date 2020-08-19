@@ -28,7 +28,7 @@ ws:
   ec2:
     cidr_block: "10.10" # first 2 octets of subnet cidr... this will be a /16
 
-    jumphosts:
+    jumphost:
       type: t3.small
       public: yes
 
