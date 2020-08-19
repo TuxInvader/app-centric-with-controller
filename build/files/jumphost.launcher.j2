@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Icon=chromium-browser
+Icon[en_US]=chromium-browser
+Terminal=false
+Exec=chromium-browser https://nginx:{{ workshop_pass.stdout }}@{{ wsid }}.{{ ws.route53.zone }}/tasks/
+Name[en_US]=NGINX Workshop
+Name=NGINX Workshop
+

@@ -101,20 +101,20 @@
         src: "secrets/license.txt"
 
     # Syncrhonize complains about missing python when run from my mac on first attempt
-    #- name: Copy over workdir
-    #  synchronize:
-    #    src: ../workdir/
-    #    dest: /home/ubuntu/
-    #    archive: yes
-    #    delete: no
-    #  become: ubuntu
-
     - name: Copy over workdir
-      copy:
+      synchronize:
         src: ../workdir/
         dest: /home/ubuntu/
-        local_follow: no
+        archive: yes
+        delete: no
       become: ubuntu
+
+    #- name: Copy over workdir
+    #  copy:
+    #    src: ../workdir/
+    #    dest: /home/ubuntu/
+    #    local_follow: no
+    #  become: ubuntu
 
     - name: create the siege-web loadtest file
       template:

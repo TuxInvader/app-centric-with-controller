@@ -116,7 +116,9 @@
         groups:
           - jumphosts
         ansible_ssh_private_key_file: secrets/user.pem
+        ansible_user: ec2-user
         wsid: "{{ ws.prefix }}{{ item }}"
+        jumpid: "{{ ws.prefix }}{{ item }}"
       with_sequence: "count={{ ws.stacks }} format=%02d"
 
     - name: Add controller host record to Route53 DNS

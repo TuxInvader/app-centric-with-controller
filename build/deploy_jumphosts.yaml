@@ -27,13 +27,6 @@
         group: ec2-user
         mode: 0400
 
-    - name: Copy over controller license key
-      copy:
-        dest: /home/ec2-user/
-        owner: ec2-user
-        group: ec2-user
-        src: "secrets/license.txt"
-
     - name: retrieve the basic auth user password
       local_action:
         module: shell
@@ -61,4 +54,34 @@
         line: "rdp://{{ jumpid }}.{{ ws.route53.zone }} ec2-user {{ workshop_pass.stdout }}"
       become: no
       connection: local
+
+    - name: Complete Mate desktop setup
+      yum:
+        name: 
+          - mate-desktop
+          - pluma
+        state: latest
+        
+    - name: Create users Desktop folder
+      file:
+        path: /home/ec2-user/Desktop
+        state: directory
+        mode: 0755
+        owner: ec2-user
+        group: ec2-user
+
+    - name: Add workshop link to desktop
+      template:
+        src: files/jumphost.launcher.j2
+        dest: /home/ec2-user/Desktop/NGINX-Lab.desktop
+        mode: 0775
+        owner: ec2-user
+        group: ec2-user
+
+    - name: Copy over controller license key
+      copy:
+        dest: /home/ec2-user/Desktop
+        owner: ec2-user
+        group: ec2-user
+        src: "secrets/license.txt"
 
