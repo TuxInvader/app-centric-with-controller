@@ -443,7 +443,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_0_1_introduction">0.1 Introduction</a></li>
-<li><a href="#_0_2_getting_shell_access">0.2 Getting Shell Access</a></li>
+<li><a href="#_0_2_getting_access">0.2 Getting Access</a>
+<ul class="sectlevel2">
+<li><a href="#_0_2_1_direct_access">0.2.1 Direct Access</a></li>
+<li><a href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></li>
+</ul>
+</li>
+<li><a href="#_0_3_begin">0.3 Begin</a></li>
 </ul>
 </div>
 </div>
@@ -484,6 +490,11 @@ task we&#8217;ll cover Ansible basics, but first lets take a look at the environ
 with a public interface in a routeable public network, and a secondary inteface in a private network.</p>
 </div>
 <div class="paragraph">
+<p>You can either access the gateway directly using SSH and HTTPS, or if that is restricted you may access
+using RDP to the jumphost. The RDP password is the same as the Basic-Auth password used to access this
+site, and the username is <code>ec2-user</code>.</p>
+</div>
+<div class="paragraph">
 <p>All other machines in the course reside in the private network and will be accessed through the NGINX
 Plus instance running on the gateway.</p>
 </div>
@@ -494,12 +505,30 @@ with it&#8217;s hostname and password.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_0_2_getting_shell_access"><a class="link" href="#_0_2_getting_shell_access">0.2 Getting Shell Access</a></h2>
+<h2 id="_0_2_getting_access"><a class="link" href="#_0_2_getting_access">0.2 Getting Access</a></h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_0_2_1_direct_access"><a class="link" href="#_0_2_1_direct_access">0.2.1 Direct Access</a></h3>
 <div class="paragraph">
 <p>The private key for gaining access to your workshop can be downloaded <a href="/secrets/">Here</a>
 You should find the SSH private key in both OpenSSH PEM and Putty PPK file formats.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_0_2_2_jumphost_access"><a class="link" href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></h3>
+<div class="paragraph">
+<p>Your jumphost should be accessable on the same stack number as this gateway. So for example,
+If you are on stack ws03.domain.com, then your jumphost will be on jump03.domain.com.</p>
+</div>
+<div class="paragraph">
+<p>Connect using your RDP client, with the username <code>ec2-user</code> and the same password as you used here.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_0_3_begin"><a class="link" href="#_0_3_begin">0.3 Begin</a></h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Once you have both HTTPS and SSH access to the workshop please continue with <a href="task1.html">Task 1</a></p>
 </div>
@@ -520,7 +549,7 @@ You should find the SSH private key in both OpenSSH PEM and Putty PPK file forma
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-15 08:56:16 +0100
+Last updated 2020-08-19 10:01:04 +0100
 </div>
 </div>
 </body>
