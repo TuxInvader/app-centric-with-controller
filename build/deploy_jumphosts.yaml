@@ -19,6 +19,15 @@
         timeout: 60
       become: no
     
+    - name: Wait for all gateways to be in the workshop file.
+      local_action:
+        module: shell
+        cmd: "wc -l secrets/workshops.txt | grep {{ ws.stacks }}"
+      retries: 10
+      delay: 10
+      become: no
+      connection: local
+
     - name: Copy over the ssh key
       copy:
         src: secrets/user.pem
@@ -48,7 +57,7 @@
     - name: Store password
       local_action:
         module: lineinfile
-        path: secrets/jumphosts.txt
+        path: secrets/workshops.txt
         state: present
         create: yes
         line: "rdp://{{ jumpid }}.{{ ws.route53.zone }} ec2-user {{ workshop_pass.stdout }}"

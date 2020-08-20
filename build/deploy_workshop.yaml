@@ -16,7 +16,7 @@
         sleep: 5
         timeout: 60
       become: no
-    
+
     - name: Ensure python symlink exists
       raw: test -e /usr/bin/python || (apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yq install python-minimal )
 

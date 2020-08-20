@@ -310,7 +310,7 @@ The _deploy_aws.yaml_ playbook sets up the VPC, and then includes _deploy_worksh
 setting up the workshop (ie the gateway instance). The gateway is set up to provide DNS for the
 other machines, and also act as a default gateway. 
 
-If jumphosts are enabled then a playbook is run to setup the jumphosts too.
+If jumphosts are enabled then the playbook _deploy_jumphosts.yaml_ is run to setup the jumphosts too.
 
 == S3 Prerequisites
 

@@ -33,10 +33,6 @@
         "instance-state-name": "running"
     register: ec2_jump_result
 
-  - name: debug
-    debug:
-      msg: "{{ ec2_jump_result }}"
-
   - block:
 
     - name: "Store the host information for {{ item }}"
