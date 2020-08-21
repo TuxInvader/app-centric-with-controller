@@ -1,8 +1,6 @@
 ---
 - hosts: nginx
   become: true
-  roles:
-    - role: nginxinc.nginx
   vars_files:
     - ~/ansible/vars/controller.yaml
   vars:
@@ -19,6 +17,26 @@
       njs: true
 
   tasks:
+
+    - name: Copy over the NGINX Plus cert
+      copy:
+        src: /etc/ssl/nginx/nginx-repo.crt
+        dest: /etc/ssl/nginx/
+        owner: root
+        group: root
+        mode: 0444
+
+    - name: Copy over the NGINX Plus key
+      copy:
+        src: /etc/ssl/nginx/nginx-repo.key
+        dest: /etc/ssl/nginx/
+        owner: root
+        group: root
+        mode: 0444
+
+    - name: Run through the NGINX setup
+      import_role:
+        name: nginxinc.nginx
 
     - name: Setup Extended logging
       lineinfile:
