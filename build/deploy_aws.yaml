@@ -97,6 +97,7 @@
         path: inventory
         state: present
       with_sequence: "count={{ ws.stacks }} format=%02d"
+      when: ws.jumphosts == true
 
     - name: add the controllers to the current playbook too
       add_host:
@@ -120,6 +121,7 @@
         wsid: "{{ ws.prefix }}{{ item }}"
         jumpid: "jump{{ item }}"
       with_sequence: "count={{ ws.stacks }} format=%02d"
+      when: ws.jumphosts == true
 
     - name: Add controller host record to Route53 DNS
       route53:
