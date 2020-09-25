@@ -14,7 +14,7 @@
       certificate: "/etc/ssl/nginx/nginx-repo.crt"
       key: "/etc/ssl/nginx/nginx-repo.key"
     nginx_modules:
-      njs: true
+      - njs
 
   tasks:
 
