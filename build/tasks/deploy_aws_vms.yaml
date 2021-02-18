@@ -115,7 +115,7 @@
 
     - name: "Update hosts file for this user"
       lineinfile:
-        line: "{{ result.instances.0.private_ip_address }}\t{{ result.machine.key }} {{ result.machine.key }}.{{ item }}.ukws.nginxlab.net"
+        line: "{{ result.instances.0.private_ip_address }}\t{{ result.machine.key }} {{ result.machine.key }}.{{ item }}.{{ ws.route53.zone }}"
         regexp: ".*\t{{ result.machine.key }}"
         path: "secrets/hosts.{{ item }}"
         state: present

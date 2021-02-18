@@ -11,6 +11,7 @@ cicd:
   jenkins:
     # pkg.jenkins.io is slow. See: http://mirrors.jenkins-ci.org/status.html
     updates_url: http://mirror.serverion.com/jenkins/updates/
+    version: 2.263
     hostname: jenkins.{{ wsid }}.{{ domain }}
     http_port: 8080
     url_prefix: /

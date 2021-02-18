@@ -41,7 +41,7 @@
 
     - name: "Update hosts file for this user"
       lineinfile:
-        line: "{{ ec2_jump_result.instances.0.private_ip_address }}\tjumphost jumphost.{{ item }}.ukws.nginxlab.net"
+        line: "{{ ec2_jump_result.instances.0.private_ip_address }}\tjumphost jumphost.{{ item }}.{{ ws.route53.zone }}"
         regexp: ".*\tjumphost"
         path: "secrets/hosts.{{ item }}"
         state: present
