@@ -1,0 +1,32 @@
+= API Automation Workshop
+:showtitle:
+:next_section: task1
+
+[cols="^20,<80" grid="none" frame="none"]
+|===
+| image:../img/nginx-logo-black.png[NGINX,150,100,align="center"]
+|
+Welcome and thank you for attending this course on NGINX API Automation.  +
+In this workshop we'll focus on API Gateway and API Management using NGINX Plus +
+and NGINX Controller.
+|===
+
+'''
+
+During this workshop, we'll be looking at various ways to automate the API lifecycle. Including:
+
+ * Install and use the NGINX Ansible role to deploy NGINX software
+ * Introduction to NGINX Controller 3.x
+ * Deploy and secure an API using pre-shared keys
+ * Deploy and secure an API using JWT OAUTH2 security.
+
+== Tasks
+
+* <<task0.adoc#,Task 0: Welcome to the workshop>>
+* <<task1.adoc#,Task 1: Introduction to Ansible>>
+* <<task2.adoc#,Task 2: Install NGINX Controller>>
+* <<task2.adoc#,Task 3: A guided tour of NGINX Controller>>
+* <<task4.adoc#,Task 4: Deploy an API manually>>
+* <<task5.adoc#,Task 5: Deploy an API with automation>>
+* <<task8.adoc#,Task 6: Wrap Up>>
+

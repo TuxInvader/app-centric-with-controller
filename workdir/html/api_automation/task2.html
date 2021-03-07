@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 3: Deploy Your CI/CD Infrastructure</title>
+<title>Task 2: Install NGINX Controller</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,23 +438,30 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 3: Deploy Your CI/CD Infrastructure</h1>
+<h1>Task 2: Install NGINX Controller</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_3_1_introduction">3.1 Introduction</a></li>
-<li><a href="#_3_2_install_jenkins_role">3.2 Install Jenkins Role</a></li>
-<li><a href="#_3_3_run_the_playbook">3.3 Run the playbook</a></li>
-<li><a href="#_3_4_check_gitea_is_running">3.4 Check Gitea is running</a></li>
-<li><a href="#_3_5_check_jenkins_is_running">3.5 Check Jenkins is running</a></li>
-<li><a href="#_3_6_introducing_nginx_unit">3.6 Introducing NGINX Unit</a>
+<li><a href="#_2_1_introduction">2.1 Introduction</a></li>
+<li><a href="#_2_2_install_the_nginx_controller_collection">2.2 Install the NGINX Controller collection</a></li>
+<li><a href="#_2_3_install_nginx_controller">2.3 Install NGINX Controller</a></li>
+<li><a href="#_2_4_what_is_nginx_controller">2.4 What is NGINX Controller</a></li>
+<li><a href="#_2_5_controller_architecture">2.5 Controller Architecture</a>
 <ul class="sectlevel2">
-<li><a href="#_about_unit">About Unit</a></li>
-<li><a href="#_key_features">Key Features</a></li>
-<li><a href="#_supported_app_languages">Supported App Languages</a></li>
-<li><a href="#_usage_of_unit_on_this_course">Usage of Unit on this course</a></li>
+<li><a href="#_analytics">Analytics</a></li>
+<li><a href="#_api_management">API Management</a></li>
+<li><a href="#_load_balancing">Load Balancing</a></li>
+<li><a href="#_controller_application_security">Controller Application Security</a></li>
 </ul>
 </li>
+<li><a href="#_2_6_the_controller_api">2.6 The Controller API</a>
+<ul class="sectlevel2">
+<li><a href="#_object_model">Object Model</a></li>
+<li><a href="#_resource_properties">Resource Properties</a></li>
+</ul>
+</li>
+<li><a href="#_2_8_controller_licensing">2.8 Controller Licensing</a></li>
+<li><a href="#_2_9_controller_agent">2.9 Controller Agent</a></li>
 </ul>
 </div>
 </div>
@@ -465,204 +472,414 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task2.html">Previous Task</a><br>
-<a href="task4.html">Next Task</a><br></p>
+<a href="task1.html">Previous Task</a><br>
+<a href="task3.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_1_introduction"><a class="link" href="#_3_1_introduction">3.1 Introduction</a></h2>
+<h2 id="_2_1_introduction"><a class="link" href="#_2_1_introduction">2.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Now we&#8217;re going to deploy some tools for CI/CD automation. We&#8217;ll be using a free Open Source Git repository
-server with a github like HTTP interface called <a href="https://gitea.io/en-us/">Gitea</a>, and for orchestration automation
-we&#8217;ll be using <a href="https://jenkins.io/">Jenkins</a></p>
+<p>In this lesson we will be getting our hands dirty by deploying your NGINX Controller and some
+NGINX Plus system using Ansible.</p>
+</div>
+<div class="paragraph">
+<p>NGINX Plus is already installed on your gateway node, and it acts as a simple TCP/UDP gateway for
+the services being deployed during this workshop</p>
+</div>
+<div class="paragraph">
+<p>Remember the network layout looks like this:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/workshop-diagram.png" alt="network"></span></p>
 </div>
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_2_install_jenkins_role"><a class="link" href="#_3_2_install_jenkins_role">3.2 Install Jenkins Role</a></h2>
+<h2 id="_2_2_install_the_nginx_controller_collection"><a class="link" href="#_2_2_install_the_nginx_controller_collection">2.2 Install the NGINX Controller collection</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Jenkins is a beast of a system with a whole bunch of plugins. We&#8217;re going to use an Ansible Galaxy role to help
-us get it all set up. So first install the <code>geerlinguy.jenkins</code> role on your gateway machine.</p>
+<p>We publish Ansible roles for all NGINX products on Ansible Galaxy. You may use the roles individually or
+acquire all of them as a collection. We&#8217;ll use the roles to install NGINX Plus and NGINX Controller next.</p>
+</div>
+<div class="paragraph">
+<p>First we need to install the collections using the <code>ansible-galaxy</code> tool.</p>
+</div>
+<div class="listingblock">
+<div class="title">Controller Collection</div>
+<div class="content">
+<pre>$ ansible-galaxy collection install nginxinc.nginx_controller</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">NGINX Core Collection</div>
+<div class="content">
+<pre>$ ansible-galaxy collection install nginxinc.nginx_core</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The NGINX Core collection includes roles for installing and configuring NGINX Plus and NGINX App Protect.
+At this time we don&#8217;t include NGINX UNIT roles in the Core collection, but it is available seperately.</p>
+</div>
+<div class="paragraph">
+<p>The published roles and collections can be found here: <a href="https://galaxy.ansible.com/nginxinc">NGINX Inc on Ansible Galaxy</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_3_install_nginx_controller"><a class="link" href="#_2_3_install_nginx_controller">2.3 Install NGINX Controller</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;re now going to be installing controller using the nginx_controller_install role included in the
+nginx_controller collection.</p>
+</div>
+<div class="paragraph">
+<p>Take a look at the playbook in <code>~/ansible/playbooks/controller/deploy_with_role.yaml</code>. This is a slightly
+modified version of the example <a href="https://galaxy.ansible.com/nginxinc/nginx_controller_install">here</a> to
+work with our lab.</p>
+</div>
+<div class="paragraph">
+<p>The role itself is declaritive, but there are some additional tasks: we need to set a root password
+before we run the role, because the installer needs to <code>su -</code> to root, and we also install some
+package prerequisites, and copy the logfile after install completes.</p>
+</div>
+<div class="paragraph">
+<p>The role section looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="title">Controller install snippet</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml"><span></span><span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">install controller</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">remote_user</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">ubuntu</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">hosts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">controller</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">become</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">yes</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">become_user</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">ubuntu</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">become_method</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">su</span>  <span class="tok-c1"># note that the become method is required to be su, you will need to support that for your distribution.</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">gather_facts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">false</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">vars_files</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">~/ansible/vars/controller.yaml</span>
+
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">roles</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginxinc.nginx_controller.nginx_controller_install</span>
+
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">vars</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_tarball</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">controller.install_package</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_install_path</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/home/ubuntu</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_bundled_db</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_tsdb_volume_type</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">local</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_smtp_host</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;localhost&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_smtp_authentication</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">false</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_smtp_use_tls</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">false</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_noreply_address</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;noreply@example.com&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_fqdn</span><span class="tok-p tok-p-Indicator">:</span>  <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">controller.hostname</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_organization_name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;NGINX&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_admin_firstname</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">controller.admin_firstname</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_admin_lastname</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">controller.admin_lastname</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_admin_email</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">controller.admin_email</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_admin_password</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">controller.admin_password</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_self_signed_cert</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx_controller_overwrite_existing_configs</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">ansible_python_interpreter</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/usr/bin/python3</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">ansible_become_password</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;{{</span><span class="tok-nv"> </span><span class="tok-s">controller.su_password</span><span class="tok-nv"> </span><span class="tok-s">}}&quot;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>jinja2</code> variables <code>{{ foo }}</code> are loaded in from the vars_file in <code>~/ansible/vars/controller.yaml</code></p>
+</div>
+<div class="paragraph">
+<p>To install controller, change directory to you <code>~/ansible</code> and run the following command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ ansible-galaxy install geerlingguy.jenkins</pre>
+<pre>$ ansible-playbook playbooks/controller/deploy_with_role.yaml</pre>
 </div>
 </div>
-<hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_3_run_the_playbook"><a class="link" href="#_3_3_run_the_playbook">3.3 Run the playbook</a></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Take a look at the playbook with your favourite text editor if your curious to see what it does.
-The playbook is in <code>playbooks/cicd/deploy.yaml</code> and this one file covers installing the jenkins
-server using the role you downloaded. Once Jenkins is installed it then includes a <code>gitea.yaml</code>
-manifest in the same directory. This second manifest handles installing the gitea service.</p>
+<p>The ansible-playbook will execute the controller install.sh script. If we were to be doing the install manually,
+it would like something like the options below. A full list of the switches used by the installer can be seen by
+running <code>./install.sh --help</code>.</p>
+</div>
+<div class="paragraph">
+<p>The arguments can be passed via switches or environment variables, and when neither is present the installer will
+ask interactively.</p>
+</div>
+<div class="paragraph">
+<p>The playbook will install controller using the following options</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook playbooks/cicd/deploy.yaml</pre>
+<pre>./install.sh -y --smtp-host localhost --smtp-port 25 --smtp-authentication false --smtp-use-tls false \
+  --noreply-address noreply@f5.com --admin-email {{ controller.admin_email }} \
+  --admin-password {{ controller.admin_password }} \
+  --fqdn {{ controller.hostname }} \
+  --auto-install-docker --self-signed-cert --organization-name 'F5 - NGINX' \
+  --admin-firstname {{ controller.admin_firstname }} \
+  --admin-lastname {{ controller.admin_lastname }} \
+  --tsdb-volume-type local --use-bundled-db --non-interactive</pre>
 </div>
 </div>
-<hr>
+<div class="paragraph">
+<p>The install step can take upto 10 minutes, so lets have a chat about controller&#8230;&#8203;.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_4_check_gitea_is_running"><a class="link" href="#_3_4_check_gitea_is_running">3.4 Check Gitea is running</a></h2>
+<h2 id="_2_4_what_is_nginx_controller"><a class="link" href="#_2_4_what_is_nginx_controller">2.4 What is NGINX Controller</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You should now be able to access your Gitea server at <code><a href="https://git.&lt;yourdomain&gt" class="bare">https://git.&lt;yourdomain&gt</a>;</code></p>
-</div>
-<p>Try accessing your Gitea Service -> <a id='git_link'></a></p>
-<script>
-  var git='https://git.' + location.host + '/';
-  document.getElementById("git_link").innerHTML = git;
-  document.getElementById("git_link").href = git;
-</script>
-<div class="paragraph">
-<p><span class="image"><img src="img/gitea.png" alt="Gitea"></span></p>
+<p>From NetOps to DevOps, modern app teams need a self‑service, API‑driven platform that integrates easily
+into CI/CD workflows to accelerate app deployment – whether your app has a hybrid or microservices
+architecture – and makes app lifecycle management easier.</p>
 </div>
 <div class="paragraph">
-<p>Check that you can login using the username <em>ngnix</em> and the password found in <code>~/secrets/git.cicd.passwd</code></p>
+<p><span class="image"><img src="../img/controller.png" alt="Controller"></span></p>
 </div>
-<hr>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+See the <a href="https://docs.nginx.com/nginx-controller/admin-guide/installing-nginx-controller/">Controller Admin Guide</a>
+for more information
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Execute the <code>ansible-playbook</code> and read through the next section while Ansible gets everything set up for you.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_3_5_check_jenkins_is_running"><a class="link" href="#_3_5_check_jenkins_is_running">3.5 Check Jenkins is running</a></h2>
+<h2 id="_2_5_controller_architecture"><a class="link" href="#_2_5_controller_architecture">2.5 Controller Architecture</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You should also be able to access your Jenkins server at <code><a href="https://jenkins.&lt;yourdomain&gt" class="bare">https://jenkins.&lt;yourdomain&gt</a>;</code></p>
+<p>The controller platform is built using a microservice architecture. The installer sets up a local
+<a href="https://kubernetes.io">Kubernetes</a> cluster on the controller, and then deploys a number of containers and
+services within the K8&#8217;s environment.</p>
 </div>
-<p>Try accessing your Jenkins Service -> <a id='jen_link'></a></p>
-<script>
-  var jen='https://jenkins.' + location.host + '/';
-  document.getElementById("jen_link").innerHTML = jen;
-  document.getElementById("jen_link").href = jen;
-</script>
-<div class="paragraph">
-<p><span class="image"><img src="img/jenkins.png" alt="Jenkins"></span></p>
-</div>
-<div class="paragraph">
-<p>Check that you can login using the username <em>ngnix</em> and the password found in <code>~/secrets/jenkins.cicd.passwd</code></p>
-</div>
-<hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_3_6_introducing_nginx_unit"><a class="link" href="#_3_6_introducing_nginx_unit">3.6 Introducing NGINX Unit</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>NGINX runs approximately 37% of the worlds websites, that&#8217;s some 470 million sites
-globally. NGINX has been in active development for many years, so when it was first
-started most websites were built using static html and javascript files.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+It is recommended that you allow the installer to installer and configure Docker and kubernetes
+for you, this is why they are not prerequisites.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Modern sites are much more dynamic, and NGINX has adapted over the years to be able to
-execute the application run times on which they are built. However this is not optimal, and
-so NGINX started developing a sister project: <a href="http://unit.nginx.org/">NGINX Unit</a></p>
-</div>
-<div class="sect2">
-<h3 id="_about_unit"><a class="link" href="#_about_unit">About Unit</a></h3>
-<div class="paragraph">
-<p>NGINX Unit is a lightweight dynamic open-source server for diverse web applications.</p>
+<p>The controller platform has been designed to be "API first" to enable the best integration coverage for
+CI/CD orchestration. The API itself is declarative and Application Centric. Role Based Access Control
+enables teams to be given access to the Applications they care about, and restricted or no access to the
+ones they don&#8217;t. The API is intuitively App Centric to enable developers to build logical pipelines easily,
+and the analytics which controller collects are equally Application focused.</p>
 </div>
 <div class="paragraph">
-<p>Built from scratch, Unit can run web apps in different language versions; fully configurable
-in runtime with zero interruption, it enables on-the-fly granular management for engineering
-and operations.</p>
+<p>Currently the controller has Four core modules:</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_key_features"><a class="link" href="#_key_features">Key Features</a></h3>
 <div class="ulist">
 <ul>
 <li>
-<p>Configuration updates dynamically via a RESTful JSON API</p>
+<p><a href="#_analytics">Analytics</a></p>
 </li>
 <li>
-<p>Disparate language versions run simultaneously</p>
+<p><a href="#_api_management">API Management</a></p>
 </li>
 <li>
-<p>Application processes scale on demand</p>
+<p><a href="#_load_balancing">Load Balancing</a></p>
 </li>
 <li>
-<p>SSL/TLS is supported seamlessly (OpenSSL 1.0.1 and later)</p>
-</li>
-<li>
-<p>Extensive request routing, load balancing, and static file serving options are available</p>
-</li>
-<li>
-<p>Server-side WebSockets are implemented for Node.js and Java</p>
-</li>
-<li>
-<p>Namespaces enable application isolation</p>
-</li>
-<li>
-<p>HTTP requests can be proxied elsewhere during routing</p>
+<p><a href="#_controller_application_security">Controller Application Security</a></p>
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="_analytics"><a class="link" href="#_analytics">Analytics</a></h3>
+<div class="paragraph">
+<p>The controller can be used as an analytics engine, either from an infrastructure perspective when not
+managing NGINX configuration, or with an Application focus when used for ADC and/or API Management.</p>
+</div>
+<div class="paragraph">
+<p>Controller can also provide valuble insights into NGINX based Service Mesh deployments.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_supported_app_languages"><a class="link" href="#_supported_app_languages">Supported App Languages</a></h3>
+<h3 id="_api_management"><a class="link" href="#_api_management">API Management</a></h3>
+<div class="paragraph">
+<p>The API Management module enables controller to act as a central management point for all of your
+enterprises APIs. It supports Authentication, and Authorization of API consumers. It can import and
+publish APIs from OAS 3.0 specifications, and can be used to manage a Developer Portal.</p>
+</div>
+<div class="paragraph">
+<p>The APIM module has been designed to manage your full API life-cycle with an Application Centric
+interface, and API first design.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_load_balancing"><a class="link" href="#_load_balancing">Load Balancing</a></h3>
+<div class="paragraph">
+<p>The Load Balancing module enables the central management of Load Balancer configuration for all of your NGINX+
+deployments.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_controller_application_security"><a class="link" href="#_controller_application_security">Controller Application Security</a></h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_6_the_controller_api"><a class="link" href="#_2_6_the_controller_api">2.6 The Controller API</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>NGINX Controller follows an “API-first” approach, which means that all NGINX Controller functionality
+is exclusively exposed through declarative and resource-oriented APIs. Even the user interface (UI) uses
+our REST API!
+You’ll find examples of REST request bodies in the UI. You can rest assured that the example you see is
+correct, because that is the call that the UI is going to make to apply your requested configuration.</p>
+</div>
+<div class="sect2">
+<h3 id="_object_model"><a class="link" href="#_object_model">Object Model</a></h3>
+<div class="paragraph">
+<p>The NGINX Controller API - as well as the UI and the product documentation - is organized
+into four top-level areas:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Assembly</p>
+<p>Analytics: Enables data visualization for NGINX Controller.</p>
 </li>
 <li>
-<p>Python</p>
+<p>Infrastructure: Lets you manage your NGINX Plus instances and certain aspects of the host machines on
+which NGINX Controller and NGINX Plus instances run.</p>
 </li>
 <li>
-<p>PHP</p>
+<p>Platform: Lets you manage NGINX Controller options and configurations, including Users, Roles, Licenses,
+and Global Settings.</p>
 </li>
 <li>
-<p>Go</p>
-</li>
-<li>
-<p>Perl</p>
-</li>
-<li>
-<p>Ruby</p>
-</li>
-<li>
-<p>JavaScript (Node.js)</p>
-</li>
-<li>
-<p>Java</p>
+<p>Services: Lets you manage your applications and APIs.</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>The diagrams below demonstrate how the different objects at the Service level relate to each other.
+All Service objects are part of an Environment:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/services-object-model-example.png" alt="Services"></span></p>
+</div>
+<div class="paragraph">
+<p>Gateways and Certs can be defined at the Environment level -or- at the App Component Level.
+The diagram below shows an example of how traffic flows through a Gateway to the App Components that
+represent your application’s back-end servers. Certs can be added to the Gateway or to an App Component.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/traffic-flow-example-1.png" alt="Traffic Flow"></span></p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_usage_of_unit_on_this_course"><a class="link" href="#_usage_of_unit_on_this_course">Usage of Unit on this course</a></h3>
+<h3 id="_resource_properties"><a class="link" href="#_resource_properties">Resource Properties</a></h3>
 <div class="paragraph">
-<p>We&#8217;ll be using Unit to host the backend applications which we are about to deploy using our
-newly built CI/CD pipelines. You have two machines in your lab which are designated for this
-task: <code>unit1</code> and <code>unit2</code>. Before we move on to deploying your first service, we&#8217;ll need to
-get those boxes ready.</p>
-</div>
-<div class="paragraph">
-<p>Please run the following ansible playbook to install docker on the unit machines:</p>
+<p>All NGINX Controller API resources contain the following properties:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook playbooks/unit/deploy.yaml</pre>
+<pre>{
+  "metadata": {
+  },
+  "desiredState": {
+  },
+  "currentStatus": {
+  }
+}</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>That&#8217;s it, you&#8217;re ready to run your first deployment pipeline&#8230;&#8203;. Exciting!!!</p>
+<p>The <code>desiredState</code> property is a representation of the state that you want to apply to the system.
+The properties within <code>desiredState</code> are the API representation of data. While changes to <code>desiredState</code> may
+trigger eventually consistent operations, the object itself is “immediately consistent”. Consumers of the API
+can “read their own writes” and should always be able to retrieve the current desired state, no matter
+where the system is in the process of applying the state change.</p>
+</div>
+<div class="paragraph">
+<p>The <code>currentStatus</code> property represents the current state of the system. Its purpose is to communicate the
+progress of achieving eventual consistency to the API consumer. As such, currentStatus is a read-only property.</p>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_8_controller_licensing"><a class="link" href="#_2_8_controller_licensing">2.8 Controller Licensing</a></h2>
+<div class="sectionbody">
+<p>When the ansible playbook has finished, please log into your controller at <a id="ctrl1"></a></p>
+<script>
+  var ctrl='https://ctrl.' + location.hostname + '/';
+  document.getElementById("ctrl1").innerHTML = ctrl;
+  document.getElementById("ctrl1").href = ctrl;
+</script>
+<div class="paragraph">
+<p>The user email address is <code>admin@nginx.com</code> and the password is saved in <code>~/secrets/controller.passwd</code></p>
+</div>
+<div class="paragraph">
+<p>You should see a warning that the controller is not yet licensed. There is a license file in the home folder
+of your gateway machine, you can either upload it manually through the UI, or use Ansible to apply the license.</p>
+</div>
+<div class="paragraph">
+<p>If you are using Ansible, you will find a <code>license.yaml</code> in the same location as the <code>deploy.yaml</code> run previously.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/ctrl-license.png" alt="Controller License"></span></p>
+</div>
+<div class="paragraph">
+<p>The NGINX button in the top left of the screen is the main navigation control for the UI. The licenses are in the
+<code>platform</code> section, along with the RBAC settings (Users and Roles), and the audit log.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_9_controller_agent"><a class="link" href="#_2_9_controller_agent">2.9 Controller Agent</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the UI if you click the NGINX Button and change to the <code>Infrastructure</code> section, you will see a pop-up advising
+you how to add an NGINX Plus instance.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/ctrl-agent.png" alt="Controller Agent Install"></span></p>
+</div>
+<div class="paragraph">
+<p>As with the licensing above, there is an ansible playbook in the controller folder which can deploy agents to
+your two NGINX Plus instances, you can either run the <code>deploy_nginx.yaml</code> playbook. Or follow the instructions
+in the UI to install a controller agent onto both <code>nginx1</code> and <code>nginx2</code>.</p>
+</div>
+<div class="paragraph">
+<p>I recommend you add the two nginx instances using the playbook, and once you have done that and they have
+appeared in your infrastructure tab as instance 2 and 4, then add the gateway manually. In the next task we&#8217;ll
+deploy code to the managed instances 2 and 4, so it&#8217;s important that those instances aren&#8217;t your gateway
+machine.</p>
+</div>
+<div class="paragraph">
+<p>If the pop-up closes for any reason, you will find a <code>+ Create</code> button in the top right of the interface.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/ctrl-instances.png" alt="NGINX Instances"></span></p>
+</div>
+<div class="paragraph">
+<p>Within a few minutes of the instances being licensed you should see them appear in the overview section. We can
+now view analytics for these nodes from an infrastructure perspective in the graphs section, and get a config
+analysis from the Analyzer.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -671,19 +888,89 @@ $ ansible-playbook playbooks/unit/deploy.yaml</pre>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Previous Task</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task1.html">Previous Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task3.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-15 08:56:36 +0100
+Last updated 2021-03-07 15:16:43 UTC
 </div>
 </div>
+<style>
+pre.pygments .hll { background-color: #ffffcc }
+pre.pygments  { background: #f8f8f8; }
+pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+pre.pygments .tok-o { color: #666666 } /* Operator */
+pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
+pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+pre.pygments .tok-go { color: #888888 } /* Generic.Output */
+pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+pre.pygments .tok-m { color: #666666 } /* Literal.Number */
+pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
+pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
+pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+pre.pygments .tok-no { color: #880000 } /* Name.Constant */
+pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
+pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
+pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
+pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </body>
 </html>

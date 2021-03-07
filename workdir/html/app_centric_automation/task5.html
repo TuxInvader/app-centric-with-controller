@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 0: Welcome to the workshop</title>
+<title>Task 5: Setup NGINX Controller</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,18 +438,32 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 0: Welcome to the workshop</h1>
+<h1>Task 5: Setup NGINX Controller</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_0_1_introduction">0.1 Introduction</a></li>
-<li><a href="#_0_2_getting_access">0.2 Getting Access</a>
+<li><a href="#_5_1_introduction">5.1 Introduction</a></li>
+<li><a href="#_5_2_install_the_controller">5.2 Install the Controller</a>
 <ul class="sectlevel2">
-<li><a href="#_0_2_1_direct_access">0.2.1 Direct Access</a></li>
-<li><a href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></li>
+<li><a href="#_5_3_helper_script">5.3 Helper Script</a></li>
 </ul>
 </li>
-<li><a href="#_0_3_begin">0.3 Begin</a></li>
+<li><a href="#_5_4_controller_architecture">5.4 Controller Architecture</a>
+<ul class="sectlevel2">
+<li><a href="#_analytics">Analytics</a></li>
+<li><a href="#_api_management">API Management</a></li>
+<li><a href="#_load_balancing">Load Balancing</a></li>
+<li><a href="#_coming_soon">Coming Soon</a></li>
+</ul>
+</li>
+<li><a href="#_5_5_controller_licensing">5.5 Controller Licensing</a></li>
+<li><a href="#_5_6_controller_agent">5.6 Controller Agent</a></li>
+<li><a href="#_5_7_complete_the_ui_tour">5.7 Complete the UI Tour</a>
+<ul class="sectlevel2">
+<li><a href="#_analytics_section">Analytics Section</a></li>
+<li><a href="#_services_section">Services Section</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -460,77 +474,349 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="index.html">Previous Task</a><br>
-<a href="task1.html">Next Task</a><br></p>
+<a href="task4.html">Previous Task</a><br>
+<a href="task6.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_0_1_introduction"><a class="link" href="#_0_1_introduction">0.1 Introduction</a></h2>
+<h2 id="_5_1_introduction"><a class="link" href="#_5_1_introduction">5.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Welcome to this NGINX Application Centric Automation workshop.</p>
+<p>From NetOps to DevOps, modern app teams need a self‑service, API‑driven platform that integrates easily
+into CI/CD workflows to accelerate app deployment – whether your app has a hybrid or microservices
+architecture – and makes app lifecycle management easier.</p>
 </div>
 <div class="paragraph">
-<p>We&#8217;ll start off by deploying NGINX configuration using Ansible to deploy configuration files
-to the servers, later we&#8217;ll move onto deploying the same files using a CI/CD pipeline, and finish up
-switching to the NGINX Controllers declarative API.</p>
+<p><span class="image"><img src="../img/controller.png" alt="Controller"></span></p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>Built to manage NGINX Plus instances, NGINX Controller is cloud‑native, secure, and high‑performance.</p>
+</div>
+</div>
 </div>
 <div class="paragraph">
-<p>Ansible is used extensively in both the course and in the deployment of the workshop. In our first
-task we&#8217;ll cover Ansible basics, but first lets take a look at the environment you&#8217;ll be working with.</p>
+<p>In this section we&#8217;ll deploy an NGINX Controller instance into your workshop, and link your NGINX instances
+with your new controller. We&#8217;ll also take a tour of the User Interface, and discuss the core functionality of
+Controller 3.x.</p>
 </div>
-<div class="paragraph">
-<p><span class="image"><img src="img/workshop-diagram.png" alt="network"></span></p>
-</div>
-<div class="paragraph">
-<p>Each individual in the workshop has been given access to a gateway instance, the gateway is multi-homed
-with a public interface in a routeable public network, and a secondary inteface in a private network.</p>
-</div>
-<div class="paragraph">
-<p>You can either access the gateway directly using SSH and HTTPS, or if that is restricted you may access
-using RDP to the jumphost. The RDP password is the same as the Basic-Auth password used to access this
-site, and the username is <code>ec2-user</code>.</p>
-</div>
-<div class="paragraph">
-<p>All other machines in the course reside in the private network and will be accessed through the NGINX
-Plus instance running on the gateway.</p>
-</div>
-<div class="paragraph">
-<p>If you&#8217;re reading this then the gateway itself is already setup, and your instructor has supplied you
-with it&#8217;s hostname and password.</p>
-</div>
+<hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_0_2_getting_access"><a class="link" href="#_0_2_getting_access">0.2 Getting Access</a></h2>
+<h2 id="_5_2_install_the_controller"><a class="link" href="#_5_2_install_the_controller">5.2 Install the Controller</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;re going to install NGINX Controller using an Ansible playbook. Please change to your Ansible folder, and
+take a look at the variables for this deployment.</p>
+</div>
+<div class="paragraph">
+<p>Most of the playbooks you have been using load their varibles from a common <code>vars</code> folder. The controller
+playbook, will load variables from <code>vars/controller.yaml</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>---
+  controller:
+    version: "3.2"
+    api_version: "v1"
+    hostname: ctrl.{{ wsid }}.{{ domain }}
+    install_package: ~/controller-installer-3.2.0.tar.gz
+    license_file: ~/license.txt
+    admin_email: admin@nginx.com
+    admin_password: "{{ lookup('password', '~/secrets/controller.passwd length=12 chars=ascii_letters,digits') }}"
+    admin_firstname: BofH
+    admin_lastname: PFY
+    api_key: ''</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>vars</code> for this playbook include a version, a link to the controller installer package and a license file.
+Your <code>admin_email</code> address is set to "<a href="mailto:admin@nginx.com">admin@nginx.com</a>" and the <code>admin_password</code> variable is using
+a JINJA filter to generate and store a new password for you. If the password file is found to exist, then it&#8217;s
+content will be used instead.</p>
+</div>
+<div class="paragraph">
+<p>Most of the varibles are used as command line switches to the installer. In a real deployment you would need
+to provide details of a postgres database, and a few other parameters, but we are fudging those in this workshop.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+See the <a href="https://docs.nginx.com/nginx-controller/admin-guide/installing-nginx-controller/">Controller Admin Guide</a>
+for more information
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The playbook will perform the following tasks for us:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Install prerequisite packages (jq, curl, and a few others)</p>
+</li>
+<li>
+<p>Copy the installer to the Controller host</p>
+</li>
+<li>
+<p>execut the installer.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The command line switches used by the installer (version 3.2) can be seen by running <code>./install.sh --help</code>. The
+arguments can be passed via switches or environment variables, and when neither is present the installer will
+ask interactively.</p>
+</div>
+<div class="paragraph">
+<p>The playbook will install controller using the following options</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./install.sh -y -n --smtp-host localhost --smtp-port 25 --smtp-authentication false --smtp-use-tls false \
+  --noreply-address noreply@f5.com --admin-email {{ controller.admin_email }} \
+  --admin-password {{ controller.admin_password }} \
+  --fqdn {{ controller.hostname }} \
+  --auto-install-docker --self-signed-cert --organization-name 'F5 - NGINX' \
+  --admin-firstname {{ controller.admin_firstname }} \
+  --admin-lastname {{ controller.admin_lastname }} \
+  --tsdb-volume-type local</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Execute the <code>ansible-playbook</code> and read through the next section while Ansible gets everything set up for you.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/controller/deploy.yaml</pre>
+</div>
+</div>
 <div class="sect2">
-<h3 id="_0_2_1_direct_access"><a class="link" href="#_0_2_1_direct_access">0.2.1 Direct Access</a></h3>
+<h3 id="_5_3_helper_script"><a class="link" href="#_5_3_helper_script">5.3 Helper Script</a></h3>
 <div class="paragraph">
-<p>The private key for gaining access to your workshop can be downloaded <a href="/secrets/">Here</a>
-You should find the SSH private key in both OpenSSH PEM and Putty PPK file formats.</p>
+<p>To start, stop, restart, and check the status of the NGINX Controller process, use the helper.sh script found at /opt/nginx-controller/:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./helper.sh controller start
+./helper.sh controller stop
+./helper.sh controller restart
+./helper.sh controller status</pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_0_2_2_jumphost_access"><a class="link" href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></h3>
-<div class="paragraph">
-<p>Your jumphost should be accessable on the same stack number as this gateway. So for example,
-If you are on stack ws03.domain.com, then your jumphost will be on jump03.domain.com.</p>
-</div>
-<div class="paragraph">
-<p>Connect using your RDP client, with the username <code>ec2-user</code> and the same password as you used here.</p>
-</div>
+<hr>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_0_3_begin"><a class="link" href="#_0_3_begin">0.3 Begin</a></h2>
+<h2 id="_5_4_controller_architecture"><a class="link" href="#_5_4_controller_architecture">5.4 Controller Architecture</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Once you have both HTTPS and SSH access to the workshop please continue with <a href="task1.html">Task 1</a></p>
+<p>The controller platform is built using a microservice architecture. The installer sets up a local
+<a href="https://kubernetes.io">Kubernetes</a> cluster on the controller, and then deploys a number of containers and
+services within the K8&#8217;s environment.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+It is recommended that you allow the installer to installer and configure Docker and kubernetes
+for you, this is why they are not prerequisites.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The controller platform has been designed to be "API first" to enable the best integration coverage for
+CI/CD orchestration. The API itself is declarative and Application Centric. Role Based Access Control
+enables teams to be given access to the Applications they care about, and restricted or no access to the
+ones they don&#8217;t. The API is intuitively App Centric to enable developers to build logical pipelines easily,
+and the analytics which controller collects are equally Application focused.</p>
+</div>
+<div class="paragraph">
+<p>Currently the controller has three core modules:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#_analytics">Analytics</a></p>
+</li>
+<li>
+<p><a href="#_api_management">API Management</a></p>
+</li>
+<li>
+<p><a href="#_load_balancing">Load Balancing</a></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_analytics"><a class="link" href="#_analytics">Analytics</a></h3>
+<div class="paragraph">
+<p>The controller can be used as an analytics engine, either from an infrastructure perspective when not
+managing NGINX configuration, or with an Application focus when used for ADC and/or API Management.</p>
+</div>
+<div class="paragraph">
+<p>Controller can also provide valuble insights into NGINX based Service Mesh deployments.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_api_management"><a class="link" href="#_api_management">API Management</a></h3>
+<div class="paragraph">
+<p>The API Management module enables controller to act as a central management point for all of your
+enterprises APIs. It supports Authentication, and Authorization of API consumers. It can import and
+publish APIs from OAS 3.0 specifications, and can be used to manage a Developer Portal.</p>
+</div>
+<div class="paragraph">
+<p>The APIM module has been designed to manage your full API life-cycle with an Application Centric
+interface, and API first design.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_load_balancing"><a class="link" href="#_load_balancing">Load Balancing</a></h3>
+<div class="paragraph">
+<p>The Load Balancing module enables the central management of Load Balancer configuration for all of your NGINX+
+deployments.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_coming_soon"><a class="link" href="#_coming_soon">Coming Soon</a></h3>
+<div class="paragraph">
+<p>WAF Module and Service Module coming summer 2020</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+Once the controller is running, all documentation can be accessed at <a href="https://&lt;fqdn&gt;/docs/" class="bare">https://&lt;fqdn&gt;/docs/</a>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_5_controller_licensing"><a class="link" href="#_5_5_controller_licensing">5.5 Controller Licensing</a></h2>
+<div class="sectionbody">
+<p>When the ansible playbook has finished, please log into your controller at <a id="ctrl1"></a></p>
+<script>
+  var ctrl='https://ctrl.' + location.hostname + '/';
+  document.getElementById("ctrl1").innerHTML = ctrl;
+  document.getElementById("ctrl1").href = ctrl;
+</script>
+<div class="paragraph">
+<p>The user email address is <code>admin@nginx.com</code> and the password is saved in <code>~/secrets/controller.passwd</code></p>
+</div>
+<div class="paragraph">
+<p>You should see a warning that the controller is not yet licensed. There is a license file in the home folder
+of your gateway machine, you can either upload it manually through the UI, or use Ansible to apply the license.</p>
+</div>
+<div class="paragraph">
+<p>If you are using Ansible, you will find a <code>license.yaml</code> in the same location as the <code>deploy.yaml</code> run previously.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/ctrl-license.png" alt="Controller License"></span></p>
+</div>
+<div class="paragraph">
+<p>The NGINX button in the top left of the screen is the main navigation control for the UI. The licenses are in the
+<code>platform</code> section, along with the RBAC settings (Users and Roles), and the audit log.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_controller_agent"><a class="link" href="#_5_6_controller_agent">5.6 Controller Agent</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the UI if you click the NGINX Button and change to the <code>Infrastructure</code> section, you will see a pop-up advising
+you how to add an NGINX Plus instance.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/ctrl-agent.png" alt="Controller Agent Install"></span></p>
+</div>
+<div class="paragraph">
+<p>As with the licensing above, there is an ansible playbook in the controller folder which can deploy agents to
+your two NGINX Plus instances, you can either run the <code>deploy_nginx.yaml</code> playbook. Or follow the instructions
+in the UI to install a controller agent onto both <code>nginx1</code> and <code>nginx2</code>.</p>
+</div>
+<div class="paragraph">
+<p>I recommend you add the two nginx instances using the playbook, and once you have done that and they have
+appeared in your infrastructure tab as instance 2 and 4, then add the gateway manually. In the next task we&#8217;ll
+deploy code to the managed instances 2 and 4, so it&#8217;s important that those instances aren&#8217;t your gateway
+machine.</p>
+</div>
+<div class="paragraph">
+<p>If the pop-up closes for any reason, you will find a <code>+ Create</code> button in the top right of the interface.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/ctrl-instances.png" alt="NGINX Instances"></span></p>
+</div>
+<div class="paragraph">
+<p>Within a few minutes of the instances being licensed you should see them appear in the overview section. We can
+now view analytics for these nodes from an infrastructure perspective in the graphs section, and get a config
+analysis from the Analyzer.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_7_complete_the_ui_tour"><a class="link" href="#_5_7_complete_the_ui_tour">5.7 Complete the UI Tour</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you click on the NGINX Button again, there are two more areas for us to explore: <code>Analytics</code> and <code>Services</code></p>
+</div>
+<div class="sect2">
+<h3 id="_analytics_section"><a class="link" href="#_analytics_section">Analytics Section</a></h3>
+<div class="paragraph">
+<p>The anlytics section provides you with an overall application health score based on the number of successful and
+unsuccessful requests through the monitored NGINX instances.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/ctrl-health.png" alt="Controller Overview"></span></p>
+</div>
+<div class="paragraph">
+<p>We can also create custom dashboards, which enable you to combine various metrics related to a NGINX instance or
+application into a single page. Why not try creating a Dashboard comparing <code>NGINX Performance Metrics</code> from the
+Whatcheese website, Jenkins, and other services to see how they compare.</p>
+</div>
+<div class="paragraph">
+<p>You will need to generate some traffic. We have siege installed on the gateway machine, run the follwing:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ siege -f ~/siege-web.txt -i -d 5 -c 5 -v</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you create the daashboard, you can use the <code>New Set</code>, <code>New Graph</code>, and <code>New Value</code> buttons to pick the metrics
+you are interested in. You can then apply a <code>vhost</code> filter to limit the data to a specific application</p>
+</div>
+<div class="paragraph">
+<p>In Analytics we can also set up Alerts and Events based on the metrics which Controller is collecting.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_services_section"><a class="link" href="#_services_section">Services Section</a></h3>
+<div class="paragraph">
+<p>The Services Section is where the controller becomes truely Application Centric&#8230;&#8203;</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -539,17 +825,18 @@ If you are on stack ws03.domain.com, then your jumphost will be on jump03.domain
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Contents</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task1.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Previous Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task6.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-19 10:01:04 +0100
+Last updated 2021-03-03 16:58:25 UTC
 </div>
 </div>
 </body>

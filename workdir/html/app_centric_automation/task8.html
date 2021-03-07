@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>NGINX Digital Accademy Workshops</title>
+<title>Task 8: Wrap Up</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,50 +436,129 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>NGINX Digital Accademy Workshops</h1>
+<h1>Task 8: Wrap Up</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_8_1_conclusion">8.1 Conclusion</a></li>
+<li><a href="#_8_2_further_reading">8.2 Further Reading</a>
+<ul class="sectlevel2">
+<li><a href="#_devportal">Devportal</a></li>
+<li><a href="#_role_based_access_controler">Role Based Access Controler</a></li>
+<li><a href="#_analytics_only_deployment">Analytics Only deployment</a></li>
+<li><a href="#_configuration_analyzer">Configuration Analyzer</a></li>
+</ul>
+</li>
+<li><a href="#_8_3_thank_you">8.3 Thank you</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this NGINX Digital Accademy Workshop. <br></p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><a href="index.html">Contents</a><br>
+<a href="task7.html">Previous Task</a><br></p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_workshops">Workshops</h2>
+<h2 id="_8_1_conclusion"><a class="link" href="#_8_1_conclusion">8.1 Conclusion</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>NGINX Plus can be automated by two primary methods.</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="nginx101/index.html">NGINX 101</a></p>
+<p>Store nginx.conf files directly in source control and have them written to disk
+via a CI/CD pipeline.</p>
 </li>
 <li>
-<p><a href="app_centric_automation/index.html">Application Centric Automation</a></p>
-</li>
-<li>
-<p><a href="api_automation/index.html">API Automation</a></p>
+<p>Manage NGINX Plus configuration through NGINX Contoller API. Intergrate Controller
+with CI/CD directly or via an automation tool such as Ansible.</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>There are pros and cons to each approach. The configuration file approach enables you
+to create exotic NGINX Plus configuration with access to all the features of
+NGINX Plus, but you need to understand the nginx configuration directives to a greater
+extent.</p>
+</div>
+<div class="paragraph">
+<p>The alternative approach using controller means you need less knowlege about the NGINX
+directives, but you are limited to the features which controller exposes. On the plus side,
+you get access to API Management features, Role Based Access control of your environments,
+and better insights through application centric metrics.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_8_2_further_reading"><a class="link" href="#_8_2_further_reading">8.2 Further Reading</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_devportal"><a class="link" href="#_devportal">Devportal</a></h3>
+<div class="paragraph">
+<p>The NGINX Controller can publish information about the APIs you publish to a <code>Developer Portal</code>,
+we haven&#8217;t done it in this course, but you can tag some of your NGINX instances with a <code>devportal</code>
+tag and Controller will configure them to perform that duty automatically.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_role_based_access_controler"><a class="link" href="#_role_based_access_controler">Role Based Access Controler</a></h3>
+<div class="paragraph">
+<p>We used a single account here, but you can create groups and users in the <code>platform</code> section to
+enable RBAC controls over your environments and applications managed by controller.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_analytics_only_deployment"><a class="link" href="#_analytics_only_deployment">Analytics Only deployment</a></h3>
+<div class="paragraph">
+<p>We have been writing configuration to our NGINX instances, but controller is also useful as an
+analytics only platform collecting metrics from "unmanaged instances".</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuration_analyzer"><a class="link" href="#_configuration_analyzer">Configuration Analyzer</a></h3>
+<div class="paragraph">
+<p>There is also a config analyzer tool in the Infrastructure section which can give you an analysis
+of the configuration running on any NGNIX instances. When Controller writes a config it uses best
+practice, but the tool is useful for "unmanaged instances".</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_8_3_thank_you"><a class="link" href="#_8_3_thank_you">8.3 Thank you</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Thank you for attending this virtual workshop. We hope you found it useful.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task7.html">Previous Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Contents</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-03 16:49:30 UTC
+Last updated 2021-03-03 16:58:46 UTC
 </div>
 </div>
 </body>

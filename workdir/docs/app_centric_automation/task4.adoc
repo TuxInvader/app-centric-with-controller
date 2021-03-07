@@ -43,7 +43,7 @@ passwordless SSH access enjoyed by our ansible playbooks.
 
 Navigate to _Credentials_ -> _System_ -> _Global Credentials_ and click the `Add Credentials` button.
 
-image:img/jenkins-add-creds.png[Add Credentials]
+image:../img/jenkins-add-creds.png[Add Credentials]
 
 You will need to change the `Kind` to be "SSH username with private key", and the `ID` should be set
 to "sshUser". The `Username` needs to be "ubuntu", and you should copy the private key that you use
@@ -89,7 +89,7 @@ the management menu. Scroll down to the `Gitea Servers` section.
 </script>
 ++++
 
-image:img/add-gitea-server.png[Add Gitea Server]
+image:../img/add-gitea-server.png[Add Gitea Server]
 
 If the connection infomation is correct, then you should see a 403/Forbidden error. Click Save.
 
@@ -112,7 +112,7 @@ discover that the _whatchees-web_ repository has a `Jenkinsfile` on its master b
 
 Return to the Jenkins home page.
 
-image:img/jenkins-home.png[Gitea Whatcheese Org]
+image:../img/jenkins-home.png[Gitea Whatcheese Org]
 
 '''
 == 4.4 View the Pipeline 
@@ -125,7 +125,7 @@ be visible here.
 
 Click on Whatcheese web and then the latest build number to view the pipeline.
 
-image:img/blue-ocean-pipe.png[Latest Pipeline Status]
+image:../img/blue-ocean-pipe.png[Latest Pipeline Status]
 
 ++++
 <p>Hopefully it's all green. Open a new browser window on <a id="git2"></a> and login using
@@ -154,7 +154,7 @@ Navigate to the _WhatCheese/whatcheese-web_ repoisitory in gitea, and click the 
 on the right hand side of the menu bar. Go to webhooks and click the `Add Webhook` and then the
 `Gitea` option in the drop down.
 
-image:img/gitea-add-webhook.png[automation using webhooks]
+image:../img/gitea-add-webhook.png[automation using webhooks]
 
 We need to tell Gitea where to send the webhook event. So in the `Target URL` field enter the
 jenkins URL of your server. 
@@ -175,7 +175,7 @@ You will be taken back to the WebHook settings for the WhatCheese repository, an
 see the hook you just created. Click on the webhook, and scroll down to the bottom, where you will
 find a test section. Run a test of your new webhook.
 
-image:img/webhook-test.png[Gitea Test Delivery]
+image:../img/webhook-test.png[Gitea Test Delivery]
 
 If everything went well then you should see _200_ response with `Processed` in the body.
 
@@ -236,7 +236,7 @@ $ git push
 If you check the Jenkins server, you should see a build was triggerd. And the Whatcheese website should
 now be accessable in your browser. Well done!
 
-image:img/whatcheese-web.png[WhatCheese Website]
+image:../img/whatcheese-web.png[WhatCheese Website]
 
 |===
 |<<task3.adoc#,Previous Task>>|<<task5.adoc#,Next Task>>

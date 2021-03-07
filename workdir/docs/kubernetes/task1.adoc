@@ -1,0 +1,95 @@
+= Task 1: Complete the workshop set up
+:showtitle:
+:toc: left
+:sectlinks:
+:prev_section: index
+:next_section: task2
+:source-highlighter: pygments
+
+****
+<<index.adoc#,Contents>> +
+<<task0.adoc#,Previous Task>> +
+<<task2.adoc#,Next Task>> +
+****
+
+== 1.1 Introduction
+
+We're going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
+in the App Centric workshop, but on this course, we're just going to run a few playbooks to deploy our
+Kubernetes cluster.
+
+== 1.2 Boot strap the nodes
+
+The workshop deployment process has already deployed your Virtual Machines, and configured the 
+gateway machine. The first task we have to complete together is to assign identities to the VMs
+in your private network. 
+
+Please change to the ansible folder on your gateway and execute the node_setup playbook.
+
+----
+$ cd ~/ansible
+$ ansible-playbook node_setup_playbook.yaml
+----
+
+Hopefully those tasks all completed successfully, and the final output from Ansible is a _PLAY RECAP_
+containing only changed and ok statuses.
+
+image:../img/node-setup-result.png[playbook recap]
+
+With that done, we're a step closer to having a useful workshop envionment. In task 2 we'll install NGINX on the
+gateway to open up access to the nodes you just configured. But before we can do that, we need to install
+an ansible role to help us.
+
+'''
+== 1.3 Setup Kubernetes
+
+We're going to deploy Kubernetes across 4 nodes running in the private network. The node_setup playbook you
+just ran has assigned hostnames to them as 'k8s1, k8s2, k8s3, and k8s4'. Now we're going to install `docker` and
+the kubernetes packages: `kubeadm`, `kubectl` and `kubelet`.
+
+Please run the deployment playbook
+
+----
+$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/deploy.yaml
+----
+
+We've installed `docker` as our container runtime. The `kubeadm` package is a tool for managing Kubernetes clusters,
+the `kubectl` command is the tool we'll be using most during the course and it's job is to help us interact with
+the kubernetes API. Finally `kubelet` is the kubernetes node agent, it runs on each node in the cluster to manage
+the containers (both our containers, and the kubernetes system itself).
+
+The next task in deploying a kubernetes cluster is to setup the 'primary' node.
+
+----
+$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/setup_primary.yaml
+----
+
+The above playbook uses `kubeadm` to create a new cluster, and then sets up the control plane components. Then we deploy a
+CNI for the pod networks (we're using flannel for simplicity), finally it retrieves and saves the API tokens which we'll
+need to join our other nodes into the cluster.
+
+Next we use the join command we retrieved from the primary node, to link our other hosts into the kubernetes cluster
+
+----
+$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/setup_nodes.yaml
+----
+
+Finally we'll install the `kubectl` command on your gateway, and copy over the authentication keys from the primary
+node:
+
+----
+$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/setup_local.yaml
+----
+
+
+
+Now let's move on to <<task2.adoc#,Task 2>> 
+
+|===
+|<<task0.adoc#,Previous>>|<<task2.adoc#,Next Task>>
+|===
+

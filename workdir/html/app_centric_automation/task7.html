@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>NGINX Digital Accademy Workshops</title>
+<title>Task 7: Application Insights</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,50 +436,231 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>NGINX Digital Accademy Workshops</h1>
+<h1>Task 7: Application Insights</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_7_1_generate_some_load">7.1 Generate some load</a>
+<ul class="sectlevel2">
+<li><a href="#_browse_the_api">Browse the API</a></li>
+</ul>
+</li>
+<li><a href="#_7_2_application_metrics">7.2 Application Metrics</a>
+<ul class="sectlevel2">
+<li><a href="#_investigate_the_api_latency">Investigate the API Latency</a></li>
+</ul>
+</li>
+<li><a href="#_7_3_modify_the_component">7.3 Modify the Component</a></li>
+<li><a href="#_7_4_fix_the_php_optional">7.4 Fix the PHP (optional)</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this NGINX Digital Accademy Workshop. <br></p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><a href="index.html">Contents</a><br>
+<a href="task6.html">Previous Task</a><br>
+<a href="task8.html">Next Task</a><br></p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_workshops">Workshops</h2>
+<h2 id="_7_1_generate_some_load"><a class="link" href="#_7_1_generate_some_load">7.1 Generate some load</a></h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="nginx101/index.html">NGINX 101</a></p>
-</li>
-<li>
-<p><a href="app_centric_automation/index.html">Application Centric Automation</a></p>
-</li>
-<li>
-<p><a href="api_automation/index.html">API Automation</a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>In this section we&#8217;re going to have a look at the <em>Application Centric</em> metrics that the controller is
+collecting. So first we need to generate some load, we&#8217;ll use "siege" to do this. Run the following
+command from your gateway node.</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre>$ siege -f ~/siege-full.txt -i -d 5 -c 10 -v</pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_browse_the_api"><a class="link" href="#_browse_the_api">Browse the API</a></h3>
+<div class="paragraph">
+<p>While siege is generating traffic also have a poke around the website in your browser. You should notice
+that the API link in the menu now works, it links to <code><a href="https://api.&lt;fqdn&gt;/v1/links" class="bare">https://api.&lt;fqdn&gt;/v1/links</a></code> which is the <code>API links</code>
+component in your <code>whatcheese_api</code> application.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/cheese-api.png" alt="WhatCheese API"></span></p>
+</div>
+<div class="paragraph">
+<p>Try the following to see how the application and component configuration affects the result</p>
+</div>
+<p>Try accessing the root of your API service -> <a id='api_root'></a><br/>
+It should return a <code>404 - Not Found</code>. The API only has endpoints
+defined that appear in the OAS spec.</p>
+
+Try accessing one of the product addition pages -> <a id='api_add'></a><br/>
+It should return a <code>405 - Not Allowed</code>. The add pages only specify
+POST as a valid method.</p>
+
+<script>
+  var api='https://api.' + location.host + '/';
+  var api_add = api + 'v1/add/cheese';
+  document.getElementById("api_root").innerHTML = api;
+  document.getElementById("api_root").href = api;
+  document.getElementById("api_add").innerHTML = api_add;
+  document.getElementById("api_add").href = api_add;
+</script>
+<div class="paragraph">
+<p>Let&#8217;s expolore a little deeper using curl. You have already send a <code>GET</code> request to <code>/v1/add/cheese</code>
+and received a <code>Method not allowed</code> in response, so lets send it a <code>POST</code>&#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl -vv -X POST https://&lt;api fqdn&gt;/v1/add/cheese</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This POST should have returned a <code>401 - Authorization Required</code> because the addition endpoints are
+protected by API Key aswell. We can send the API key using the curl command below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl -vv -X POST https://&lt;api fqdn&gt;/v1/add/pickle?psk=e849b3f640a6740683f9012b097208bc -d '{"name":"piccalilli", "country":"England", "description":"Piccalilli or mustard pickle is a British interpretation of South Asian pickles, a relish of chopped pickled vegetables and spices; regional recipes vary considerably."}'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This POST should succeed and add a new <code>pickle</code> to the API. The controller configuration is set to expect
+an API key to be passed in a query string variable called <code>psk</code>. The <code>-d</code> argument posted the quoted JSON to the
+API, which should have resulted in <em>piccalilli</em> being added.</p>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_7_2_application_metrics"><a class="link" href="#_7_2_application_metrics">7.2 Application Metrics</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that siege has been running a while we can view the metrics that controller has been collecting
+about out environment. Navigate to the <code>WhatCheese [Production]</code> environment in your services.
+Change to the <code>Critical Analytics</code> view and then view the last <code>15 minutes</code> of data, and break out by
+<code>App</code>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/critical-1-env.png" alt="Environment Analytics by Application"></span></p>
+</div>
+<div class="paragraph">
+<p>We can see the traffic is split between the two applications, but the top left graph is showing the
+<code>workload latency</code> and clearly indicates that the <code>whatcheese_api</code> has a much higher latency than
+the <code>whatcheese</code> website.</p>
+</div>
+<div class="paragraph">
+<p>Scrolling down shows us more metrics, such as <code>Network Latency</code>, <code>Time to First Byte</code>, <code>Bytes In</code>,
+<code>Bytes Out</code>, <code>HTTP Requests</code> and more. These charts also show us that the website is having more
+hits, and also transferring more data.</p>
+</div>
+<div class="sect2">
+<h3 id="_investigate_the_api_latency"><a class="link" href="#_investigate_the_api_latency">Investigate the API Latency</a></h3>
+<div class="paragraph">
+<p>If you change to the <code>Apps</code> section in the left hand menu, and then look at the <code>WhatCheeseAPI</code>
+application we can see <code>Critical Analytics</code> for only this section. Take a look at the same
+<code>15 minutes</code> window, but this time set the break out by <code>component</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/critical-2-app.png" alt="Application Analytics by Component"></span></p>
+</div>
+<div class="paragraph">
+<p>That&#8217;s interesting the <code>win_get</code> component has significantly higher latency than the other parts
+of the API. We can investigate further by limiting our analytics to just that component. Still
+under the <code>Apps</code> section, click components in the sub menu, and then open the <code>Wine</code> component.</p>
+</div>
+<div class="paragraph">
+<p>Take a look at the same <code>15 minutes</code> window and break out by <code>HTTP Upstream Address</code>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/critical-3-comp.png" alt="Componenent Analytics by Upstream"></span></p>
+</div>
+<div class="paragraph">
+<p>Ah - So one of the application servers is significantly slower than the other. This is causing a
+degredation in service. Unsurprisingly this is intentional. The unit2 server is intentionally
+adding a delay into it&#8217;s responses for <code>/v1/wine</code> API calls.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_7_3_modify_the_component"><a class="link" href="#_7_3_modify_the_component">7.3 Modify the Component</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We could "fix" the problematic unit server and republish the fixed code. The problem exists in
+the PHP application <code>/unit/html/api/v1/index.php</code> within the controller branch of the whatcheese-web
+application.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;re going to temporarily resolve the issue, by modifying the component and removing <code>unit2</code> from
+service. From the <code>Critical Analytics</code> screen for the win component you can click <code>Edit Config</code> in
+the submenu.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/edit-component.png" alt="Edit Component"></span></p>
+</div>
+<div class="paragraph">
+<p>In the edit screen, open the <code>Workload Groups</code> section and edit the <code>unit</code> group. Scroll down and
+delete <code>unit2:81</code> from the group and click done.</p>
+</div>
+<div class="paragraph">
+<p>Open the <code>API Spec</code> section, this is the API call which the UI is going to make when you press
+submit. The <code>uris</code> section of the JSON payload should now just have a single unit backend.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/submit-component.png" alt="Components API Spec"></span></p>
+</div>
+<div class="paragraph">
+<p>Click the submit button. In a few minutes the workload latency for this component, the application
+and the environment should start to drop.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_7_4_fix_the_php_optional"><a class="link" href="#_7_4_fix_the_php_optional">7.4 Fix the PHP (optional)</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you&#8217;re the type of person who needs to pull at a loose thread when you see one, then feel free
+to fix the PHP application and bring <code>unit2</code> back into service. Simply edit the PHP file, and
+remove lines 79-82</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  if ( $segments[2] == "wine" and $unit == 'unit2' ) {
+    # sleep for 25ms on wine requests
+    time_nanosleep(0,25000000);
+  }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When your changes are commited, a Jenkins pipeline will start and redeploy the application.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task6.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task8.html">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-03 16:49:30 UTC
+Last updated 2021-03-03 16:58:41 UTC
 </div>
 </div>
 </body>

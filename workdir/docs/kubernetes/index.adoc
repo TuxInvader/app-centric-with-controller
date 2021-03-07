@@ -1,0 +1,27 @@
+= Kubernetes Ingress Controller Workshop
+:showtitle:
+:next_section: task1
+
+[cols="^20,<80" grid="none" frame="none"]
+|===
+| image:../img/nginx-logo-black.png[NGINX,150,100,align="center"]
+|
+Welcome and thank you for attending this course on NGINX Ingress Controller for Kubernetes.  +
+In this workshop we'll focus on using NGINX as a Kubernetes Ingress Controller, and the features +
+and benefits we provide beyond standard Ingress.
+|===
+
+'''
+
+During this workshop, we'll be looking at KIC use-cases for NGINX. Including:
+
+ * Improving Ingress by using Custom Resources
+ * Securing Ingress using NGINX App Protect
+ * More
+ * More
+ * More
+
+== Tasks
+
+* <<task0.adoc#,Task 0: Welcome to the workshop>>
+

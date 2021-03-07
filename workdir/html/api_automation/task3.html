@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 8: Wrap Up</title>
+<title>Task 3: A Guided Tour of NGINX Plus and NGINX Controller</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,20 +438,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 8: Wrap Up</h1>
+<h1>Task 3: A Guided Tour of NGINX Plus and NGINX Controller</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_8_1_conclusion">8.1 Conclusion</a></li>
-<li><a href="#_8_2_further_reading">8.2 Further Reading</a>
-<ul class="sectlevel2">
-<li><a href="#_devportal">Devportal</a></li>
-<li><a href="#_role_based_access_controler">Role Based Access Controler</a></li>
-<li><a href="#_analytics_only_deployment">Analytics Only deployment</a></li>
-<li><a href="#_configuration_analyzer">Configuration Analyzer</a></li>
-</ul>
-</li>
-<li><a href="#_8_3_thank_you">8.3 Thank you</a></li>
+<li><a href="#_3_1_what_is_nginx_plus">3.1 What is NGINX Plus</a></li>
+<li><a href="#_3_2_nginx_plus_dashboard">3.2 NGINX Plus Dashboard</a></li>
+<li><a href="#_3_3_setup_the_nginx_backends">3.3 Setup the NGINX backends</a></li>
 </ul>
 </div>
 </div>
@@ -462,84 +455,146 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task7.html">Previous Task</a><br></p>
+<a href="task2.html">Previous Task</a><br>
+<a href="task4.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_8_1_conclusion"><a class="link" href="#_8_1_conclusion">8.1 Conclusion</a></h2>
+<h2 id="_3_1_what_is_nginx_plus"><a class="link" href="#_3_1_what_is_nginx_plus">3.1 What is NGINX Plus</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>NGINX Plus can be automated by two primary methods.</p>
+<p>Most people are familiar with the extremely popular NGINX Open Source project. NGINX runs most of
+the worlds websites, and it is the most downloaded container on Docker Hub. You may not be aware
+that NGINX also build a commercial version of NGINX which comes with additional features and an
+enterprise support agreement. The commercial version is called NGINX Plus.</p>
+</div>
+<div class="paragraph">
+<p>NGINX Plus provides many additional features in the data plane where it manages traffic, and also
+includes some control plane functionality in the form of a REST API for <em>upstream</em> management, a
+key/valure store for dynamic ADC use-cases, and metrics collection.</p>
+</div>
+<div class="paragraph">
+<p>NGINX Plus is required if you want to manage your NGINX instances with NGINX Controller,
+or utilize the NGINX App Protect WAF.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/app-platform.png" alt="NGINX Application Platform"></span></p>
+</div>
+<div class="paragraph">
+<p>Other NGINX Plus enhancements include:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Store nginx.conf files directly in source control and have them written to disk
-via a CI/CD pipeline.</p>
+<p>Service Discovery using DNS SRV or A/AAAA records</p>
 </li>
 <li>
-<p>Manage NGINX Plus configuration through NGINX Contoller API. Intergrate Controller
-with CI/CD directly or via an automation tool such as Ansible.</p>
+<p>JWT Support for OATH2 or OpenID Connect (OIDC)</p>
+</li>
+<li>
+<p>ModSecurity WAF</p>
+</li>
+<li>
+<p>App Protect WAF (Based on F5s market leading WAF technology)</p>
+</li>
+<li>
+<p>Active Application Health Monitoring</p>
+</li>
+<li>
+<p>Cache Management API</p>
+</li>
+<li>
+<p>High Availability</p>
+</li>
+<li>
+<p>Live Activity monitoring dashboard</p>
+</li>
+<li>
+<p>Dynamic Configuration</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>There are pros and cons to each approach. The configuration file approach enables you
-to create exotic NGINX Plus configuration with access to all the features of
-NGINX Plus, but you need to understand the nginx configuration directives to a greater
-extent.</p>
+<p>NGINX Plus is used in many organizations for ADC/Load Balancing use-cases and also API Gateway.</p>
 </div>
-<div class="paragraph">
-<p>The alternative approach using controller means you need less knowlege about the NGINX
-directives, but you are limited to the features which controller exposes. On the plus side,
-you get access to API Management features, Role Based Access control of your environments,
-and better insights through application centric metrics.</p>
-</div>
+<hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_8_2_further_reading"><a class="link" href="#_8_2_further_reading">8.2 Further Reading</a></h2>
+<h2 id="_3_2_nginx_plus_dashboard"><a class="link" href="#_3_2_nginx_plus_dashboard">3.2 NGINX Plus Dashboard</a></h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_devportal"><a class="link" href="#_devportal">Devportal</a></h3>
 <div class="paragraph">
-<p>The NGINX Controller can publish information about the APIs you publish to a <code>Developer Portal</code>,
-we haven&#8217;t done it in this course, but you can tag some of your NGINX instances with a <code>devportal</code>
-tag and Controller will configure them to perform that duty automatically.</p>
+<p>The way we provide the <em>password</em> for the <em>htpasswd</em> module is a pattern which is used extensively
+for password generation in this course. The <em>password</em> is set using the Jinja lookup module.
+The module will attempt to open the provided file and use its content as the password, but
+if the file does not exist it will create a new password and store it there.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_role_based_access_controler"><a class="link" href="#_role_based_access_controler">Role Based Access Controler</a></h3>
 <div class="paragraph">
-<p>We used a single account here, but you can create groups and users in the <code>platform</code> section to
-enable RBAC controls over your environments and applications managed by controller.</p>
+<p>You should now be able to access your NGINX Plus dashboard, and API using the password created and stored
+in your secrets folder and the username 'nginx'. Grab the password now:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cat ~/secrets/basic_auth.passwd</pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_analytics_only_deployment"><a class="link" href="#_analytics_only_deployment">Analytics Only deployment</a></h3>
 <div class="paragraph">
-<p>We have been writing configuration to our NGINX instances, but controller is also useful as an
-analytics only platform collecting metrics from "unmanaged instances".</p>
+<p>And then try to access these URLs (username is nginx):</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_configuration_analyzer"><a class="link" href="#_configuration_analyzer">Configuration Analyzer</a></h3>
+<p>Try accessing your NGINX Plus dashboard -> <a id='db_link'></a><br/>
+Try accessing your NGINX Plus API -> <a id='api_link'></a><br/>
+Try accessing your NGINX Plus Swagger Spec -> <a id='oas_link'></a></p>
+<script>
+  var db='https://' + location.host + '/dashboard.html';
+  var api='https://' + location.host + '/api/6';
+  var oas='https://' + location.host + '/swagger-ui';
+  document.getElementById("db_link").innerHTML = db;
+  document.getElementById("db_link").href = db;
+  document.getElementById("api_link").innerHTML = api;
+  document.getElementById("api_link").href = api;
+  document.getElementById("oas_link").innerHTML = oas;
+  document.getElementById("oas_link").href = oas;
+</script>
 <div class="paragraph">
-<p>There is also a config analyzer tool in the Infrastructure section which can give you an analysis
-of the configuration running on any NGNIX instances. When Controller writes a config it uses best
-practice, but the tool is useful for "unmanaged instances".</p>
+<p>You will notice that the dashboard has many failed backends. This is because we haven&#8217;t deployed them yet, and
+the active health monitoring feature of NGINX Plus has detected them as failed.</p>
 </div>
+<div class="paragraph">
+<p>You can keep an eye on the gateway dashboard as we deploy services to ensure that they are running correctly.</p>
 </div>
+<hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_8_3_thank_you"><a class="link" href="#_8_3_thank_you">8.3 Thank you</a></h2>
+<h2 id="_3_3_setup_the_nginx_backends"><a class="link" href="#_3_3_setup_the_nginx_backends">3.3 Setup the NGINX backends</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Thank you for attending this virtual workshop. We hope you found it useful.</p>
+<p>Okay, so we have NGINX Plus installed on the gateway machine and it&#8217;s configured to serve content from our HTML
+folder and to load balance onto the services we&#8217;re going to deploy later.</p>
+</div>
+<div class="paragraph">
+<p>Before moving on lets run a final playbook to install NGINX Plus onto our backend NGINX instances (nginx1
+and nginx2). Please run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/nginx_workshop_gw/install_backends.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you check back on your NGINX Plus dashboard you should see that the <em>nginx_api</em>, <em>nginx_app</em>, and
+<em>nginx_web</em> upstream zones become healthy as they begin responding to the health probes.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/nginx-dash.png" alt="NGINX Plus Dashboard"></span></p>
+</div>
+<div class="paragraph">
+<p>In the next task we&#8217;ll install our CI/CD platform so that we can automate deployments to our new NGINX
+servers.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -548,8 +603,8 @@ practice, but the tool is useful for "unmanaged instances".</p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task7.html">Previous Task</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Contents</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task1.html">Previous Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -558,7 +613,7 @@ practice, but the tool is useful for "unmanaged instances".</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-15 08:57:14 +0100
+Last updated 2021-03-07 15:18:24 UTC
 </div>
 </div>
 </body>

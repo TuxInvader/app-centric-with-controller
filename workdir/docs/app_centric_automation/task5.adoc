@@ -17,7 +17,7 @@ From NetOps to DevOps, modern app teams need a self‑service, API‑driven plat
 into CI/CD workflows to accelerate app deployment – whether your app has a hybrid or microservices
 architecture – and makes app lifecycle management easier.
 
-image:img/controller.png[Controller]
+image:../img/controller.png[Controller]
 
 ****
 Built to manage NGINX Plus instances, NGINX Controller is cloud‑native, secure, and high‑performance.
@@ -167,7 +167,7 @@ of your gateway machine, you can either upload it manually through the UI, or us
 
 If you are using Ansible, you will find a `license.yaml` in the same location as the `deploy.yaml` run previously.
 
-image:img/ctrl-license.png[Controller License]
+image:../img/ctrl-license.png[Controller License]
 
 The NGINX button in the top left of the screen is the main navigation control for the UI. The licenses are in the
 `platform` section, along with the RBAC settings (Users and Roles), and the audit log.
@@ -178,7 +178,7 @@ The NGINX button in the top left of the screen is the main navigation control fo
 In the UI if you click the NGINX Button and change to the `Infrastructure` section, you will see a pop-up advising
 you how to add an NGINX Plus instance.
 
-image:img/ctrl-agent.png[Controller Agent Install]
+image:../img/ctrl-agent.png[Controller Agent Install]
 
 As with the licensing above, there is an ansible playbook in the controller folder which can deploy agents to
 your two NGINX Plus instances, you can either run the `deploy_nginx.yaml` playbook. Or follow the instructions
@@ -191,7 +191,7 @@ machine.
 
 If the pop-up closes for any reason, you will find a `+ Create` button in the top right of the interface.
 
-image:img/ctrl-instances.png[NGINX Instances]
+image:../img/ctrl-instances.png[NGINX Instances]
 
 Within a few minutes of the instances being licensed you should see them appear in the overview section. We can
 now view analytics for these nodes from an infrastructure perspective in the graphs section, and get a config
@@ -207,7 +207,7 @@ If you click on the NGINX Button again, there are two more areas for us to explo
 The anlytics section provides you with an overall application health score based on the number of successful and
 unsuccessful requests through the monitored NGINX instances.
 
-image:img/ctrl-health.png[Controller Overview]
+image:../img/ctrl-health.png[Controller Overview]
 
 We can also create custom dashboards, which enable you to combine various metrics related to a NGINX instance or
 application into a single page. Why not try creating a Dashboard comparing `NGINX Performance Metrics` from the

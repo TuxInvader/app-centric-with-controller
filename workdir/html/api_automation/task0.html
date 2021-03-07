@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 4: Automate NGINX with CI/CD Pipeline</title>
+<title>Task 0: Welcome to the workshop</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,26 +438,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 4: Automate NGINX with CI/CD Pipeline</h1>
+<h1>Task 0: Welcome to the workshop</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_4_1_introduction">4.1 Introduction</a></li>
-<li><a href="#_4_2_setup_credentials">4.2 Setup Credentials</a>
+<li><a href="#_0_1_introduction">0.1 Introduction</a></li>
+<li><a href="#_0_2_getting_access">0.2 Getting Access</a>
 <ul class="sectlevel2">
-<li><a href="#_4_2_1_credentials_for_ssh_access">4.2-1 Credentials for SSH access</a></li>
-<li><a href="#_4_2_2_credentials_for_gitea_access">4.2-2 Credentials for Gitea access</a></li>
+<li><a href="#_0_2_1_direct_access">0.2.1 Direct Access</a></li>
+<li><a href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></li>
 </ul>
 </li>
-<li><a href="#_4_3_connecting_jenkins_and_gitea">4.3 Connecting Jenkins and Gitea</a>
-<ul class="sectlevel2">
-<li><a href="#_4_3_1_create_a_gitea_reference">4.3-1 Create a Gitea reference</a></li>
-<li><a href="#_4_3_2_create_a_gitea_item">4.3-2 Create a Gitea Item</a></li>
-</ul>
-</li>
-<li><a href="#_4_4_view_the_pipeline">4.4 View the Pipeline</a></li>
-<li><a href="#_4_5_setup_an_automated_webhook">4.5 Setup an Automated Webhook</a></li>
-<li><a href="#_4_6_whatcheese_demo_site">4.6 WhatCheese Demo site</a></li>
+<li><a href="#_0_3_begin">0.3 Begin</a></li>
 </ul>
 </div>
 </div>
@@ -468,291 +460,74 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task3.html">Previous Task</a><br>
-<a href="task5.html">Next Task</a><br></p>
+<a href="index.html">Previous Task</a><br>
+<a href="task1.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_4_1_introduction"><a class="link" href="#_4_1_introduction">4.1 Introduction</a></h2>
+<h2 id="_0_1_introduction"><a class="link" href="#_0_1_introduction">0.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In this task we are going to login in to our newly deployed Jenkins automation server, and
-create a new CI/CD pipeline.</p>
+<p>Welcome to this NGINX API Automation workshop.</p>
 </div>
-<hr>
+<div class="paragraph">
+<p>We&#8217;ll start off with an introduction to Ansible, which we&#8217;ll then use to complete the bootstrap
+process of the workshop.
+Once everything is set up, we&#8217;ll take a look at NGINX Controller together, and they&#8217;ll we&#8217;ll start
+deploying APIs. Manually at first before switching to the NGINX Controllers declarative API.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/workshop-diagram.png" alt="network"></span></p>
+</div>
+<div class="paragraph">
+<p>Each individual in the workshop has been given access to a gateway instance, the gateway is multi-homed
+with a public interface in a routeable public network, and a secondary inteface in a private network.</p>
+</div>
+<div class="paragraph">
+<p>You can either access the gateway directly using SSH and HTTPS, or if that is restricted you may access
+using RDP to the jumphost. The RDP password is the same as the Basic-Auth password used to access this
+site, and the username is <code>ec2-user</code>.</p>
+</div>
+<div class="paragraph">
+<p>All other machines in the course reside in the private network and will be accessed through the NGINX
+Plus instance running on the gateway.</p>
+</div>
+<div class="paragraph">
+<p>If you&#8217;re reading this then the gateway itself is already setup, and your instructor has supplied you
+with it&#8217;s hostname and password.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_4_2_setup_credentials"><a class="link" href="#_4_2_setup_credentials">4.2 Setup Credentials</a></h2>
+<h2 id="_0_2_getting_access"><a class="link" href="#_0_2_getting_access">0.2 Getting Access</a></h2>
 <div class="sectionbody">
-<p>Login to the Jenkins instance running in your workshop <a id="jen1"></a></p>
-<script>
-  var jen='https://jenkins.' + location.host + '/';
-  document.getElementById("jen1").innerHTML = jen;
-  document.getElementById("jen1").href = jen;
-</script>
-<div class="paragraph">
-<p>The username is <code>nginx</code> and the password can be found in <code>~/secrets/jenkins.cicd.passwd</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cat secrets/jenkins.cicd.passwd</pre>
-</div>
-</div>
-<hr>
 <div class="sect2">
-<h3 id="_4_2_1_credentials_for_ssh_access"><a class="link" href="#_4_2_1_credentials_for_ssh_access">4.2-1 Credentials for SSH access</a></h3>
+<h3 id="_0_2_1_direct_access"><a class="link" href="#_0_2_1_direct_access">0.2.1 Direct Access</a></h3>
 <div class="paragraph">
-<p>The purpose of our first pipeline will be to deploy NGINX configuration to our NGINX web
-servers. We shall acomplish this using SSH, and so Jenkins needs to be given the same
-passwordless SSH access enjoyed by our ansible playbooks.</p>
+<p>The private key for gaining access to your workshop can be downloaded <a href="/secrets/">Here</a>
+You should find the SSH private key in both OpenSSH PEM and Putty PPK file formats.</p>
 </div>
-<div class="paragraph">
-<p>Navigate to <em>Credentials</em> &#8594; <em>System</em> &#8594; <em>Global Credentials</em> and click the <code>Add Credentials</code> button.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/jenkins-add-creds.png" alt="Add Credentials"></span></p>
-</div>
-<div class="paragraph">
-<p>You will need to change the <code>Kind</code> to be "SSH username with private key", and the <code>ID</code> should be set
-to "sshUser". The <code>Username</code> needs to be "ubuntu", and you should copy the private key that you use
-to access the workshop instances into the private key field. The key also exists on your gateway</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cat ~/.ssh/id_rsa</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once complete, click <code>OK</code> to save.</p>
-</div>
-<hr>
 </div>
 <div class="sect2">
-<h3 id="_4_2_2_credentials_for_gitea_access"><a class="link" href="#_4_2_2_credentials_for_gitea_access">4.2-2 Credentials for Gitea access</a></h3>
+<h3 id="_0_2_2_jumphost_access"><a class="link" href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></h3>
 <div class="paragraph">
-<p>Jenkins also needs to be able to access our source code repositories stored in Gitea. We will need
-to provide a set of credentials for that access next.</p>
+<p>Your jumphost should be accessable on the same stack number as this gateway. So for example,
+If you are on stack ws03.domain.com, then your jumphost will be on jump03.domain.com.</p>
 </div>
 <div class="paragraph">
-<p>Using the same <code>add Credentials</code> dialog, set the <code>Kind</code> to be "username with password" and enter
-a <code>username</code> of "nginx", and the <code>password</code> as found in <code>~/secrets/git.cicd.passwd</code>. Set the <code>ID</code> to
-"gitea" so you remember what it is for.</p>
+<p>Connect using your RDP client, with the username <code>ec2-user</code> and the same password as you used here.</p>
 </div>
-<div class="paragraph">
-<p>Once complete, click <code>OK</code> to save.</p>
-</div>
-<hr>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_4_3_connecting_jenkins_and_gitea"><a class="link" href="#_4_3_connecting_jenkins_and_gitea">4.3 Connecting Jenkins and Gitea</a></h2>
+<h2 id="_0_3_begin"><a class="link" href="#_0_3_begin">0.3 Begin</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Your Jenkins server has a Gitea plugin, which enables Jenkins to be able to enumerate Organizations
-and source repositories on the Gitea server. The plugin also enables a webhook end point so that
-we can automatically trigger a build pipeline when changes are commited to Git.</p>
-</div>
-<hr>
-<div class="sect2">
-<h3 id="_4_3_1_create_a_gitea_reference"><a class="link" href="#_4_3_1_create_a_gitea_reference">4.3-1 Create a Gitea reference</a></h3>
-<div class="paragraph">
-<p>Login to Jenkins and select <code>Manage Jenkins</code> from the side menu, and then <code>Configure System</code> in
-the management menu. Scroll down to the <code>Gitea Servers</code> section.</p>
-</div>
-<p>Add a new server with the name <code>gitea</code> and the URL <code id="git1"></code></p>
-<script>
-  var git='http://git.' + location.hostname + ':3000';
-  document.getElementById("git1").innerHTML = git;
-  document.getElementById("git1").href = git;
-</script>
-<div class="paragraph">
-<p><span class="image"><img src="img/add-gitea-server.png" alt="Add Gitea Server"></span></p>
-</div>
-<div class="paragraph">
-<p>If the connection infomation is correct, then you should see a 403/Forbidden error. Click Save.</p>
-</div>
-<hr>
-</div>
-<div class="sect2">
-<h3 id="_4_3_2_create_a_gitea_item"><a class="link" href="#_4_3_2_create_a_gitea_item">4.3-2 Create a Gitea Item</a></h3>
-<div class="paragraph">
-<p>Go back to the Jenkins home page, and click <code>New Item</code>. Call the item "whatcheese" and scroll down
-and select the <code>Gitea Organization</code> as the type. Click Ok</p>
-</div>
-<div class="paragraph">
-<p>You will arrive at the new Items properties page. Scroll down to the <code>Projects</code> section. You should
-see that the <code>Server</code> is linked to the server you added above. Select the Credentials we added
-previously, and the owner box should be set to "whatcheese". Click Save.</p>
-</div>
-<div class="paragraph">
-<p>You will see Jenkins automatically scan the Gitea Organization, looking for <code>Jenksinfile</code> pipeline
-configurations.</p>
-</div>
-<div class="paragraph">
-<p>It will check all repositories owned by the whatcheese organization, <em>whatcheese-app</em> <em>whatcheese-api</em>
-and <em>whatcheese-web</em>. It is looking for a pipeline configuration file called <code>Jenkinsfile</code>. It should
-discover that the <em>whatchees-web</em> repository has a <code>Jenkinsfile</code> on its master branch.</p>
-</div>
-<div class="paragraph">
-<p>Return to the Jenkins home page.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/jenkins-home.png" alt="Gitea Whatcheese Org"></span></p>
-</div>
-<hr>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_4_view_the_pipeline"><a class="link" href="#_4_4_view_the_pipeline">4.4 View the Pipeline</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Navigate back to your Jenkins home page, and then follow the link in the side menu <code>Open Blue Ocean</code><br></p>
-</div>
-<div class="paragraph">
-<p>When Jenkins searched the gitea organization of "whatcheese" it discovered a Jenkinsfile in the
-whatcheese-web repository. It then automatically ran a build of whatcheese-web. That should now
-be visible here.</p>
-</div>
-<div class="paragraph">
-<p>Click on Whatcheese web and then the latest build number to view the pipeline.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/blue-ocean-pipe.png" alt="Latest Pipeline Status"></span></p>
-</div>
-<p>Hopefully it's all green. Open a new browser window on <a id="git2"></a> and login using
-the username "nginx" and the same password you provided to Jenkins earlier.</p>
-<script>
-  var git='http://git.' + location.host + '/';
-  document.getElementById("git2").innerHTML = git;
-  document.getElementById("git2").href = git;
-</script>
-<div class="paragraph">
-<p>Find the <em>WhatCheese/whatcheese-web</em> repoisitory and take a look at the Jenkinsfile. The pipeline
-presented in Blue Ocean is a visual representation of the CI/CD pipeline described in this file.</p>
-</div>
-<hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_5_setup_an_automated_webhook"><a class="link" href="#_4_5_setup_an_automated_webhook">4.5 Setup an Automated Webhook</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Jenkins can be set up to periodically poll Gitea for changes, but it would be better if we could
-make Gitea notify Jenkins whenever a repository is updated. To do that, we need to create a webhook.</p>
-</div>
-<div class="paragraph">
-<p>A <code>webhook</code> is an automated HTTP call that can be configured in response to a change. In our case
-we will configure Gitea to make a HTTP Post to the Jenkins server whenever a change is committed
-to the repository.</p>
-</div>
-<div class="paragraph">
-<p>Navigate to the <em>WhatCheese/whatcheese-web</em> repoisitory in gitea, and click the <code>Settings</code> button
-on the right hand side of the menu bar. Go to webhooks and click the <code>Add Webhook</code> and then the
-<code>Gitea</code> option in the drop down.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/gitea-add-webhook.png" alt="automation using webhooks"></span></p>
-</div>
-<div class="paragraph">
-<p>We need to tell Gitea where to send the webhook event. So in the <code>Target URL</code> field enter the
-jenkins URL of your server.</p>
-</div>
-<p>It should be: <code id="jen2"></code></p>
-<script>
-  var jen='http://jenkins.' + location.host + ':8080/gitea-webhook/post';
-  document.getElementById("jen2").innerHTML = jen;
-  document.getElementById("jen2").href = jen;
-</script>
-<div class="paragraph">
-<p>The <code>HTTP Method</code> should be set to "POST", and the <code>Post Content Type</code> should be
-"application/json". The <code>Secret</code> should be blank. Click <code>Add Webhook</code>.</p>
-</div>
-<div class="paragraph">
-<p>You will be taken back to the WebHook settings for the WhatCheese repository, and you should now
-see the hook you just created. Click on the webhook, and scroll down to the bottom, where you will
-find a test section. Run a test of your new webhook.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/webhook-test.png" alt="Gitea Test Delivery"></span></p>
-</div>
-<div class="paragraph">
-<p>If everything went well then you should see <em>200</em> response with <code>Processed</code> in the body.</p>
-</div>
-<hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_4_6_whatcheese_demo_site"><a class="link" href="#_4_6_whatcheese_demo_site">4.6 WhatCheese Demo site</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>In this section we have linked our Git server (gitea) and our CI/CD automation platform (Jenkins)
-together. We told Jenkins about the WhatCheese organization on Gitea, and Jenkins will now scan the
-WhatCheese organization periodically looking for new projects. We also created a Webhook in Gitea
-to poke Jenkins whenever a changed is committed.</p>
-</div>
-<p>The Whatcheese-web pipeline should have deployed our whatcheese demo site for us.
-Take a look at: <a id="www"></a> and see if it's working</p>
-<script>
-  var web='https://www.' + location.host + '/';
-  document.getElementById("www").innerHTML = web;
-  document.getElementById("www").href = web;
-</script>
-<div class="sidebarblock">
-<div class="content">
-<div class="paragraph">
-<p>If you see the default "Welcome to nginx" page then it&#8217;s not working :-(</p>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>The reason it doesn&#8217;t work is because the nginx config file is looking for the wrong hostname, so
-you&#8217;re seeing the default NGINX page rather than the whatcheese website. But because we&#8217;ve already set
-up our CI/CD pipeline, all we need to do is change the config file and make a commit.</p>
-</div>
-<div class="paragraph">
-<p>You can do this through the gitea website, or if you want to be a proper developer you can check
-out the repository to your gateway machine.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cd ~/source/
-$ git clone http://cicd1:3000/WhatCheese/whatcheese-web/
-Cloning into 'whatcheese-web'...
-Username for 'http://cicd1:3000': nginx
-Password for 'http://nginx@cicd1:3000':
-remote: Counting objects: 102, done.
-remote: Compressing objects: 100% (93/93), done.
-remote: Total 102 (delta 31), reused 0 (delta 0)
-Receiving objects: 100% (102/102), 3.89 MiB | 17.46 MiB/s, done.
-Resolving deltas: 100% (31/31), done.
-$ cd whatcheese-web/</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Modify the <code>conf/nginx-lb.conf</code> file, and change the <code>server_name</code> directive to match <code>www.&lt;yourdomain&gt;</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ git config --global user.email me@myworkshop.nginx
-$ git config --global user.name Chuck Norris
-
-$ git add conf/nginx-lb.conf
-$ git commit -m "fix hostname"
-$ git push</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you check the Jenkins server, you should see a build was triggerd. And the Whatcheese website should
-now be accessable in your browser. Well done!</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/whatcheese-web.png" alt="WhatCheese Website"></span></p>
+<p>Once you have both HTTPS and SSH access to the workshop please continue with <a href="task1.html">Task 1</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -761,8 +536,8 @@ now be accessable in your browser. Well done!</p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task3.html">Previous Task</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task5.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Contents</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task1.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -771,7 +546,7 @@ now be accessable in your browser. Well done!</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-15 08:56:45 +0100
+Last updated 2021-03-03 17:10:52 UTC
 </div>
 </div>
 </body>

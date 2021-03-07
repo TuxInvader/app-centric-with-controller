@@ -21,7 +21,7 @@ the services being deployed during this workshop
 
 Remember the network layout looks like this:
 
-image:img/workshop-diagram.png[network,align="center"]
+image:../img/workshop-diagram.png[network,align="center"]
 
 '''
 == 2.2 Check out the playbook
@@ -86,7 +86,7 @@ $ sudo nginx -t
 
 If all went well, then you should see this output.
 
-image:img/nginx-t.png[nginx -t output]
+image:../img/nginx-t.png[nginx -t output]
 
 Congratulations, you just installed NGINX Plus and enabled it's REST API using Ansible.
 
@@ -105,7 +105,7 @@ key/valure store for dynamic ADC use-cases, and metrics collection.
 NGINX Plus is required if you want to manage your NGINX instances with NGINX Controller, 
 or utilize the NGINX App Protect WAF.
 
-image:img/app-platform.png[NGINX Application Platform]
+image:../img/app-platform.png[NGINX Application Platform]
 
 Other NGINX Plus enhancements include:
 
@@ -251,7 +251,7 @@ $ ansible-playbook playbooks/nginx_workshop_gw/install_backends.yaml
 If you check back on your NGINX Plus dashboard you should see that the _nginx_api_, _nginx_app_, and 
 _nginx_web_ upstream zones become healthy as they begin responding to the health probes.
 
-image:img/nginx-dash.png[NGINX Plus Dashboard]
+image:../img/nginx-dash.png[NGINX Plus Dashboard]
 
 In the next task we'll install our CI/CD platform so that we can automate deployments to our new NGINX
 servers.

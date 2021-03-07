@@ -23,7 +23,7 @@ switching to the NGINX Controllers declarative API.
 Ansible is used extensively in both the course and in the deployment of the workshop. In our first
 task we'll cover Ansible basics, but first lets take a look at the environment you'll be working with.
 
-image:img/workshop-diagram.png[network,align="center"]
+image:../img/workshop-diagram.png[network,align="center"]
 
 Each individual in the workshop has been given access to a gateway instance, the gateway is multi-homed
 with a public interface in a routeable public network, and a secondary inteface in a private network.

@@ -48,13 +48,13 @@ into four top-level areas:
 The diagrams below demonstrate how the different objects at the Service level relate to each other.
 All Service objects are part of an Environment:
 
-image:img/services-object-model-example.png[Services]
+image:../img/services-object-model-example.png[Services]
 
 Gateways and Certs can be defined at the Environment level -or- at the App Component Level. 
 The diagram below shows an example of how traffic flows through a Gateway to the App Components that 
 represent your application’s back-end servers. Certs can be added to the Gateway or to an App Component.
 
-image:img/traffic-flow-example-1.png[Traffic Flow]
+image:../img/traffic-flow-example-1.png[Traffic Flow]
 
 === Resource Properties
 
@@ -97,7 +97,7 @@ components are created. We're not going to be talking to the API directly, we'll
 Ansible to make the API calls, but it's important to understand that these are the calls that are
 happening in the background.
 
-image:img/controller-api-ref.png[Controller API Reference]
+image:../img/controller-api-ref.png[Controller API Reference]
 
 
 '''
@@ -185,7 +185,7 @@ $ sudo pip3 install ansible
 Once Ansible is installed the next step is to install the Jenkins plugin. In your browser, navigate
 to `Manage Jenkins` -> `Manage Plugins` and change to the `Available` tab and search for `Ansible`
 
-image:img/jenkins-ansible.png[Ansible Plugin]
+image:../img/jenkins-ansible.png[Ansible Plugin]
 
 Select the `Ansible` plugin and then click `Download now and install after restart`. On the next
 screen tick `Restart Jenkins when installation is complete and no jobs are running`. Jenkins should
@@ -198,7 +198,7 @@ Take a look at your gitea server and the whatcheese-web repository. You should s
 tells you there are `nn commits` and `2 Branches`. Beneath the summary it says `Branch: master`, clicking
 on that link will allow you to switch to the other branch `Branch: controller`.
 
-image:img/whatcheese-branch.png[Whatcheese controller branch]
+image:../img/whatcheese-branch.png[Whatcheese controller branch]
 
 You'll see that this branch has a `ansible` folder, inside which is a `envs/cheese_prod.yaml` file which
 defines our service for controller, and also a `specs/whatcheese.yaml` file which is an OAS 3 document
@@ -249,7 +249,7 @@ Switch to your Jenkins server, and you should see it's running the pipeline from
 keep an eye on the "Services" section of your NGINX Controller, you should see an API Spec appear under `APIs`
 and an `environment`, followed by an `application` and finally the application `components`.
 
-image:img/whatcheese-deployed.png[The Whatcheese APP]
+image:../img/whatcheese-deployed.png[The Whatcheese APP]
 
 == 6.8 Take a look around
 
@@ -260,7 +260,7 @@ and there are also several other components in `WhatCheeseAPI` for each API Serv
 
 You can see the API endpoints in the `APIs` section.
 
-image:img/whatcheese-api-def.png[API Definition]
+image:../img/whatcheese-api-def.png[API Definition]
 
 In this area there's also an `Identity Provider` section which contains an _API Key_ based IDp configuration. 
 All of the POST endpoints in the WhatCheese API are protected by the `Whatcheese Admin Keys` identity provider.

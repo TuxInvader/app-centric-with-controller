@@ -27,7 +27,7 @@ While siege is generating traffic also have a poke around the website in your br
 that the API link in the menu now works, it links to `https://api.<fqdn>/v1/links` which is the `API links`
 component in your `whatcheese_api` application.
 
-image:img/cheese-api.png[WhatCheese API]
+image:../img/cheese-api.png[WhatCheese API]
 
 Try the following to see how the application and component configuration affects the result
 
@@ -77,7 +77,7 @@ about out environment. Navigate to the `WhatCheese [Production]` environment in 
 Change to the `Critical Analytics` view and then view the last `15 minutes` of data, and break out by
 `App`.
 
-image:img/critical-1-env.png[Environment Analytics by Application]
+image:../img/critical-1-env.png[Environment Analytics by Application]
 
 We can see the traffic is split between the two applications, but the top left graph is showing the
 `workload latency` and clearly indicates that the `whatcheese_api` has a much higher latency than
@@ -93,7 +93,7 @@ If you change to the `Apps` section in the left hand menu, and then look at the 
 application we can see `Critical Analytics` for only this section. Take a look at the same 
 `15 minutes` window, but this time set the break out by `component`
 
-image:img/critical-2-app.png[Application Analytics by Component]
+image:../img/critical-2-app.png[Application Analytics by Component]
 
 That's interesting the `win_get` component has significantly higher latency than the other parts
 of the API. We can investigate further by limiting our analytics to just that component. Still
@@ -101,7 +101,7 @@ under the `Apps` section, click components in the sub menu, and then open the `W
 
 Take a look at the same `15 minutes` window and break out by `HTTP Upstream Address`.
 
-image:img/critical-3-comp.png[Componenent Analytics by Upstream]
+image:../img/critical-3-comp.png[Componenent Analytics by Upstream]
 
 Ah - So one of the application servers is significantly slower than the other. This is causing a
 degredation in service. Unsurprisingly this is intentional. The unit2 server is intentionally
@@ -117,7 +117,7 @@ We're going to temporarily resolve the issue, by modifying the component and rem
 service. From the `Critical Analytics` screen for the win component you can click `Edit Config` in
 the submenu.
 
-image:img/edit-component.png[Edit Component]
+image:../img/edit-component.png[Edit Component]
 
 In the edit screen, open the `Workload Groups` section and edit the `unit` group. Scroll down and
 delete `unit2:81` from the group and click done.
@@ -125,7 +125,7 @@ delete `unit2:81` from the group and click done.
 Open the `API Spec` section, this is the API call which the UI is going to make when you press
 submit. The `uris` section of the JSON payload should now just have a single unit backend.
 
-image:img/submit-component.png[Components API Spec]
+image:../img/submit-component.png[Components API Spec]
 
 Click the submit button. In a few minutes the workload latency for this component, the application
 and the environment should start to drop. 

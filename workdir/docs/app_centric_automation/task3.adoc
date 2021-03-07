@@ -54,7 +54,7 @@ You should now be able to access your Gitea server at `https://git.<yourdomain>`
 </script>
 ++++
 
-image:img/gitea.png[Gitea]
+image:../img/gitea.png[Gitea]
 
 Check that you can login using the username _ngnix_ and the password found in `~/secrets/git.cicd.passwd`
 
@@ -72,7 +72,7 @@ You should also be able to access your Jenkins server at `https://jenkins.<yourd
 </script>
 ++++
 
-image:img/jenkins.png[Jenkins]
+image:../img/jenkins.png[Jenkins]
 
 Check that you can login using the username _ngnix_ and the password found in `~/secrets/jenkins.cicd.passwd`
 

@@ -1,0 +1,36 @@
+= Application Centric Automation Workshop
+:showtitle:
+:next_section: task1
+
+[cols="^20,<80" grid="none" frame="none"]
+|===
+| image:../img/nginx-logo-black.png[NGINX,150,100,align="center"]
+|
+Welcome and thank you for attending this course on NGINX Automation.  +
+We'll be covering Automation of NGINX Plus and NGINX Controller using Ansible,  +
+and also integrating NGINX/Controller with CI/CD pipelines.
+|===
+
+'''
+
+During this workshop, we'll be looking at various ways to automate NGINX. Including:
+
+ * Install and use the NGINX Ansible role to deploy NGINX software
+ * Deploy NGINX configuration files with Ansible (Simple IaC use-case)
+ * Introduction to NGINX Controller 3.x
+ * Deploy NGINX Controller Agent with Ansible
+ * Configure an Application in Controller and assign NGINX instance gateways (recommended IaC usage)
+ * Store NGINX configuration in Version Control, and deploy changes using CI/CD (Jenkins) Pipelines
+
+== Tasks
+
+* <<task0.adoc#,Task 0: Welcome to the workshop>>
+* <<task1.adoc#,Task 1: Introduction to Ansible>>
+* <<task2.adoc#,Task 2: Deploy a simple NGNIX Configuration>>
+* <<task3.adoc#,Task 3: Deploy Your CI/CD Infrastructure>>
+* <<task4.adoc#,Task 4: Automate NGINX with CI/CD Pipeline>>
+* <<task5.adoc#,Task 5: Setup NGINX Controller>>
+* <<task6.adoc#,Task 6: Automate NGINX with CI/CD and Controller>>
+* <<task7.adoc#,Task 7: Application Insights>>
+* <<task8.adoc#,Task 8: Wrap Up>>
+

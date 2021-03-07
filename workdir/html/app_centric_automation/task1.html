@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 7: Application Insights</title>
+<title>Task 1: Familiarize yourself with Ansible</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,22 +438,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 7: Application Insights</h1>
+<h1>Task 1: Familiarize yourself with Ansible</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_7_1_generate_some_load">7.1 Generate some load</a>
-<ul class="sectlevel2">
-<li><a href="#_browse_the_api">Browse the API</a></li>
-</ul>
-</li>
-<li><a href="#_7_2_application_metrics">7.2 Application Metrics</a>
-<ul class="sectlevel2">
-<li><a href="#_investigate_the_api_latency">Investigate the API Latency</a></li>
-</ul>
-</li>
-<li><a href="#_7_3_modify_the_component">7.3 Modify the Component</a></li>
-<li><a href="#_7_4_fix_the_php_optional">7.4 Fix the PHP (optional)</a></li>
+<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
+<li><a href="#_1_2_running_ansible">1.2 Running Ansible</a></li>
+<li><a href="#_1_3_review_the_ansible_config">1.3 Review the Ansible config</a></li>
+<li><a href="#_1_4_ansible_ad_hoc_mode">1.4 Ansible Ad-hoc mode</a></li>
+<li><a href="#_1_5_ansible_facts">1.5 Ansible Facts</a></li>
+<li><a href="#_1_6_ansible_playbooks">1.6 Ansible Playbooks</a></li>
+<li><a href="#_1_7_finishing_our_configuration">1.7 Finishing our configuration</a></li>
+<li><a href="#_1_8_ansible_roles">1.8 Ansible Roles</a></li>
 </ul>
 </div>
 </div>
@@ -464,184 +460,384 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task6.html">Previous Task</a><br>
-<a href="task8.html">Next Task</a><br></p>
+<a href="task0.html">Previous Task</a><br>
+<a href="task2.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_7_1_generate_some_load"><a class="link" href="#_7_1_generate_some_load">7.1 Generate some load</a></h2>
+<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In this section we&#8217;re going to have a look at the <em>Application Centric</em> metrics that the controller is
-collecting. So first we need to generate some load, we&#8217;ll use "siege" to do this. Run the following
-command from your gateway node.</p>
+<p>Ansible is an automation tool from RedHat which supports agentless configuration of remote systems.
+Ansible can be used on the command line to execute <strong>"Ad-Hoc"</strong> commands, or whole sequencies of configuration
+steps can be grouped and executed together in what is known as a <strong>"playbook"</strong>.</p>
 </div>
-<div class="listingblock">
+<div class="paragraph">
+<p>The system from which you run ansible tasks is called the  <strong>"control node"</strong>. This system has ansible
+installed locally, and it is used to execute tasks on <strong>"managed nodes"</strong> (also known as hosts).</p>
+</div>
+<div class="paragraph">
+<p>The hosts do not need to have ansible installed. Ansible is agent-less. However, all of the hosts which
+are managed by the ansible control node need to be defined in your <strong>"inventory"</strong>.</p>
+</div>
+<div class="paragraph">
+<p>An inventory item can be a single host or a group of hosts.
+When you execute an ansible task against a host or group in your inventory, ansible performs the operation
+remotely (from the control node) using <strong>"modules"</strong>.</p>
+</div>
+<div class="paragraph">
+<p>There are hundreds of ansible modules available each with a particular purpose. Ansible modules can do anything from
+deploying host Operating Systems, managing users groups and files, through to managing configuration of an F5 Big-IP.</p>
+</div>
+<div class="sidebarblock">
 <div class="content">
-<pre>$ siege -f ~/siege-full.txt -i -d 5 -c 10 -v</pre>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_browse_the_api"><a class="link" href="#_browse_the_api">Browse the API</a></h3>
 <div class="paragraph">
-<p>While siege is generating traffic also have a poke around the website in your browser. You should notice
-that the API link in the menu now works, it links to <code><a href="https://api.&lt;fqdn&gt;/v1/links" class="bare">https://api.&lt;fqdn&gt;/v1/links</a></code> which is the <code>API links</code>
-component in your <code>whatcheese_api</code> application.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/cheese-api.png" alt="WhatCheese API"></span></p>
-</div>
-<div class="paragraph">
-<p>Try the following to see how the application and component configuration affects the result</p>
-</div>
-<p>Try accessing the root of your API service -> <a id='api_root'></a><br/>
-It should return a <code>404 - Not Found</code>. The API only has endpoints
-defined that appear in the OAS spec.</p>
-
-Try accessing one of the product addition pages -> <a id='api_add'></a><br/>
-It should return a <code>405 - Not Allowed</code>. The add pages only specify
-POST as a valid method.</p>
-
-<script>
-  var api='https://api.' + location.host + '/';
-  var api_add = api + 'v1/add/cheese';
-  document.getElementById("api_root").innerHTML = api;
-  document.getElementById("api_root").href = api;
-  document.getElementById("api_add").innerHTML = api_add;
-  document.getElementById("api_add").href = api_add;
-</script>
-<div class="paragraph">
-<p>Let&#8217;s expolore a little deeper using curl. You have already send a <code>GET</code> request to <code>/v1/add/cheese</code>
-and received a <code>Method not allowed</code> in response, so lets send it a <code>POST</code>&#8230;&#8203;</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ curl -vv -X POST https://&lt;api fqdn&gt;/v1/add/cheese</pre>
+<p>In this course you will be connecting to a machine running on Amazon EC2. This host is publically
+accessable via SSH/HTTP/HTTPS. You will be provided a FQDN and a SSH private key for access.<br>
+This machine is your Ansible Control Node, and your "frontend" for all other systems</p>
 </div>
 </div>
-<div class="paragraph">
-<p>This POST should have returned a <code>401 - Authorization Required</code> because the addition endpoints are
-protected by API Key aswell. We can send the API key using the curl command below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ curl -vv -X POST https://&lt;api fqdn&gt;/v1/add/pickle?psk=e849b3f640a6740683f9012b097208bc -d '{"name":"piccalilli", "country":"England", "description":"Piccalilli or mustard pickle is a British interpretation of South Asian pickles, a relish of chopped pickled vegetables and spices; regional recipes vary considerably."}'</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This POST should succeed and add a new <code>pickle</code> to the API. The controller configuration is set to expect
-an API key to be passed in a query string variable called <code>psk</code>. The <code>-d</code> argument posted the quoted JSON to the
-API, which should have resulted in <em>piccalilli</em> being added.</p>
 </div>
 <hr>
 </div>
 </div>
-</div>
 <div class="sect1">
-<h2 id="_7_2_application_metrics"><a class="link" href="#_7_2_application_metrics">7.2 Application Metrics</a></h2>
+<h2 id="_1_2_running_ansible"><a class="link" href="#_1_2_running_ansible">1.2 Running Ansible</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Now that siege has been running a while we can view the metrics that controller has been collecting
-about out environment. Navigate to the <code>WhatCheese [Production]</code> environment in your services.
-Change to the <code>Critical Analytics</code> view and then view the last <code>15 minutes</code> of data, and break out by
-<code>App</code>.</p>
+<p>In your home directory, you have a directory called ansible. We will be executing all of your ansible
+tasks and playbooks from this location. When you execute ansible it checks for an <em>ansible.cfg</em> file
+in the local folder first, followed by various other locations, finally falling back to <em>/etc/ansible.cfg</em>.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="img/critical-1-env.png" alt="Environment Analytics by Application"></span></p>
+<p>As you&#8217;ve probably guessed, the ansible.cfg file we are using for this workshop resides in your
+<em>~/ansible</em> folder, and running commands outside of this folder will not work as expected.</p>
 </div>
-<div class="paragraph">
-<p>We can see the traffic is split between the two applications, but the top left graph is showing the
-<code>workload latency</code> and clearly indicates that the <code>whatcheese_api</code> has a much higher latency than
-the <code>whatcheese</code> website.</p>
-</div>
-<div class="paragraph">
-<p>Scrolling down shows us more metrics, such as <code>Network Latency</code>, <code>Time to First Byte</code>, <code>Bytes In</code>,
-<code>Bytes Out</code>, <code>HTTP Requests</code> and more. These charts also show us that the website is having more
-hits, and also transferring more data.</p>
-</div>
-<div class="sect2">
-<h3 id="_investigate_the_api_latency"><a class="link" href="#_investigate_the_api_latency">Investigate the API Latency</a></h3>
-<div class="paragraph">
-<p>If you change to the <code>Apps</code> section in the left hand menu, and then look at the <code>WhatCheeseAPI</code>
-application we can see <code>Critical Analytics</code> for only this section. Take a look at the same
-<code>15 minutes</code> window, but this time set the break out by <code>component</code></p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/critical-2-app.png" alt="Application Analytics by Component"></span></p>
-</div>
-<div class="paragraph">
-<p>That&#8217;s interesting the <code>win_get</code> component has significantly higher latency than the other parts
-of the API. We can investigate further by limiting our analytics to just that component. Still
-under the <code>Apps</code> section, click components in the sub menu, and then open the <code>Wine</code> component.</p>
-</div>
-<div class="paragraph">
-<p>Take a look at the same <code>15 minutes</code> window and break out by <code>HTTP Upstream Address</code>.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/critical-3-comp.png" alt="Componenent Analytics by Upstream"></span></p>
-</div>
-<div class="paragraph">
-<p>Ah - So one of the application servers is significantly slower than the other. This is causing a
-degredation in service. Unsurprisingly this is intentional. The unit2 server is intentionally
-adding a delay into it&#8217;s responses for <code>/v1/wine</code> API calls.</p>
-</div>
-</div>
+<hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_7_3_modify_the_component"><a class="link" href="#_7_3_modify_the_component">7.3 Modify the Component</a></h2>
+<h2 id="_1_3_review_the_ansible_config"><a class="link" href="#_1_3_review_the_ansible_config">1.3 Review the Ansible config</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We could "fix" the problematic unit server and republish the fixed code. The problem exists in
-the PHP application <code>/unit/html/api/v1/index.php</code> within the controller branch of the whatcheese-web
-application.</p>
-</div>
-<div class="paragraph">
-<p>We&#8217;re going to temporarily resolve the issue, by modifying the component and removing <code>unit2</code> from
-service. From the <code>Critical Analytics</code> screen for the win component you can click <code>Edit Config</code> in
-the submenu.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/edit-component.png" alt="Edit Component"></span></p>
-</div>
-<div class="paragraph">
-<p>In the edit screen, open the <code>Workload Groups</code> section and edit the <code>unit</code> group. Scroll down and
-delete <code>unit2:81</code> from the group and click done.</p>
-</div>
-<div class="paragraph">
-<p>Open the <code>API Spec</code> section, this is the API call which the UI is going to make when you press
-submit. The <code>uris</code> section of the JSON payload should now just have a single unit backend.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="img/submit-component.png" alt="Components API Spec"></span></p>
-</div>
-<div class="paragraph">
-<p>Click the submit button. In a few minutes the workload latency for this component, the application
-and the environment should start to drop.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_7_4_fix_the_php_optional"><a class="link" href="#_7_4_fix_the_php_optional">7.4 Fix the PHP (optional)</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>If you&#8217;re the type of person who needs to pull at a loose thread when you see one, then feel free
-to fix the PHP application and bring <code>unit2</code> back into service. Simply edit the PHP file, and
-remove lines 79-82</p>
+<p>The ansible.cfg file in your ansible folder contains all of the ansible defaults.
+We&#8217;re only setting a handful:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>  if ( $segments[2] == "wine" and $unit == 'unit2' ) {
-    # sleep for 25ms on wine requests
-    time_nanosleep(0,25000000);
-  }</pre>
+<pre>$ egrep -v "^[\[#]" ansible.cfg | sort -u
+
+host_key_checking = False
+inventory      = inventory
+nocows = 1
+remote_user = ubuntu
+stdout_callback = yaml</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>When your changes are commited, a Jenkins pipeline will start and redeploy the application.</p>
+<p>We set the remote user to be <em>ubuntu</em>, so when ansible attempts to execute a command it will try to ssh
+to the remote system as ubuntu. We set <em>nocows</em> to 1, which disables cowsay, but feel free to re-enable it
+if you find it comforting. We also tell ansible to use the "yaml" output plugin in <em>stdout_callback</em>,
+this is so we get nicely formatted output, especially useful when things go wrong.</p>
+</div>
+<div class="paragraph">
+<p>The inventory file can be a script to generate hosts/groups dynamically, but in our case a simple static text
+file will suffice.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Next we can take a look at the inventory</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cat inventory
+localhost
+gateway
+
+[controller]
+ctrl1
+
+ ...
+
+[remote]
+ctrl1
+nginx1
+nginx2
+unit1
+unit2
+cicd1
+
+[all:vars]
+wsid=mb01
+domain=workshop.nginxlab.net</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ansible uses the inventory to match hosts and groups of hosts on which to execute tasks or playbooks.
+The inventory uses <em>"ini file"</em> like syntax, and groups are indicated by surrounding them with square brackets <em>[]</em>.</p>
+</div>
+<div class="paragraph">
+<p>Variables can also be applied to hosts, by including them after a host entry on the same line, or for a group
+by referencing the group name with a <code>:vars</code> suffix. The special group <code>[all]</code> matches all hosts.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_4_ansible_ad_hoc_mode"><a class="link" href="#_1_4_ansible_ad_hoc_mode">1.4 Ansible Ad-hoc mode</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ansible allows you to execute tasks in an ad-hoc way. Try executing the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible -m ping ctrl1
+$ ansible -m ping nginx</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above command line executed the <em>ping</em> module against the provided inventory item.
+The first ping command was execute on a single host <em>ctrl1</em>, while the second was executed on
+all hosts in the group <em>nginx</em></p>
+</div>
+<div class="paragraph">
+<p>The ansible <em>ping</em> module is a very simple module and it simply confirms that you can connect to the
+host in the inventory and execute a command. Most modules take additional arguments, try running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible -m copy localhost -a "src=/etc/hosts dest=/home/ubuntu/hosts"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above uses the <em>copy</em> module, which requires additional arguments. The <em>dest</em> argumnet is mandatory
+and tells ansible where to copy the given content.
+The content can be read from a file in which case the <em>src</em> argument is used. Or it may be given to
+the module directly with the <em>content</em> argument.</p>
+</div>
+<div class="paragraph">
+<p>Here we simply copied the /etc/hosts file into your home directory.</p>
+</div>
+<div class="paragraph">
+<p>Ansible should have output a <em>changed</em> status because the file didn&#8217;t exist before and the execution
+resulted in a change. If you run the same ansible command again you will see a <em>success</em> outcome which
+indicates the module ran without error, but nothing changed in the system.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_5_ansible_facts"><a class="link" href="#_1_5_ansible_facts">1.5 Ansible Facts</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ansible can also gather facts about the nodes on which it executes. These facts include the
+Operating System details, information on network interfaces, etc.</p>
+</div>
+<div class="paragraph">
+<p>The facts can be collected using the setup module. Try:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible -m setup localhost</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will have just seen a whole load of information flash through your console.</p>
+</div>
+<div class="paragraph">
+<p>Fortunately the setup module has a filter argument. Try:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible -m setup nginx -a "filter=ansible_dist*"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This time the results were filtered to output only facts which matched the filter. You should see
+a collection of facts about the Operating System in use on the <em>nginx</em> instances.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_6_ansible_playbooks"><a class="link" href="#_1_6_ansible_playbooks">1.6 Ansible Playbooks</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the previous section we used ansible to execute single tasks using the specified modules.
+A more common requirement is to have ansible execute a sequence of tasks in order.
+This is where a playbook comes in.</p>
+</div>
+<div class="paragraph">
+<p>A Playbook is an ordered list of tasks to execute against a set of hosts.
+It has several advantages over Ad-Hoc mode:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can include variables either directly or from external sources.</p>
+</li>
+<li>
+<p>You can use loops to perform tasks multiple times (eg iterate over a list of users)</p>
+</li>
+<li>
+<p>You can use conditional statements to determine if a task needs to be run</p>
+</li>
+<li>
+<p>You can start a task asynchronously and poll for completion</p>
+</li>
+<li>
+<p>You can use other tasks from Ansible Roles.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In section 1.7 we&#8217;ll look through an Ansible playbook and introduce you to the <code>ansible-playbook</code>
+command.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_7_finishing_our_configuration"><a class="link" href="#_1_7_finishing_our_configuration">1.7 Finishing our configuration</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The machines that you are connecting to for this workshop have all been deployed using Ansible.<br>
+However the set up is not complete, lets finish that task now - using our new ansible skills.</p>
+</div>
+<div class="paragraph">
+<p>Change directory to your ansible folder and take a look at the node setup playbook.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ less node_setup_playbook.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ansible configuration uses YAML extensivley. You are now looking at an ansible playbook, the three dashes
+denote this is a yaml file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml"><span></span><span class="tok-nn">---</span>
+<span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">hosts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">remote</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">become</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">true</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">gather_facts</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">yes</span>
+
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">tasks</span><span class="tok-p tok-p-Indicator">:</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>hosts</code> line tells Ansible on which host or group it should be applying this playbook. The <code>become</code> entry
+indicates that Ansible should attept to run the command as root, and <code>gather_facts</code> tells ansible to collect
+information about the hosts first.</p>
+</div>
+<div class="paragraph">
+<p>Next follows a list of tasks for the playbook to perform. They essentially all use the same format:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml"><span></span>  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">A friendly description of the task</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">module</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">module_options</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">module_options</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">task_options</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each <code>name</code> will be printed by Ansible as it runs through the playbook, and if something goes wrong, the <code>name</code>
+will be used to reference where the error occurred. Each task runs an ansible <code>module</code>, which is defined on
+the next line, and is usually followed by a series of <code>module</code> specific options. Finally some <code>task_options</code>
+may be defined for storing output, or looping through the task multiple times, etc.</p>
+</div>
+<div class="paragraph">
+<p>If you look through the node_setup_playbook you will see that it is doing several things on each of the
+machines listed in the <code>remote</code> group of our ansible inventory <code>~/ansible/inventory</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Add each machines hostname to it&#8217;s own hostfile</p>
+</li>
+<li>
+<p>set the machines hostname using the hostname command</p>
+</li>
+<li>
+<p>install a script <code>/etc/rc.ansible</code> and configure systemd to run it.</p>
+</li>
+<li>
+<p>update the apt package cache</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The script Ansible is adding to each machine configures them to use your ansible controller as their
+default gateway, and to consult it for DNS. This is because your gateway is the only public machine,
+and some tasks later will require them to download packages from the internet. Also there is a DNSMasq
+configuration on your gateways which responds authoritatively for your workshops domain.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s run the playbook</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook node_setup_playbook.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
+containing only changed and ok statuses.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
+</div>
+<div class="paragraph">
+<p>With that done, we&#8217;re a step closer to having a useful workshop envionment. In task 2 we&#8217;ll install NGINX on the
+gateway to open up access to the nodes you just configured. But before we can do that, we need to install
+an ansible role to help us.</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_8_ansible_roles"><a class="link" href="#_1_8_ansible_roles">1.8 Ansible Roles</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An Ansible Role is a group of tasks and variables which have been built in a standard way to enable reuse.
+It&#8217;s a good way to create building blocks for performing common tasks, such as setting up
+a webserver, or installing a system such as jenkins. Unlike a playbook a role is not tied to a group of hosts.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;re going to be making use of a few ansible roles during this course.</p>
+</div>
+<div class="paragraph">
+<p>In fact we used a role during the deployment of your workshop to install NGINX onto your gateway host.
+The role used was <code>nginxinc.nginx</code> which can install and configure NGINX and NGINX Plus software.
+You can see the installed roles by executing the following <code>ansible-galaxy</code> command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ansible-galaxy list</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can search for roles using the same command line tool or using the <a href="https://galaxy.ansible.com/">Galaxy website</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ansible-galaxy search nginxinc</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -650,8 +846,8 @@ remove lines 79-82</p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task6.html">Next Task</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task8.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -660,8 +856,79 @@ remove lines 79-82</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-15 08:57:07 +0100
+Last updated 2021-03-03 16:57:51 UTC
 </div>
 </div>
+<style>
+pre.pygments .hll { background-color: #ffffcc }
+pre.pygments  { background: #f8f8f8; }
+pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+pre.pygments .tok-o { color: #666666 } /* Operator */
+pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
+pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+pre.pygments .tok-go { color: #888888 } /* Generic.Output */
+pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+pre.pygments .tok-m { color: #666666 } /* Literal.Number */
+pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
+pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
+pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+pre.pygments .tok-no { color: #880000 } /* Name.Constant */
+pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
+pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
+pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
+pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </body>
 </html>
