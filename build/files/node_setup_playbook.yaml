@@ -1,0 +1,73 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: yes
+
+  tasks:
+
+  - name: Run tasks for API and App Centric workshops
+    block:
+
+    - name: Setup Inventory file (api_automation)
+      blockinfile:
+        path: /home/ubuntu/ansible/inventory
+        block: |
+          [remote]
+          ctrl1
+          nginx1
+          nginx2
+          unit1
+          unit2
+          cicd1
+
+    - name: setup hosts
+      lineinfile:
+        backrefs: yes
+        regexp: '(^[0-9\.]+)\s+{{item.name}}.*'
+        line: '\1 {{ item.name }} {{ item.alias }} {{ item.alias }}.{{ wsid }}.{{ domain }}'
+        path: /etc/hosts
+      loop:
+        - { name: 'node1', alias: 'nginx1' }
+        - { name: 'node2', alias: 'nginx2' }
+        - { name: 'node3', alias: 'unit1' }
+        - { name: 'node4', alias: 'unit2' }
+
+    when:
+    - wstype == "api_automation" or wstype == "app_centric"
+
+  - name: Run tasks for Kubernetes workshop
+    block:
+
+    - name: Setup Inventory file (kubernetes)
+      blockinfile:
+        path: /home/ubuntu/ansible/inventory
+        block: |
+          [remote]
+          ctrl1
+          cicd1
+          k8s1
+          k8s2
+          k8s3
+          k8s4
+
+    - name: setup hosts
+      lineinfile:
+        backrefs: yes
+        regexp: '(^[0-9\.]+)\s+{{item.name}}.*'
+        line: '\1 {{ item.name }} {{ item.alias }} {{ item.alias }}.{{ wsid }}.{{ domain }}'
+        path: /etc/hosts
+      loop:
+        - { name: 'node1', alias: 'k8s1' }
+        - { name: 'node2', alias: 'k8s2' }
+        - { name: 'node3', alias: 'k8s3' }
+        - { name: 'node4', alias: 'k8s4' }
+
+    when:
+    - wstype == "kubernetes"
+
+  - name: Refresh inventory to ensure new instances exist in inventory
+    meta: refresh_inventory
+
+- name: Setup the remote nodes now.
+  import_playbook: playbooks/setup_remotes_playbook.yaml
+

@@ -12,4 +12,5 @@
     admin_firstname: BofH
     admin_lastname: PFY
     api_key: ''
+    su_password: "{{ lookup('password', '~/secrets/controller.su_passwd length=12 chars=ascii_letters,digits') }}"
 

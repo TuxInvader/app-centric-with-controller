@@ -107,7 +107,8 @@
         dest: /home/ubuntu/
         archive: yes
         delete: no
-      become: ubuntu
+      become: no
+      become_user: ubuntu
 
     #- name: Copy over workdir
     #  copy:
@@ -131,11 +132,19 @@
         group: ubuntu
 
     - name: create the node_setup playbook
-      template:
+      copy:
         dest: /home/ubuntu/ansible/node_setup_playbook.yaml
-        src: files/node_setup_playbook.j2
+        src: files/node_setup_playbook.yaml
         owner: ubuntu
         group: ubuntu
+
+    - name: create the remotes playbook (called by node_setup)
+      template:
+        dest: /home/ubuntu/ansible/playbooks/setup_remotes_playbook.yaml
+        src: files/setup_remotes_playbook.j2
+        owner: ubuntu
+        group: ubuntu
+
 
     - name: Upload the deploy_all shell script ;-)
       copy:
@@ -155,7 +164,7 @@
     - name: Provide the remote ansible with its wsid and domain name
       lineinfile:
         path: /home/ubuntu/ansible/inventory
-        line: "[all:vars]\nwsid={{ wsid }}\ndomain={{ ws.route53.zone }}\n"
+        line: "[all:vars]\nwsid={{ wsid }}\ndomain={{ ws.route53.zone }}\nwstype={{ ws.wstype | default('app_centric')  }}\n"
 
     - name: Download controller installer from S3
       get_url:
@@ -224,7 +233,8 @@
           cmd: cat /home/ubuntu/secrets/basic_auth.passwd
         register: basic_auth
 
-      become: ubuntu
+      become: yes
+      become_user: ubuntu
 
     - name: Store password
       local_action:

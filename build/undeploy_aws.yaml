@@ -1,6 +1,7 @@
 ---
 - name: Fetch Certbot/letsencrypt configs
   import_playbook: fetch_certbot_configs.yaml
+  when: ws.save_certbot_configs == true
 
 - hosts: localhost
   become: no

@@ -1,0 +1,111 @@
+---
+- hosts: remote
+  become: true
+  gather_facts: yes
+
+  tasks:
+
+  - name: Add myself to /etc/hosts
+    lineinfile:
+      line: "127.0.1.1   {% raw %} {{ inventory_hostname }} {{ inventory_hostname }}.{{ wsid }}.{{ domain }}{% endraw %}"
+      path: /etc/hosts
+
+  - name: Set the controller hostname
+    command:
+      cmd: "hostname {% raw %}{{ inventory_hostname }}.{{ wsid }}.{{ domain }}{% endraw %}"
+
+  - name: "Setup rc.ansible to sort out the routing"
+    copy:
+      dest: /etc/rc.ansible
+      content: |
+        #!/bin/bash
+        # This script is executed on start up after the network target, and also whenever
+        # the network is restarted
+        # Fixes networking to route through gateway. systemd/netplan/networkd all suck.
+
+        for i in 1 2
+        do
+          sleep $i
+
+          # Remove the default route and set it to go via the gatewaay
+          ip route del default
+          ip route add 0.0.0.0/0 via {{ privip }} metric 10
+
+          # update the hostname
+          hostname {% raw %}{{ inventory_hostname }}.{{ wsid }}.{{ domain }}{% endraw %}
+
+          # Any forwarded DNS that tries to go to Amazon DNS, send to the gateway.
+          # Captures K8s coreDNS Grrrrr
+          iptables -t nat -D PREROUTING -d {{ ws.ec2.cidr_block }}.0.2 -p udp --dport 53 -j DNAT --to {{ privip }}:53
+          iptables -t nat -I PREROUTING -d {{ ws.ec2.cidr_block }}.0.2 -p udp --dport 53 -j DNAT --to {{ privip }}:53
+
+        done
+
+        exit 0
+      mode: 0755
+
+  - name: "Create Systemd UNIT File for rc.ansible"
+    copy:
+      dest: /lib/systemd/system/rc.ansible.service
+      content: |
+        [Unit]
+        Description=/etc/rc.ansible Compatibility
+        ConditionFileIsExecutable=/etc/rc.ansible
+        After=network.target
+        After=systemd-networkd-wait-online.service
+        Requires=systemd-networkd-wait-online.service
+
+        [Service]
+        Type=forking
+        ExecStart=/etc/rc.ansible
+        TimeoutSec=0
+        RemainAfterExit=yes
+        GuessMainPID=no
+        Restart=always
+
+  - name: setup systemd-resolved to use controller for DNS
+    copy:
+      content: |
+        [Resolve]
+        DNS={{ privip }}
+        Domains={{ wsid }}.{{ ws.route53.zone }}
+      dest: /etc/systemd/resolved.conf
+
+  - name: just force systemd to reread configs (2.4 and above)
+    systemd:
+      daemon_reload: yes
+
+  - name: Restart systemd resolver service
+    systemd:
+      name: systemd-resolved
+      state: restarted
+
+  - name: Enable and restart rc.ansible service
+    systemd:
+      name: rc.ansible
+      enabled: true
+      state: restarted
+
+  - name: Ensure machines all have up-to-date caches
+    apt:
+      update_cache: yes
+
+  - name: Run tasks for API workshop
+    block:
+
+    - name: Section Complete
+      debug:
+        msg: "Done"
+
+    when:
+    - wstype == "api_automation"
+
+  - name: Run tasks for App Centric workshop
+    block
+
+    - name: Section Complete
+      debug:
+        msg: "Done"
+
+    when:
+    - wstype == "app_centric"
