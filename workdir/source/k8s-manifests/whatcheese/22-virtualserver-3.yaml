@@ -1,0 +1,58 @@
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: api-whatcheese-web-vs
+  namespace: cheese-demo
+spec:
+  host: "api.ws01.nginxdemo.net"
+  upstreams:
+  - name: apiv1
+    service: whatcheese-api
+    port: 80
+  policies:
+    - name: cheese-waf
+  routes:
+  - path: /
+    action:
+      pass:  apiv1
+  - path: /v1/add
+    matches:
+    - conditions:
+      - argument: psk
+        value: superSecretKey
+      action:
+        pass: apiv1
+    action:
+      return:
+        code: 200
+        type: application/json
+        body: |
+          {\"result\": \"ERROR\", \"details\": \"Please provide the Super Secret Key in the psk field\"}
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: www-whatcheese-web-vs
+  namespace: cheese-demo
+spec:
+  host: "www.ws01.nginxdemo.net"
+  upstreams:
+  - name: webv1
+    service: whatcheese-web
+    port: 80
+  - name: webv2
+    service: whatcheese-web-v2
+    port: 80
+  policies:
+    - name: cheese-waf
+  routes:
+  - path: /
+    matches:
+    - conditions:
+      - cookie: austin
+        value: yeahBabyYeah
+      action:
+        pass: webv2
+    action:
+      pass:  webv1

@@ -69,6 +69,9 @@
       -d api.{{wsid}}.{{ domain }} \
       -d ctrl.{{wsid}}.{{ domain }} \
       -d git.{{wsid}}.{{ domain }} \
+      -d k8s.{{wsid}}.{{ domain }} \
+      -d graf.{{wsid}}.{{ domain }} \
+      -d prom.{{wsid}}.{{ domain }} \
       -d jenkins.{{wsid}}.{{ domain }}
     when: cert_status.rc != 0
 

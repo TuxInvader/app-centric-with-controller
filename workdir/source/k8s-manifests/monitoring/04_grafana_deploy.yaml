@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app: grafana
+    component: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+        component: core
+    spec:
+      imagePullSecrets:
+      - name: k8s01-registry
+      containers:
+        #- image: grafana/grafana:3.1.1
+        - image: grafana/grafana:latest
+          name: grafana
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: _PASSWORD_
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+              readOnly: false
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: grafana-dash-providers
+              readOnly: false
+            - mountPath: /dashboards
+              name: grafana-dashboards
+              readOnly: false
+      volumes:
+        - name: grafana-storage
+          emptyDir: {}
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
+        - name: grafana-dash-providers
+          configMap:
+            defaultMode: 420
+            name: grafana-dash-providers
+        - name: grafana-dashboards
+          configMap:
+            defaultMode: 420
+            name: grafana-dashboards
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: monitoring
+spec:
+  selector:
+    app: grafana
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+

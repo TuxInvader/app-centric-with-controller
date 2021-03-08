@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Kubernetes Ingress Controller Workshop</title>
+<title>Task 6: Playtime</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,87 +436,212 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>Kubernetes Ingress Controller Workshop</h1>
+<h1>Task 6: Playtime</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_6_1_deploy_some_monitoring">6.1 Deploy some monitoring</a></li>
+<li><a href="#_6_2_what_cheese">6.2 What Cheese</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="../img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this course on NGINX Ingress Controller for Kubernetes. <br>
-In this workshop we&#8217;ll focus on using NGINX as a Kubernetes Ingress Controller, and the features<br>
-and benefits we provide beyond standard Ingress.</p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>During this workshop, we&#8217;ll be looking at KIC use-cases for NGINX. Including:</p>
+<p><a href="index.html">Contents</a><br>
+<a href="task5.html">Previous Task</a><br>
+<a href="task7.html">Next Task</a><br></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Improving Ingress by using Custom Resources</p>
-</li>
-<li>
-<p>Securing Ingress using NGINX App Protect</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tasks">Tasks</h2>
+<h2 id="_6_1_deploy_some_monitoring"><a class="link" href="#_6_1_deploy_some_monitoring">6.1 Deploy some monitoring</a></h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="task0.html">Task 0: Welcome to the workshop</a></p>
-</li>
-<li>
-<p><a href="task1.html">Task 1: Bootstrap the nodes</a></p>
-</li>
-<li>
-<p><a href="task2.html">Task 2: Deploy Kubernetes</a></p>
-</li>
-<li>
-<p><a href="task3.html">Task 3: Setup Docker and Git</a></p>
-</li>
-<li>
-<p><a href="task4.html">Task 4: Build NGINX Plus KIC</a></p>
-</li>
-<li>
-<p><a href="task5.html">Task 5: Deploy the KIC (finally)</a></p>
-</li>
-<li>
-<p><a href="task6.html">Task 6: Playtime</a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Most Kubernetes Knights, like NGINX Ninjas, and F5 Frequent Flyers enjoy the magesty of a properly configured monitoring
+solution. In Kubernetes land, the most common tool for that sort of thing is Prometheus.</p>
 </div>
+<div class="paragraph">
+<p>NGINX KIC has native support for prometheus, so it would seem rude not to deploy some. First lets set a grafana password,
+we&#8217;ll use the same one basic auth password from <code>~/secrets/basic_auth_passwd</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ grafpass=$( cat ~/secrets/basic_auth.passwd )
+$ sed -i -re "s/_PASSWORD_/'$grafpass'/" monitoring/04_grafana_deploy.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once we&#8217;ve set that, we&#8217;ll deploy the monitoring stuff&#8230;&#8203;..</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f monitoring/01_namespace.yaml
+$ kubectl apply -f monitoring/02_configmap_prom.yaml
+$ kubectl apply -f monitoring/02_configmap_graf.yaml
+$ kubectl apply -f monitoring/03_prom_deploy.yaml
+$ kubectl apply -f monitoring/04_grafana_deploy.yaml
+$ kubectl apply -f monitoring/06_vservers.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>time to hit up <code>app.&lt;fqdn&gt;</code> and login as <code>admin</code> with your basic auth password.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/k8s-grafana.png" alt="Grafana Dashboard"></span></p>
+</div>
+<div class="paragraph">
+<p>Lovely&#8230;&#8203;&#8230;&#8203;. What it didn&#8217;t work? Well it works for me ;-)</p>
+</div>
+<div class="paragraph">
+<p>Actually, here&#8217;s the thing&#8230;&#8203;&#8230;&#8203; we&#8217;re done with the whole ansible automation thing now. You&#8217;re here to learn Kubernetes,
+and well it&#8217;s about time you started doing some of this stuff yourself. In each of the applications we&#8217;re going to deploy
+from here in, you&#8217;ll likely have to change some hostnames in the <code>Ingress</code> and/or <code>VirtualServer</code> resources to match the
+names in your workshop.</p>
+</div>
+<div class="paragraph">
+<p>Open the <code>monitoring/06-vservers.yaml</code> file in your editor of choice. The file contains two <code>VirtualServer</code> resources, the
+first one is for prometheus and looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml"><span></span><span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apiVersion</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">k8s.nginx.org/v1</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">kind</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">VirtualServer</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">metadata</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">prometheus-ingress</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">namespace</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">monitoring</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">spec</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">host</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;prom.foo.bar&quot;</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">upstreams</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">web9090</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">service</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">prometheus-service</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">port</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">9090</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">routes</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">path</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">action</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">pass</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">web9090</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll need to change the <code>host</code> line to match your workshop domain, eg <code>prom.wsXX.nginxdemodomainthatwereusingthisweek.com</code>, and
+do the same for the grafana entry too, only that one should be <code>graf.wsXX.nginxdemodomainthatwereusingthisweek.com</code>.</p>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;ve fixed those two lines, you only need to apply the vservers fail again to fix everything.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f monitoring/06_vservers.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Enjoy.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_2_what_cheese"><a class="link" href="#_6_2_what_cheese">6.2 What Cheese</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now we&#8217;re going to look at the demo app&#8230;&#8203; change to the whatcheese directory and have a look at the manifests.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 22:54:30 UTC
+Last updated 2021-03-08 23:23:21 UTC
 </div>
 </div>
+<style>
+pre.pygments .hll { background-color: #ffffcc }
+pre.pygments  { background: #f8f8f8; }
+pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+pre.pygments .tok-o { color: #666666 } /* Operator */
+pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
+pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+pre.pygments .tok-go { color: #888888 } /* Generic.Output */
+pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+pre.pygments .tok-m { color: #666666 } /* Literal.Number */
+pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
+pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
+pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+pre.pygments .tok-no { color: #880000 } /* Name.Constant */
+pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
+pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
+pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
+pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </body>
 </html>

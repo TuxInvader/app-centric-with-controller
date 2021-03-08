@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Kubernetes Ingress Controller Workshop</title>
+<title>Task 5: Deploy the Kubernetes Ingress Controller</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,86 +436,214 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>Kubernetes Ingress Controller Workshop</h1>
+<h1>Task 5: Deploy the Kubernetes Ingress Controller</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_5_1_ingress_is_rubbish">5.1 Ingress is Rubbish</a></li>
+<li><a href="#_5_2_custom_resource_definition">5.2 Custom Resource Definition</a></li>
+<li><a href="#_5_3_setup_the_ingress_controller_namespace">5.3 Setup the Ingress Controller namespace</a></li>
+<li><a href="#_5_4_deploy_the_controller">5.4 Deploy the controller</a></li>
+<li><a href="#_5_5_monitoring_hints">5.5 Monitoring Hints</a>
+<ul class="sectlevel2">
+<li><a href="#_nginx_dash">NGINX Dash</a></li>
+<li><a href="#_nginx_kic_logs">NGINX KIC logs</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="../img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this course on NGINX Ingress Controller for Kubernetes. <br>
-In this workshop we&#8217;ll focus on using NGINX as a Kubernetes Ingress Controller, and the features<br>
-and benefits we provide beyond standard Ingress.</p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>During this workshop, we&#8217;ll be looking at KIC use-cases for NGINX. Including:</p>
+<p><a href="index.html">Contents</a><br>
+<a href="task4.html">Previous Task</a><br>
+<a href="task6.html">Next Task</a><br></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Improving Ingress by using Custom Resources</p>
-</li>
-<li>
-<p>Securing Ingress using NGINX App Protect</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tasks">Tasks</h2>
+<h2 id="_5_1_ingress_is_rubbish"><a class="link" href="#_5_1_ingress_is_rubbish">5.1 Ingress is Rubbish</a></h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="task0.html">Task 0: Welcome to the workshop</a></p>
-</li>
-<li>
-<p><a href="task1.html">Task 1: Bootstrap the nodes</a></p>
-</li>
-<li>
-<p><a href="task2.html">Task 2: Deploy Kubernetes</a></p>
-</li>
-<li>
-<p><a href="task3.html">Task 3: Setup Docker and Git</a></p>
-</li>
-<li>
-<p><a href="task4.html">Task 4: Build NGINX Plus KIC</a></p>
-</li>
-<li>
-<p><a href="task5.html">Task 5: Deploy the KIC (finally)</a></p>
-</li>
-<li>
-<p><a href="task6.html">Task 6: Playtime</a></p>
-</li>
-</ul>
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_2_custom_resource_definition"><a class="link" href="#_5_2_custom_resource_definition">5.2 Custom Resource Definition</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Back on your gateway machine, where you have your kubectl setup and ready to talk to your K8s cluster, we&#8217;re going
+to check out the NGINX KIC source again, so that we can upload the manifests for our Custom Resource Definitions</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/source
+$ git clone https://github.com/nginxinc/kubernetes-ingress.git
+$ cd kubernetes-ingress/deployments</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is the deployments folder, it includes a bunch of Custom Resources for extending the Kubernetes API, and
+enabling you to access more of the NGINX KIC functionality, in a way that can be validated by the K8s API.</p>
+</div>
+<div class="paragraph">
+<p>The following four CRDs provide advanced load balancing configuration for HTTP and non-HTTP services. The <code>VirtualServer</code>
+and <code>VirtualServerRoutes</code> are used in HTTP(S) deployments, and can also references <code>Policies</code> for applying rate shaping,
+and other reusable elements. The <code>TransportServer</code> provides support for other TCP/UDP services, and is used in conjunction
+with the <code>GlobalConfiguration</code> for opening the TCP/UDP ports used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f common/crds/k8s.nginx.org_virtualservers.yaml
+$ kubectl apply -f common/crds/k8s.nginx.org_virtualserverroutes.yaml
+$ kubectl apply -f common/crds/k8s.nginx.org_policies.yaml
+$ kubectl apply -f common/crds/k8s.nginx.org_transportservers.yaml
+$ kubectl apply -f common/crds/k8s.nginx.org_globalconfigurations.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next set of CRDs we&#8217;re going to apply provide support for NGINX App Protect WAF. There&#8217;s a resource for managing
+logging: <code>APLogConf</code>, one for building security policy: <code>APPolicy</code>, and one for user signatures: <code>APUserSig</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f common/crds/appprotect.f5.com_aplogconfs.yaml
+$ kubectl apply -f common/crds/appprotect.f5.com_appolicies.yaml
+$ kubectl apply -f common/crds/appprotect.f5.com_apusersigs.yaml</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_setup_the_ingress_controller_namespace"><a class="link" href="#_5_3_setup_the_ingress_controller_namespace">5.3 Setup the Ingress Controller namespace</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It&#8217;s time. We&#8217;re finally (almost) going to deploy an NGINX Ingress Controller :-)</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;re going to need a <code>namespace</code>, so first we&#8217;ll use the example from the docs called <code>nginx-ingress</code>, we&#8217;ll also
+create a service account, and apply some RBAC rules to allow the Ingress Controller to watch both standard <code>Ingress</code>
+resources, and our own <code>Custom Resources</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f common/ns-and-sa.yaml
+$ kubectl apply -f rbac/rbac.yaml
+$ kubectl apply -f rbac/ap-rbac.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll also create a default SSL certificate and private key and some empty place holder configmaps</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f common/default-server-secret.yaml
+$ kubectl apply -f common/nginx-config.yaml
+$ kubectl apply -f common/global-configuration.yaml
+$ kubectl apply -f common/ingress-class.yaml</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_deploy_the_controller"><a class="link" href="#_5_4_deploy_the_controller">5.4 Deploy the controller</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;ve pushed the NGINX Ingress Controller to our private repository, so the next thing we need to do is give kubernetes
+access to it. We do that by creating a kubernetes <code>secret</code> from the docker config at <code>/home/ubuntu/.docker/config.json</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you open the file <code>~/source/k8s-manifests/docker-secret.yaml</code> you&#8217;ll see a docker secret with a place holder just waiting
+for us to provide the secret. We can do that with a little <code>sed</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/source/k8s-manifests
+$ dockerconfig=$(cat /home/ubuntu/.docker/config.json | base64 -w 0)
+$ sed -i -re "s/YOUR_SECRET/$dockerconfig/" docker-secret.yaml
+$ kubectl -n nginx-ingress apply -f docker-secret.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That last line used <code>kubectl</code> to deploy a new secret called <code>registry</code> into the <code>nginx-ingress</code> namespace.</p>
+</div>
+<div class="paragraph">
+<p>Now, let&#8217;s deploy the NGINX KIC</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f nginx-ingress/10-deploy-kic.yaml
+$ kubectl apply -f nginx-ingress/11-deploy-kic-service.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should now have an NGINX Ingress Controller deployed.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/k8s-nginx-ingress.png" alt="nginx-ingress-controller"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_5_monitoring_hints"><a class="link" href="#_5_5_monitoring_hints">5.5 Monitoring Hints</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before we get into the bones of the workshop, I&#8217;m going to let you into a secret. The NGINX gateway which you are connecting
+to is also running NGINX Plus, and it has the NGINX Plus dashboard enabled&#8230;&#8203;..</p>
+</div>
+<div class="sect2">
+<h3 id="_nginx_dash"><a class="link" href="#_nginx_dash">NGINX Dash</a></h3>
+<p>Try accessing your NGINX Plus dashboard -> <a id='db_link'></a><br/>
+Try accessing your NGINX Plus API -> <a id='api_link'></a><br/>
+Try accessing your NGINX Plus Swagger Spec -> <a id='oas_link'></a></p>
+<script>
+  var db='https://' + location.host + '/dashboard.html';
+  var api='https://' + location.host + '/api/6';
+  var oas='https://' + location.host + '/swagger-ui';
+  document.getElementById("db_link").innerHTML = db;
+  document.getElementById("db_link").href = db;
+  document.getElementById("api_link").innerHTML = api;
+  document.getElementById("api_link").href = api;
+  document.getElementById("oas_link").innerHTML = oas;
+  document.getElementById("oas_link").href = oas;
+</script>
+</div>
+<div class="sect2">
+<h3 id="_nginx_kic_logs"><a class="link" href="#_nginx_kic_logs">NGINX KIC logs</a></h3>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl -n nginx-ingress logs deployment.apps/nginx-ingress -f</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task6.html">Task 6</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task6.html">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 22:54:30 UTC
+Last updated 2021-03-08 21:53:48 UTC
 </div>
 </div>
 </body>

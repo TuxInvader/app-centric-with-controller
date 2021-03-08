@@ -14,6 +14,15 @@
     command:
       cmd: "hostname {% raw %}{{ inventory_hostname }}.{{ wsid }}.{{ domain }}{% endraw %}"
 
+  - name: Copy the CA cert to the remotes
+    copy:
+      src: /home/ubuntu/CA/ca.cert.pem
+      dest: /usr/local/share/ca-certificates/workshop_ca.crt
+
+  - name: Update the CA trust to include workshop CA
+    shell:
+      cmd: update-ca-certificates
+
   - name: "Setup rc.ansible to sort out the routing"
     copy:
       dest: /etc/rc.ansible

@@ -11,29 +11,8 @@
 
   - name: Copy over gateway nginx config
     template:
-      src: "{{ playbook_dir }}/conf.d/gateway.{{ config_suffix |default('j2') }}"
+      src: "{{ playbook_dir }}/conf.d/wild.{{ config_suffix |default('j2') }}"
       dest: "/etc/nginx/conf.d/{{ wsid }}.{{ domain }}.conf"
-      owner: ubuntu
-      group: ubuntu
-
-  - name: Copy over www nginx config
-    template:
-      src: "{{ playbook_dir }}/conf.d/www.{{ config_suffix |default('j2') }}"
-      dest: "/etc/nginx/conf.d/www.{{ wsid }}.{{ domain }}.conf"
-      owner: ubuntu
-      group: ubuntu
-
-  - name: Copy over CICD nginx config
-    template:
-      src: "{{ playbook_dir }}/conf.d/cicd.{{ config_suffix |default('j2') }}"
-      dest: "/etc/nginx/conf.d/jenkins.{{ wsid }}.{{ domain }}.conf"
-      owner: ubuntu
-      group: ubuntu
-
-  - name: Copy over www nginx config
-    template:
-      src: "{{ playbook_dir }}/conf.d/controller.{{ config_suffix |default('j2') }}"
-      dest: "/etc/nginx/conf.d/ctrl.{{ wsid }}.{{ domain }}.conf"
       owner: ubuntu
       group: ubuntu
 

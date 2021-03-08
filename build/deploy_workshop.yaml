@@ -243,6 +243,7 @@
         state: present
         create: yes
         line: "https://{{ wsid }}.{{ ws.route53.zone }}/tasks nginx {{ basic_auth.stdout }}"
+        mode: 0644
       become: no
       connection: local
 

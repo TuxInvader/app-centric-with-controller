@@ -57,10 +57,43 @@
         line: '\1 {{ item.name }} {{ item.alias }} {{ item.alias }}.{{ wsid }}.{{ domain }}'
         path: /etc/hosts
       loop:
+        - { name: 'cicd1', alias: 'registry' }
         - { name: 'node1', alias: 'k8s1' }
         - { name: 'node2', alias: 'k8s2' }
         - { name: 'node3', alias: 'k8s3' }
         - { name: 'node4', alias: 'k8s4' }
+        
+    - name: Remove any OS docker packages
+      apt:
+        name:
+          - docker
+          - docker-engine
+          - docker.io
+          - containerd
+          - runc
+        state: absent
+
+    - name: Add the Docker Repo Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add the Docker Repo
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+        update_cache: yes
+
+    - name: Install Additional Packages for K8s workshop
+      apt:
+        name:
+          - docker-ce-cli
+        state: latest
+
+    - name: Ensure there's no docker socket
+      file:
+        path: /var/run/docker.sock
+        state: absent
 
     when:
     - wstype == "kubernetes"
@@ -68,6 +101,22 @@
   - name: Refresh inventory to ensure new instances exist in inventory
     meta: refresh_inventory
 
+  - name: Restart DNSmasq service
+    systemd:
+      name: dnsmasq
+      state: restarted
+
+- name: Setup the CA
+  import_playbook: playbooks/openssl_ca/deploy-ca.yaml
+
 - name: Setup the remote nodes now.
   import_playbook: playbooks/setup_remotes_playbook.yaml
+
+- name: Setup the NGINX gateway for kubernetes ws.
+  import_playbook: playbooks/nginx_workshop_gw/setup_k8s.yaml
+  when: wstype == "kubernetes"
+
+- name: Setup the NGINX gateway for APP/API ws.
+  import_playbook: playbooks/nginx_workshop_gw/setup_app.yaml
+  when: wstype == "api_automation" or wstype == "app_centric"
 

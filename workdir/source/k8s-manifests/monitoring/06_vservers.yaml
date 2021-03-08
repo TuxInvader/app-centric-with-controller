@@ -1,0 +1,33 @@
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: prometheus-ingress
+  namespace: monitoring
+spec:
+  host: "prom.ws01.nginxdemo.net"
+  upstreams:
+  - name: web9090
+    service: prometheus-service
+    port: 9090
+  routes:
+  - path: /
+    action:
+      pass: web9090
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: grafana-ingress
+  namespace: monitoring
+spec:
+  host: "app.ws01.nginxdemo.net"
+  upstreams:
+  - name: web80
+    service: grafana-service
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: web80
+

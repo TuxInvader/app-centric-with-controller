@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Kubernetes Ingress Controller Workshop</title>
+<title>Task 4: Build and upload NGINX Plus KIC</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,86 +436,127 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>Kubernetes Ingress Controller Workshop</h1>
+<h1>Task 4: Build and upload NGINX Plus KIC</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_4_1_nginx_kubernetes_ingress_controllers">4.1 NGINX Kubernetes Ingress Controllers</a></li>
+<li><a href="#_4_2_use_the_source_luke">4.2 Use the source Luke</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="../img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this course on NGINX Ingress Controller for Kubernetes. <br>
-In this workshop we&#8217;ll focus on using NGINX as a Kubernetes Ingress Controller, and the features<br>
-and benefits we provide beyond standard Ingress.</p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>During this workshop, we&#8217;ll be looking at KIC use-cases for NGINX. Including:</p>
+<p><a href="index.html">Contents</a><br>
+<a href="task3.html">Previous Task</a><br>
+<a href="task5.html">Next Task</a><br></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Improving Ingress by using Custom Resources</p>
-</li>
-<li>
-<p>Securing Ingress using NGINX App Protect</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tasks">Tasks</h2>
+<h2 id="_4_1_nginx_kubernetes_ingress_controllers"><a class="link" href="#_4_1_nginx_kubernetes_ingress_controllers">4.1 NGINX Kubernetes Ingress Controllers</a></h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="task0.html">Task 0: Welcome to the workshop</a></p>
-</li>
-<li>
-<p><a href="task1.html">Task 1: Bootstrap the nodes</a></p>
-</li>
-<li>
-<p><a href="task2.html">Task 2: Deploy Kubernetes</a></p>
-</li>
-<li>
-<p><a href="task3.html">Task 3: Setup Docker and Git</a></p>
-</li>
-<li>
-<p><a href="task4.html">Task 4: Build NGINX Plus KIC</a></p>
-</li>
-<li>
-<p><a href="task5.html">Task 5: Deploy the KIC (finally)</a></p>
-</li>
-<li>
-<p><a href="task6.html">Task 6: Playtime</a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>TODO Describe KIC options.</p>
 </div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>A thorough comparisson of all three is posted here:
+<a href="https://github.com/nginxinc/kubernetes-ingress/blob/master/docs/nginx-ingress-controllers.md">KIC Differences</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_2_use_the_source_luke"><a class="link" href="#_4_2_use_the_source_luke">4.2 Use the source Luke</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Okay, so now we know all about Kubernetes Ingress Controllers. Let&#8217;s download and build the best one (NGINX Plus).</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;re going to copy our NGINX repo keys onto <code>cicd1</code>, and then ssh over there and build the KIC on that host. This is
+because the KIC is designed to build itself inside containers, so we need to run it on the docker host.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ scp /etc/ssl/nginx/nginx-repo.* cicd1:
+$ ssh cicd1
+$ git clone https://github.com/nginxinc/kubernetes-ingress.git
+$ cd kubernetes-ingress
+$ mv ~/nginx-repo.* .</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So we&#8217;ve just downloaded the NGINX KIC source from github, and copied in our NGINX Plus keys ready for building. At this
+point we have a choice to make. The build system supports building both Open Source and NGINX Plus versions, as well as
+options for OpenShift, OpenTracing enabled builds, and also builds with the NGINX App Protect Firewall.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;re going to build <code>NGINX Plus with NAP</code>, so run the following build command:</p>
+</div>
+<div id="make_cmd" class="listingblock">
+<div class="content">
+<pre>$ make debian-image-nap-plus PREFIX=registry.&lt;fqdn&gt;:5000/nginx-plus-ingress TARGET=container</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should get some pretty output and timer showing you all of the steps the build process is running. This will take a
+few minutes to build. Once built we need to push the image to our local repository.</p>
+</div>
+<div class="paragraph">
+<p>First of all you&#8217;ll need to login to the docker registry. The username is <code>nginx</code>, do you remember the password Ansible
+generated for you during the docker setup? It&#8217;s in the file <code>~/secrets/docker.cicd.passwd</code> on the gateway machine.</p>
+</div>
+<div id="doc_login" class="listingblock">
+<div class="content">
+<pre>$ docker login registry.&lt;fqdn&gt;:5000</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we can push the KIC image.</p>
+</div>
+<div id="push_cmd" class="listingblock">
+<div class="content">
+<pre>make push PREFIX=registry.&lt;fqdn&gt;:5000/nginx-plus-ingress</pre>
+</div>
+</div>
+<script>
+  var reg='registry.' + location.hostname + ':5000';
+  document.getElementById("make_cmd").innerHTML = "<div class=\"content\"><pre>$ make debian-image-nap-plus PREFIX=" + reg + "/nginx-plus-ingress TARGET=container</pre></div>";
+  document.getElementById("doc_login").innerHTML = "<div class=\"content\"><pre>$ docker login " + reg + "</pre></div>";
+  document.getElementById("push_cmd").innerHTML = "<div class=\"content\"><pre>$ make push PREFIX=" + reg + "/nginx-plus-ingress</pre></div>";
+</script>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task5.html">Task 5</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task3.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task5.html">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 22:54:30 UTC
+Last updated 2021-03-08 18:53:29 UTC
 </div>
 </div>
 </body>

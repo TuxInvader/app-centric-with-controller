@@ -2,6 +2,7 @@ server {
     listen       80;
 
     server_name  {{ wsid }}.{{ domain }};
+    server_name  *.{{ wsid }}.{{ domain }};
 
     #access_log  /var/log/nginx/host.access.log  main_ext;
 

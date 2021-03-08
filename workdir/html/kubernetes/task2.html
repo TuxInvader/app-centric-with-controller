@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Kubernetes Ingress Controller Workshop</title>
+<title>Task 2: Deploy Kubernetes</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,86 +436,206 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>Kubernetes Ingress Controller Workshop</h1>
+<h1>Task 2: Deploy Kubernetes</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_2_1_introduction">2.1 Introduction</a>
+<ul class="sectlevel2">
+<li><a href="#_terminology">Terminology</a></li>
+</ul>
+</li>
+<li><a href="#_2_2_kubernetes_components">2.2 Kubernetes Components</a></li>
+<li><a href="#_2_3_setup_kubernetes">2.3 Setup Kubernetes</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="../img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this course on NGINX Ingress Controller for Kubernetes. <br>
-In this workshop we&#8217;ll focus on using NGINX as a Kubernetes Ingress Controller, and the features<br>
-and benefits we provide beyond standard Ingress.</p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>During this workshop, we&#8217;ll be looking at KIC use-cases for NGINX. Including:</p>
+<p><a href="index.html">Contents</a><br>
+<a href="task1.html">Previous Task</a><br>
+<a href="task3.html">Next Task</a><br></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Improving Ingress by using Custom Resources</p>
-</li>
-<li>
-<p>Securing Ingress using NGINX App Protect</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tasks">Tasks</h2>
+<h2 id="_2_1_introduction"><a class="link" href="#_2_1_introduction">2.1 Introduction</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Kubernetes has become the defacto container orchestration system. All of the main cloud providers have a PaaS offering
+based on Kubernetes, and RedHat OpenShift is one of the most popular enterprise distributions, for use both on premise
+and in public cloud environments.</p>
+</div>
+<div class="paragraph">
+<p>At the heart of the different variants of Kubernetes is the Kubernetes API Server. It is the flixibility and the extensibility
+of the Kubernetets (K8s) API that has helped it win out over other platforms. In fact you&#8217;ll see during this course how
+vendors like F5/NGINX make good use of that extensibility to provide greater control of advanced extensions.</p>
+</div>
+<div class="sect2">
+<h3 id="_terminology"><a class="link" href="#_terminology">Terminology</a></h3>
+<div class="paragraph">
+<p>When you want to run a workload on Kubernetes, you generally create a <code>deployment</code> which describes the application
+in terms of meta-data and the application containers you want to deploy. The containers themselves are deployed in <code>pods</code>
+which are the smallest unit of compute that k8s deals with. A <code>pod</code> can be made up of multiple containers, deployed in
+a shared context. The <code>deployment</code> will contain information on the containers needed for each <code>pod</code> and also the numnber
+of <code>replicas</code> to deploy.</p>
+</div>
+<div class="paragraph">
+<p>When you want to make a deployment accessable to others, either internally or externally, then you create a <code>service</code>.
+A Kubernetes <code>service</code> can be of several types: <code>ClusterIP</code>, <code>NodePort</code>, <code>LoadBalancer</code>, or <code>ExternalName</code>. If you
+are creating a <code>service</code> for consumption within the kubernetes cluster, then <code>ClusterIP</code> is generally used. It&#8217;s also
+used in some cloud environments where the Kubernetes pod network is directly routable from external services.
+A <code>NodePort</code> service assigns a port on the kubernetes node and a route is created to the <code>pods</code> for traffic hitting
+that port. A <code>LoadBalancer</code> type is used in cloud environments for automatically assigning a cloud load balancer to the service.</p>
+</div>
+<div class="paragraph">
+<p>Kubernetes also makes heavy use of <code>labels</code> and <code>selectors</code> for linking different objects. It&#8217;s common practice for
+a <code>service</code> to use <code>selectors</code> to find the <code>deployment</code> and <code>pods</code> which it has been created to publish.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_2_kubernetes_components"><a class="link" href="#_2_2_kubernetes_components">2.2 Kubernetes Components</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this section, we&#8217;ll be deploying a 4 node Kubernetes cluster, but first lets have a look at the K8s Components.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/k8s-components.svg" alt="Kubernetes Components"></span></p>
+</div>
+<div class="paragraph">
+<p>Kubernetes provides a control plane for managing the lifecycle of containerised applications. At the heart
+of the systems is the Kubernetes API, which provids the communications channel between all k8s components and the
+end users.</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="task0.html">Task 0: Welcome to the workshop</a></p>
+<p>The etcd database is used as the key/value store for keeping track of all k8s data</p>
 </li>
 <li>
-<p><a href="task1.html">Task 1: Bootstrap the nodes</a></p>
+<p>The kube-scheduler watches for new pods, and finds a node on which they can be scheduled</p>
 </li>
 <li>
-<p><a href="task2.html">Task 2: Deploy Kubernetes</a></p>
+<p>The kube-controller manager is responsible for managing built-in <code>controllers</code></p>
 </li>
 <li>
-<p><a href="task3.html">Task 3: Setup Docker and Git</a></p>
+<p>The cloud-controller manager is a cloud-specific manage for cloud related <code>controllers</code></p>
 </li>
 <li>
-<p><a href="task4.html">Task 4: Build NGINX Plus KIC</a></p>
+<p>kubelet is the agent on each node which actually runs and looks after your containers.</p>
 </li>
 <li>
-<p><a href="task5.html">Task 5: Deploy the KIC (finally)</a></p>
-</li>
-<li>
-<p><a href="task6.html">Task 6: Playtime</a></p>
+<p>kube-proxy manages the networking for the containers</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>The Kubernetes API is a collection of losely coupled resource specifications. A <code>deployment</code>, a <code>service</code>, an <code>Ingress</code>
+are all examples of resources which are registered in the K8s API. When you create one of these resources, it is a
+<code>controller</code> which detects the CRUD request and takes appropriate action.</p>
+</div>
+<div class="paragraph">
+<p>Interestingly one of the common resources <code>Ingress</code> doesn&#8217;t come with a <code>controller</code> out of the box. More on that later.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_3_setup_kubernetes"><a class="link" href="#_2_3_setup_kubernetes">2.3 Setup Kubernetes</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;re going to deploy Kubernetes across 4 nodes running in the private network. The node_setup playbook you
+just ran has assigned hostnames to them as 'k8s1, k8s2, k8s3, and k8s4'. Now we&#8217;re going to install <code>docker</code> and
+the kubernetes packages: <code>kubeadm</code>, <code>kubectl</code> and <code>kubelet</code>.</p>
+</div>
+<div class="paragraph">
+<p>Please run the deployment playbook</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/deploy.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve installed <code>docker</code> as our container runtime. The <code>kubeadm</code> package is a tool for managing Kubernetes clusters,
+the <code>kubectl</code> command is the tool we&#8217;ll be using most during the course and it&#8217;s job is to help us interact with
+the kubernetes API. Finally <code>kubelet</code> is the kubernetes node agent, it runs on each node in the cluster to manage
+the containers (both our containers, and the kubernetes system itself).</p>
+</div>
+<div class="paragraph">
+<p>The other kubernetes components, such as kube-proxy, etcd, the api server, etc are all launched as containers</p>
+</div>
+<div class="paragraph">
+<p>The next task in deploying a kubernetes cluster is to setup the 'primary' node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/setup_primary.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above playbook uses <code>kubeadm</code> to create a new cluster, and then sets up the control plane components. Then we deploy a
+CNI for the pod networks (we&#8217;re using flannel for simplicity), finally it retrieves and saves the API tokens which we&#8217;ll
+need to join our other nodes into the cluster.</p>
+</div>
+<div class="paragraph">
+<p>Next we use the join command we retrieved from the primary node, to link our other hosts into the kubernetes cluster</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/setup_nodes.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally we&#8217;ll install the <code>kubectl</code> command on your gateway, and copy over the authentication keys from the primary
+node:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/kubernetes/setup_local.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should know have a Kubernetes cluster installed in your lab environment, and we should be able to interract with it
+from the command line. Try executing <code>kubectl get nodes</code> in your shell. You should see output similar to:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/k8s-kubectl-get-nodes.png" alt="node list"></span></p>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task3.html">Task 3</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task1.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task3.html">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 22:54:30 UTC
+Last updated 2021-03-08 20:47:47 UTC
 </div>
 </div>
 </body>

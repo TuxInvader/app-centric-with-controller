@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whatcheese-web-v2
+  namespace: cheese-demo
+  labels:
+    app: whatcheese-web-v2
+spec:
+  selector:
+    matchLabels:
+      app: whatcheese-web-v2
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: whatcheese-web-v2
+    spec:
+      containers:
+      - name: whatcheese-web-v2
+        image: tuxinvader/whatcheese-web-v2:latest
+        imagePullPolicy: Always
+        ports:
+#        - containerPort: 443
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: whatcheese-web-v2
+  namespace: cheese-demo
+spec:
+  selector:
+    app: whatcheese-web-v2
+  #type: NodePort
+  type: ClusterIP
+  clusterIP: None
+  ports:
+#    - name: https
+#      port: 443
+#      targetPort: 443
+#      protocol: TCP
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

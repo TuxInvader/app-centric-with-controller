@@ -24,4 +24,9 @@ During this workshop, we'll be looking at KIC use-cases for NGINX. Including:
 == Tasks
 
 * <<task0.adoc#,Task 0: Welcome to the workshop>>
-
+* <<task1.adoc#,Task 1: Bootstrap the nodes>>
+* <<task2.adoc#,Task 2: Deploy Kubernetes>>
+* <<task3.adoc#,Task 3: Setup Docker and Git>>
+* <<task4.adoc#,Task 4: Build NGINX Plus KIC>>
+* <<task5.adoc#,Task 5: Deploy the KIC (finally)>>
+* <<task6.adoc#,Task 6: Playtime>>

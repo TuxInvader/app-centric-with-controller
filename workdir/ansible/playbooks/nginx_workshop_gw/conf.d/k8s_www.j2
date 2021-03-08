@@ -1,0 +1,107 @@
+
+upstream nginx_web {
+  zone upstream_kic_web 64k;
+  server k8s1:80;
+  server k8s2:80;
+  server k8s3:80;
+  server k8s4:80;
+  keepalive 32;
+  keepalive_requests 100;
+  keepalive_timeout 60s;
+}
+
+upstream nginx_app {
+  zone upstream_kic_app 64k;
+  server k8s1:80;
+  server k8s2:80;
+  server k8s3:80;
+  server k8s4:80;
+  keepalive 32;
+  keepalive_requests 100;
+  keepalive_timeout 60s;
+}
+
+upstream nginx_api {
+  zone upstream_kic_api 64k;
+  server k8s1:80;
+  server k8s2:80;
+  server k8s3:80;
+  server k8s4:80;
+  keepalive 32;
+  keepalive_requests 100;
+  keepalive_timeout 60s;
+}
+
+match wwwok {
+  status 200-444;
+}
+
+server {
+  listen       80 default_server;
+
+  server_name   www.{{ wsid }}.{{ domain }};
+
+  #access_log  /var/log/nginx/www.access.log  main_ext;
+
+  location / {
+    proxy_pass http://nginx_web;
+    proxy_set_header Host      $host;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header X-Real-IP $remote_addr;
+    health_check match=wwwok;
+  }
+
+  # redirect server error pages to the static page /50x.html
+  error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+      root   /usr/share/nginx/html;
+  }
+}
+
+server {
+  listen       80;
+
+  server_name   api.{{ wsid }}.{{ domain }};
+
+  #access_log  /var/log/nginx/api.access.log  main_ext;
+
+  location / {
+    proxy_pass http://nginx_api;
+    proxy_set_header Host      $host;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header X-Real-IP $remote_addr;
+    health_check match=wwwok;
+  }
+
+  # redirect server error pages to the static page /50x.html
+  error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+      root   /usr/share/nginx/html;
+  }
+}
+
+server {
+  listen       80;
+
+  server_name   app.{{ wsid }}.{{ domain }};
+
+  #access_log  /var/log/nginx/app.access.log  main_ext;
+
+  location / {
+    proxy_pass http://nginx_app;
+    proxy_set_header Host      $host;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header X-Real-IP $remote_addr;
+    health_check match=wwwok;
+  }
+
+  # redirect server error pages to the static page /50x.html
+  error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+      root   /usr/share/nginx/html;
+  }
+}
+

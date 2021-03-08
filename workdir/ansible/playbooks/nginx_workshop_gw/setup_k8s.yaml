@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: yes
+  connection: local
+
+  tasks:
+
+  - name: Copy configs for (Kubernetes)
+    import_tasks: tasks/copy-configs-k8s.yaml
+
+  - name: Restart NGINX
+    service:
+      name: nginx
+      state: restarted
+

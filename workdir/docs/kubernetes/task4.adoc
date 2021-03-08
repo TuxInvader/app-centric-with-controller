@@ -1,0 +1,82 @@
+= Task 4: Build and upload NGINX Plus KIC 
+:showtitle:
+:toc: left
+:sectlinks:
+:prev_section: task3
+:next_section: task5
+:source-highlighter: pygments
+
+****
+<<index.adoc#,Contents>> +
+<<task3.adoc#,Previous Task>> +
+<<task5.adoc#,Next Task>> +
+****
+
+== 4.1 NGINX Kubernetes Ingress Controllers
+
+TODO Describe KIC options.
+
+****
+A thorough comparisson of all three is posted here: 
+link:https://github.com/nginxinc/kubernetes-ingress/blob/master/docs/nginx-ingress-controllers.md[KIC Differences]
+****
+
+== 4.2 Use the source Luke
+
+Okay, so now we know all about Kubernetes Ingress Controllers. Let's download and build the best one (NGINX Plus).
+
+We're going to copy our NGINX repo keys onto `cicd1`, and then ssh over there and build the KIC on that host. This is
+because the KIC is designed to build itself inside containers, so we need to run it on the docker host.
+
+----
+$ scp /etc/ssl/nginx/nginx-repo.* cicd1:
+$ ssh cicd1
+$ git clone https://github.com/nginxinc/kubernetes-ingress.git
+$ cd kubernetes-ingress
+$ mv ~/nginx-repo.* .
+----
+
+So we've just downloaded the NGINX KIC source from github, and copied in our NGINX Plus keys ready for building. At this
+point we have a choice to make. The build system supports building both Open Source and NGINX Plus versions, as well as
+options for OpenShift, OpenTracing enabled builds, and also builds with the NGINX App Protect Firewall.
+
+We're going to build `NGINX Plus with NAP`, so run the following build command:
+
+[#make_cmd]
+----
+$ make debian-image-nap-plus PREFIX=registry.<fqdn>:5000/nginx-plus-ingress TARGET=container
+----
+
+You should get some pretty output and timer showing you all of the steps the build process is running. This will take a
+few minutes to build. Once built we need to push the image to our local repository.
+
+First of all you'll need to login to the docker registry. The username is `nginx`, do you remember the password Ansible 
+generated for you during the docker setup? It's in the file `~/secrets/docker.cicd.passwd` on the gateway machine. 
+
+[#doc_login]
+----
+$ docker login registry.<fqdn>:5000
+----
+
+Now we can push the KIC image.
+
+[#push_cmd]
+----
+make push PREFIX=registry.<fqdn>:5000/nginx-plus-ingress
+----
+
+++++
+<script>
+  var reg='registry.' + location.hostname + ':5000';
+  document.getElementById("make_cmd").innerHTML = "<div class=\"content\"><pre>$ make debian-image-nap-plus PREFIX=" + reg + "/nginx-plus-ingress TARGET=container</pre></div>";
+  document.getElementById("doc_login").innerHTML = "<div class=\"content\"><pre>$ docker login " + reg + "</pre></div>";
+  document.getElementById("push_cmd").innerHTML = "<div class=\"content\"><pre>$ make push PREFIX=" + reg + "/nginx-plus-ingress</pre></div>";
+</script>
+++++
+
+Now let's move on to <<task5.adoc#,Task 5>> 
+
+|===
+|<<task3.adoc#,Previous>>|<<task5.adoc#,Next Task>>
+|===
+

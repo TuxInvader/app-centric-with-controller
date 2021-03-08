@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Kubernetes Ingress Controller Workshop</title>
+<title>Task 3: Setup our container registry and Git server</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,86 +436,158 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>Kubernetes Ingress Controller Workshop</h1>
+<h1>Task 3: Setup our container registry and Git server</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_3_1_container_registries">3.1 Container Registries</a></li>
+<li><a href="#_3_2_setup_the_docker_registry">3.2 Setup the docker registry</a></li>
+<li><a href="#_3_3_setup_our_git_repo">3.3 Setup our Git Repo</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<table class="tableblock frame-none grid-none stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 80%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="../img/nginx-logo-black.png" alt="NGINX" width="150" height="100"></span></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Welcome and thank you for attending this course on NGINX Ingress Controller for Kubernetes. <br>
-In this workshop we&#8217;ll focus on using NGINX as a Kubernetes Ingress Controller, and the features<br>
-and benefits we provide beyond standard Ingress.</p></td>
-</tr>
-</tbody>
-</table>
-<hr>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>During this workshop, we&#8217;ll be looking at KIC use-cases for NGINX. Including:</p>
+<p><a href="index.html">Contents</a><br>
+<a href="task2.html">Previous Task</a><br>
+<a href="task4.html">Next Task</a><br></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Improving Ingress by using Custom Resources</p>
-</li>
-<li>
-<p>Securing Ingress using NGINX App Protect</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-<li>
-<p>More</p>
-</li>
-</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tasks">Tasks</h2>
+<h2 id="_3_1_container_registries"><a class="link" href="#_3_1_container_registries">3.1 Container Registries</a></h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="task0.html">Task 0: Welcome to the workshop</a></p>
-</li>
-<li>
-<p><a href="task1.html">Task 1: Bootstrap the nodes</a></p>
-</li>
-<li>
-<p><a href="task2.html">Task 2: Deploy Kubernetes</a></p>
-</li>
-<li>
-<p><a href="task3.html">Task 3: Setup Docker and Git</a></p>
-</li>
-<li>
-<p><a href="task4.html">Task 4: Build NGINX Plus KIC</a></p>
-</li>
-<li>
-<p><a href="task5.html">Task 5: Deploy the KIC (finally)</a></p>
-</li>
-<li>
-<p><a href="task6.html">Task 6: Playtime</a></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>So we now have a functioning K8s cluster, we&#8217;re good to go right???</p>
 </div>
+<div class="paragraph">
+<p>Well almost. If we want to publish our own applications, then we could build containers and upload them to a
+public container registry, but what if the application contains our sensitive Intellectual Property (IP), or
+it&#8217;s licensable software (like NGINX Plus for example)? In that case it&#8217;s preferable to run our own container
+registry.</p>
+</div>
+<div class="paragraph">
+<p>In the next task, we&#8217;ll build and upload an NGINX Plus Ingress Controller for Kubernetes, but first we need
+to create a docker registry server to host it for us.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_2_setup_the_docker_registry"><a class="link" href="#_3_2_setup_the_docker_registry">3.2 Setup the docker registry</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Setting up a docker registry is as simple as executing:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ docker run -d -p 5000:5000 registry:2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This instructs docker to launch a version 2 registry container <code>registry:2</code> and publish the registry service on
+port 5000 <code>-p 5000:5000</code>, and run the container detached.</p>
+</div>
+<div class="paragraph">
+<p>The above is fins for testing, and would certainly work for this lab. But we&#8217;re going to set the bar a little higher
+for our repository. We&#8217;re going to provide a few additional options to enable TLS, setup basic authentication, and
+store the images on a mounted volume.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ docker run -d -p 5000:5000 --restart=always --name registry \
+    -v /home/docker/certs:/certs \
+    -v /home/docker/auth:/auth \
+    -v /home/docker/registry:/var/lib/registry \
+    -e REGISTRY_AUTH=htpasswd \
+    -e REGISTRY_AUTH_HTPASSWD_REALM=PrivateRepo \
+    -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+    -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+    -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+    registry:2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;re not going to run either of those commands manually, we have a playbook to do it for us. So can you now run
+the following playbook</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/cicd/docker-registry.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That will setup our local registry on the <code>cicd1</code> node. Now lets confirm that docker is working. Ansible will have
+generate a password and stored it under <code>/home/ubuntu/secrets/docker.cicd.passwd</code>. The username is <code>nginx</code>.</p>
+</div>
+<div id="doc_login" class="listingblock">
+<div class="content">
+<pre>$ docker login registry.&lt;domain&gt;:5000</pre>
+</div>
+</div>
+<script>
+  var reg='registry.' + location.hostname + ':5000';
+  document.getElementById("doc_login").innerHTML = "<div class=\"content\"><pre>$ docker login " + reg + "</pre></div>";
+</script>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_3_setup_our_git_repo"><a class="link" href="#_3_3_setup_our_git_repo">3.3 Setup our Git Repo</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We have one last task in this section and that&#8217;s to deploy our git server, we&#8217;ll use this to checkout application code
+later, but first we need to deploy the service. Again, we&#8217;ll let Ansible do this for us. Please run the following playbook:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd ~/ansible
+$ ansible-playbook playbooks/cicd/gitea.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should now be able to access your Gitea server at <code><a href="https://git.&lt;yourdomain&gt" class="bare">https://git.&lt;yourdomain&gt</a>;</code></p>
+</div>
+<p>Try accessing your Gitea Service -> <a id='git_link'></a></p>
+<script>
+  var git='https://git.' + location.host + '/';
+  document.getElementById("git_link").innerHTML = git;
+  document.getElementById("git_link").href = git;
+</script>
+<div class="paragraph">
+<p><span class="image"><img src="../img/gitea.png" alt="Gitea"></span></p>
+</div>
+<div class="paragraph">
+<p>Check that you can login using the username <em>ngnix</em> and the password found in <code>~/secrets/git.cicd.passwd</code></p>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task4.html">Task 4</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Next Task</a></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 22:54:30 UTC
+Last updated 2021-03-08 19:24:41 UTC
 </div>
 </div>
 </body>

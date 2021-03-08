@@ -1,0 +1,39 @@
+---
+  - name: Check for existing SSL Certificate
+    stat:
+      path: /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem
+    register: certfile
+
+  - name: Use SSL template if certificate was found
+    set_fact:
+       config_suffix: "ssl.j2"
+    when: certfile.stat.exists == true
+
+  - name: Copy over gateway nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/gateway.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Copy over www nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/app_www.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/www.{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Copy over CICD nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/cicd.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/jenkins.{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+
+  - name: Copy over controller nginx config
+    template:
+      src: "{{ playbook_dir }}/conf.d/controller.{{ config_suffix |default('j2') }}"
+      dest: "/etc/nginx/conf.d/ctrl.{{ wsid }}.{{ domain }}.conf"
+      owner: ubuntu
+      group: ubuntu
+

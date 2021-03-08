@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 1: Complete the workshop set up</title>
+<title>Task 1: Deploy Kubernetes</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,13 +438,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 1: Complete the workshop set up</h1>
+<h1>Task 1: Deploy Kubernetes</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_1_1_introduction">1.1 Introduction</a></li>
 <li><a href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></li>
-<li><a href="#_1_3_setup_kubernetes">1.3 Setup Kubernetes</a></li>
 </ul>
 </div>
 </div>
@@ -477,7 +476,7 @@ Kubernetes cluster.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The workshop deployment process has already deployed your Virtual Machines, and configured the
-gateway machine. The first task we have to complete together is to assign identities to the VMs
+gateway instance. The first task we have to complete together is to assign identities to the VMs
 in your private network.</p>
 </div>
 <div class="paragraph">
@@ -491,77 +490,18 @@ $ ansible-playbook node_setup_playbook.yaml</pre>
 </div>
 <div class="paragraph">
 <p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
-containing only changed and ok statuses.</p>
+containing only changed, ok or skipped statuses.</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
 </div>
 <div class="paragraph">
-<p>With that done, we&#8217;re a step closer to having a useful workshop envionment. In task 2 we&#8217;ll install NGINX on the
-gateway to open up access to the nodes you just configured. But before we can do that, we need to install
-an ansible role to help us.</p>
+<p>With that done, we&#8217;re a step closer to having a useful workshop envionment.</p>
 </div>
 <hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_1_3_setup_kubernetes"><a class="link" href="#_1_3_setup_kubernetes">1.3 Setup Kubernetes</a></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to deploy Kubernetes across 4 nodes running in the private network. The node_setup playbook you
-just ran has assigned hostnames to them as 'k8s1, k8s2, k8s3, and k8s4'. Now we&#8217;re going to install <code>docker</code> and
-the kubernetes packages: <code>kubeadm</code>, <code>kubectl</code> and <code>kubelet</code>.</p>
-</div>
-<div class="paragraph">
-<p>Please run the deployment playbook</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook playbooks/kubernetes/deploy.yaml</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>We&#8217;ve installed <code>docker</code> as our container runtime. The <code>kubeadm</code> package is a tool for managing Kubernetes clusters,
-the <code>kubectl</code> command is the tool we&#8217;ll be using most during the course and it&#8217;s job is to help us interact with
-the kubernetes API. Finally <code>kubelet</code> is the kubernetes node agent, it runs on each node in the cluster to manage
-the containers (both our containers, and the kubernetes system itself).</p>
-</div>
-<div class="paragraph">
-<p>The next task in deploying a kubernetes cluster is to setup the 'primary' node.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook playbooks/kubernetes/setup_primary.yaml</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above playbook uses <code>kubeadm</code> to create a new cluster, and then sets up the control plane components. Then we deploy a
-CNI for the pod networks (we&#8217;re using flannel for simplicity), finally it retrieves and saves the API tokens which we&#8217;ll
-need to join our other nodes into the cluster.</p>
-</div>
-<div class="paragraph">
-<p>Next we use the join command we retrieved from the primary node, to link our other hosts into the kubernetes cluster</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook playbooks/kubernetes/setup_nodes.yaml</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Finally we&#8217;ll install the <code>kubectl</code> command on your gateway, and copy over the authentication keys from the primary
-node:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook playbooks/kubernetes/setup_local.yaml</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now let&#8217;s move on to <a href="task2.html">Task 2</a></p>
+<p>In the next task, we&#8217;ll introduce you to kubernetes, and get our cluster up and running.
+So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -580,7 +520,7 @@ $ ansible-playbook playbooks/kubernetes/setup_local.yaml</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-07 19:09:07 UTC
+Last updated 2021-03-08 18:54:28 UTC
 </div>
 </div>
 </body>

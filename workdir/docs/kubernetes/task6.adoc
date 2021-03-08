@@ -1,0 +1,91 @@
+= Task 6: Playtime
+:showtitle:
+:toc: left
+:sectlinks:
+:prev_section: task4
+:next_section: task6
+:source-highlighter: pygments
+
+****
+<<index.adoc#,Contents>> +
+<<task5.adoc#,Previous Task>> +
+<<task7.adoc#,Next Task>> +
+****
+
+== 6.1 Deploy some monitoring
+
+Most Kubernetes Knights, like NGINX Ninjas, and F5 Frequent Flyers enjoy the magesty of a properly configured monitoring
+solution. In Kubernetes land, the most common tool for that sort of thing is Prometheus.
+
+NGINX KIC has native support for prometheus, so it would seem rude not to deploy some. First lets set a grafana password,
+we'll use the same one basic auth password from `~/secrets/basic_auth_passwd`
+
+----
+$ grafpass=$( cat ~/secrets/basic_auth.passwd )
+$ sed -i -re "s/_PASSWORD_/'$grafpass'/" monitoring/04_grafana_deploy.yaml
+----
+
+Once we've set that, we'll deploy the monitoring stuff.....
+
+----
+$ kubectl apply -f monitoring/01_namespace.yaml
+$ kubectl apply -f monitoring/02_configmap_prom.yaml
+$ kubectl apply -f monitoring/02_configmap_graf.yaml
+$ kubectl apply -f monitoring/03_prom_deploy.yaml
+$ kubectl apply -f monitoring/04_grafana_deploy.yaml
+$ kubectl apply -f monitoring/06_vservers.yaml
+----
+
+time to hit up `app.<fqdn>` and login as `admin` with your basic auth password.
+
+image:../img/k8s-grafana.png[Grafana Dashboard]
+
+Lovely....... What it didn't work? Well it works for me ;-)
+
+Actually, here's the thing...... we're done with the whole ansible automation thing now. You're here to learn Kubernetes,
+and well it's about time you started doing some of this stuff yourself. In each of the applications we're going to deploy
+from here in, you'll likely have to change some hostnames in the `Ingress` and/or `VirtualServer` resources to match the
+names in your workshop.
+
+Open the `monitoring/06-vservers.yaml` file in your editor of choice. The file contains two `VirtualServer` resources, the
+first one is for prometheus and looks like this:
+
+[source,yaml]
+----
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: prometheus-ingress
+  namespace: monitoring
+spec:
+  host: "prom.foo.bar"
+  upstreams:
+  - name: web9090
+    service: prometheus-service
+    port: 9090
+  routes:
+  - path: /
+    action:
+      pass: web9090
+----
+
+You'll need to change the `host` line to match your workshop domain, eg `prom.wsXX.nginxdemodomainthatwereusingthisweek.com`, and
+do the same for the grafana entry too, only that one should be `graf.wsXX.nginxdemodomainthatwereusingthisweek.com`.
+
+Once you've fixed those two lines, you only need to apply the vservers fail again to fix everything.
+
+----
+$ kubectl apply -f monitoring/06_vservers.yaml
+----
+
+Enjoy.
+
+== 6.2 What Cheese
+
+Now we're going to look at the demo app... change to the whatcheese directory and have a look at the manifests.
+
+
+|===
+|<<task4.adoc#,Previous>>|<<task6.adoc#,Next Task>>
+|===
+
