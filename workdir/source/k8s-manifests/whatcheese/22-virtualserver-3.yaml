@@ -6,29 +6,11 @@ metadata:
   namespace: cheese-demo
 spec:
   host: "api.ws01.nginxdemo.net"
-  upstreams:
-  - name: apiv1
-    service: whatcheese-api
-    port: 80
   policies:
     - name: cheese-waf
   routes:
   - path: /
-    action:
-      pass:  apiv1
-  - path: /v1/add
-    matches:
-    - conditions:
-      - argument: psk
-        value: superSecretKey
-      action:
-        pass: apiv1
-    action:
-      return:
-        code: 200
-        type: application/json
-        body: |
-          {\"result\": \"ERROR\", \"details\": \"Please provide the Super Secret Key in the psk field\"}
+    route: api-whatcheese-routes
 ---
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
