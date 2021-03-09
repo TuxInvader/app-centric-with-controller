@@ -41,7 +41,7 @@ The purpose of our first pipeline will be to deploy NGINX configuration to our N
 servers. We shall acomplish this using SSH, and so Jenkins needs to be given the same
 passwordless SSH access enjoyed by our ansible playbooks.
 
-Navigate to _Credentials_ -> _System_ -> _Global Credentials_ and click the `Add Credentials` button.
+Navigate to _Manage Jenkins_ -> _Manage Credentials_ -> _Jenkins_ -> _Global Credentials_ and click the `Add Credentials` button.
 
 image:../img/jenkins-add-creds.png[Add Credentials]
 
