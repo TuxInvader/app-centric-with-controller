@@ -14,12 +14,20 @@
 
 == 4.1 NGINX Kubernetes Ingress Controllers
 
-TODO Describe KIC options.
+There are three commonly available Kubernetes Ingress Controllers based on NGINX software. One is maintained by the
+Kubernetes project as a reference implementation, and the other two are built by F5/NGINX.
+
+At NGINX we build a KIC based on the Open Source code base, and this is available publicly on Dockers hub. We also
+provide a build for NGINX Plus, which has all of the advantages of NGINX plus.
 
 ****
-A thorough comparisson of all three is posted here: 
+A thorough comparison of all three is posted here: 
 link:https://github.com/nginxinc/kubernetes-ingress/blob/master/docs/nginx-ingress-controllers.md[KIC Differences]
 ****
+
+The job of an Ingress controller is to provide the `Control Loop` for `Ingress Resources`. The Ingress resource is the
+standard mechanism for exposing services running inside Kubernetes to the outside world. We'll discuss the role of the
+`Kubernetes Ingress Controller` more in chapter 5. For now, lets get the KIC built and uploaded to our Docker registry.
 
 == 4.2 Use the source Luke
 

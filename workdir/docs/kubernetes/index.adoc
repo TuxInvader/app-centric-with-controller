@@ -13,13 +13,13 @@ and benefits we provide beyond standard Ingress.
 
 '''
 
-During this workshop, we'll be looking at KIC use-cases for NGINX. Including:
+During this workshop, we'll cover :
 
- * Improving Ingress by using Custom Resources
+ * Deploying Kubernetes
+ * Building NGINX Plus Ingress Controller
+ * Looking at standard Ingress configuration
+ * Examine the benefits of using Custom Resources
  * Securing Ingress using NGINX App Protect
- * More
- * More
- * More
 
 == Tasks
 
@@ -30,3 +30,4 @@ During this workshop, we'll be looking at KIC use-cases for NGINX. Including:
 * <<task4.adoc#,Task 4: Build NGINX Plus KIC>>
 * <<task5.adoc#,Task 5: Deploy the KIC (finally)>>
 * <<task6.adoc#,Task 6: Playtime>>
+* <<task7.adoc#,Task 7: NGINX App Protect>>

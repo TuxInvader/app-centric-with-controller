@@ -475,21 +475,44 @@ based on Kubernetes, and RedHat OpenShift is one of the most popular enterprise 
 and in public cloud environments.</p>
 </div>
 <div class="paragraph">
-<p>At the heart of the different variants of Kubernetes is the Kubernetes API Server. It is the flixibility and the extensibility
-of the Kubernetets (K8s) API that has helped it win out over other platforms. In fact you&#8217;ll see during this course how
-vendors like F5/NGINX make good use of that extensibility to provide greater control of advanced extensions.</p>
+<p>At the heart of the different variants of Kubernetes is the Kubernetes API Server. It is the flexibility and the extensibility
+of the Kubernetes (K8s) API that has helped it win out over other platforms. In fact you&#8217;ll see during this course how
+vendors like F5/NGINX make good use of that extensibility to provide greater control of advanced extensions with Custom Resources.</p>
 </div>
 <div class="sect2">
 <h3 id="_terminology"><a class="link" href="#_terminology">Terminology</a></h3>
 <div class="paragraph">
-<p>When you want to run a workload on Kubernetes, you generally create a <code>deployment</code> which describes the application
-in terms of meta-data and the application containers you want to deploy. The containers themselves are deployed in <code>pods</code>
-which are the smallest unit of compute that k8s deals with. A <code>pod</code> can be made up of multiple containers, deployed in
-a shared context. The <code>deployment</code> will contain information on the containers needed for each <code>pod</code> and also the numnber
-of <code>replicas</code> to deploy.</p>
+<p>When you want to run a workload on Kubernetes, you generally create a <code>deployment</code>. The deployment describes the application
+by specifying the required <code>containers</code>, but it also includes <code>meta-data</code> (including <code>name</code>, <code>namespace</code>, and <code>labels</code>),
+additional configuration through <code>annotations</code>, <code>env</code> (environment variables), <code>secrets</code>, and <code>config-maps</code> can be provided.
+Deployments can also be assigned shared file-systems through <code>Persistent Volumes</code> and <code>Persistent Volume Claims</code>. Often <code>volumes</code>
+are used to mount <code>config-maps</code> into a <code>pod</code> as a file-system mount too.</p>
 </div>
 <div class="paragraph">
-<p>When you want to make a deployment accessable to others, either internally or externally, then you create a <code>service</code>.
+<p><span class="image"><img src="../img/k8s-basics.png" alt="service" width="deployment" height="replicaset"></span></p>
+</div>
+<div class="paragraph">
+<p>The <code>pod</code> is the smallest element of compute the Kubernetes deals with. Your <code>deployment</code> will specify a number of <code>replicas</code>
+which equates to the number of <code>pods</code> that get deployed. The pod is a single compute instance and can be made up from one or many
+containers. At least one of those containers will be persistent and run the application, but some may be short-lived or ephemeral.
+It&#8217;s quite common for complex applications to use one or more <code>init-containers</code> which are there to setup the environment ready for
+the main task.</p>
+</div>
+<div class="paragraph">
+<p>The <code>deployment</code> is the common interface used to create a <code>replicaSet</code>, and the <code>pods</code> it manages. It provides support for scaling,
+rolling-updates, and other application life cycle functions. Applications can also be deployed as <code>daemonSets</code> which enable you to
+create a pod on each eligible Kubernetes node, or <code>statefulSets</code> which give you more control over how the pods are deployed and named.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>The <code>DaemonSet</code> is a common pattern used for cluster services, and is often employed with <code>Kubernetes Ingress Controllers</code>. The NGINX
+KIC can be deployed in this way, but we also support the standard <code>deployment</code> model.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>When you want to make a deployment accessible to others, either internally or externally, then you create a <code>service</code>.
 A Kubernetes <code>service</code> can be of several types: <code>ClusterIP</code>, <code>NodePort</code>, <code>LoadBalancer</code>, or <code>ExternalName</code>. If you
 are creating a <code>service</code> for consumption within the kubernetes cluster, then <code>ClusterIP</code> is generally used. It&#8217;s also
 used in some cloud environments where the Kubernetes pod network is directly routable from external services.
@@ -513,8 +536,8 @@ a <code>service</code> to use <code>selectors</code> to find the <code>deploymen
 <p><span class="image"><img src="../img/k8s-components.svg" alt="Kubernetes Components"></span></p>
 </div>
 <div class="paragraph">
-<p>Kubernetes provides a control plane for managing the lifecycle of containerised applications. At the heart
-of the systems is the Kubernetes API, which provids the communications channel between all k8s components and the
+<p>Kubernetes provides a control plane for managing the lifecycle of containerized applications. At the heart
+of the systems is the Kubernetes API, which provides the communications channel between all k8s components and the
 end users.</p>
 </div>
 <div class="ulist">
@@ -540,12 +563,19 @@ end users.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The Kubernetes API is a collection of losely coupled resource specifications. A <code>deployment</code>, a <code>service</code>, an <code>Ingress</code>
+<p>The Kubernetes API is a collection of loosely coupled resource specifications. A <code>deployment</code>, a <code>service</code>, an <code>Ingress</code>
 are all examples of resources which are registered in the K8s API. When you create one of these resources, it is a
 <code>controller</code> which detects the CRUD request and takes appropriate action.</p>
 </div>
 <div class="paragraph">
+<p><span class="image"><img src="../img/k8s-control-loop.png" alt="Kubernetes Control Loop"></span></p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
 <p>Interestingly one of the common resources <code>Ingress</code> doesn&#8217;t come with a <code>controller</code> out of the box. More on that later.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -554,7 +584,7 @@ are all examples of resources which are registered in the K8s API. When you crea
 <div class="sectionbody">
 <div class="paragraph">
 <p>We&#8217;re going to deploy Kubernetes across 4 nodes running in the private network. The node_setup playbook you
-just ran has assigned hostnames to them as 'k8s1, k8s2, k8s3, and k8s4'. Now we&#8217;re going to install <code>docker</code> and
+just ran has assigned host names to them as 'k8s1, k8s2, k8s3, and k8s4'. Now we&#8217;re going to install <code>docker</code> and
 the kubernetes packages: <code>kubeadm</code>, <code>kubectl</code> and <code>kubelet</code>.</p>
 </div>
 <div class="paragraph">
@@ -609,7 +639,7 @@ $ ansible-playbook playbooks/kubernetes/setup_local.yaml</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You should know have a Kubernetes cluster installed in your lab environment, and we should be able to interract with it
+<p>You should know have a Kubernetes cluster installed in your lab environment, and we should be able to interact with it
 from the command line. Try executing <code>kubectl get nodes</code> in your shell. You should see output similar to:</p>
 </div>
 <div class="paragraph">
@@ -635,7 +665,7 @@ from the command line. Try executing <code>kubectl get nodes</code> in your shel
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 20:47:47 UTC
+Last updated 2021-03-10 21:35:52 UTC
 </div>
 </div>
 </body>

@@ -1,0 +1,43 @@
+= Task 7: NGINX App Protect
+:showtitle:
+:toc: left
+:sectlinks:
+:prev_section: task4
+:next_section: task6
+:source-highlighter: pygments
+
+****
+<<index.adoc#,Contents>> +
+<<task6.adoc#,Previous Task>> +
+****
+
+== 7.1 NGINX App Protect
+
+NGINX App Protect is an Advanced WAF solution that can be deployed inside the KIC.
+We provide a set of Custom Resources for managing the WAF policy, and it's Logging, and
+also for User Signatures.
+
+Take a look at the yaml files numbered `20` and higher to see an `APPolicy`, `Policy`, and
+a `virtualServer` and `VirtualServerRoute` which uses them.
+
+== 7.2 Custom Resources and RBAC
+
+Each resource type in the Kubernetes API can be given its own Access Control privileges as
+part of the Kubernetes RBAC system. That means that each of the NGINX CRDs can be accessed
+by different teams within an organization.
+
+For example: We might enable the SecOps teams to create firewall policy using `APPolicy` resources,
+the DevOps team to publish new apps by giving them access to `VirtualServer` resources, and
+the application developers access to routing to different releases through `VirtualServerRoute`
+resources.
+
+== 7.3 Continue playing
+
+Please have a go at deploying the `20`+ resources in whatcheese to see how NAP functions. Also take a
+look at the documentation on 
+link:https://docs.nginx.com/nginx-ingress-controller/configuration/virtualserver-and-virtualserverroute-resources/[docs.nginx.com]
+to see how Ingress and Custom Resources can be utilized to give you the best KIC experience.
+
+|===
+|<<task6.adoc#,Previous>>|<<index.adoc#,Home>>
+|===

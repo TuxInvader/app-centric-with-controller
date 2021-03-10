@@ -465,15 +465,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_4_1_nginx_kubernetes_ingress_controllers"><a class="link" href="#_4_1_nginx_kubernetes_ingress_controllers">4.1 NGINX Kubernetes Ingress Controllers</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO Describe KIC options.</p>
+<p>There are three commonly available Kubernetes Ingress Controllers based on NGINX software. One is maintained by the
+Kubernetes project as a reference implementation, and the other two are built by F5/NGINX.</p>
+</div>
+<div class="paragraph">
+<p>At NGINX we build a KIC based on the Open Source code base, and this is available publicly on Dockers hub. We also
+provide a build for NGINX Plus, which has all of the advantages of NGINX plus.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
-<p>A thorough comparisson of all three is posted here:
+<p>A thorough comparison of all three is posted here:
 <a href="https://github.com/nginxinc/kubernetes-ingress/blob/master/docs/nginx-ingress-controllers.md">KIC Differences</a></p>
 </div>
 </div>
+</div>
+<div class="paragraph">
+<p>The job of an Ingress controller is to provide the <code>Control Loop</code> for <code>Ingress Resources</code>. The Ingress resource is the
+standard mechanism for exposing services running inside Kubernetes to the outside world. We&#8217;ll discuss the role of the
+<code>Kubernetes Ingress Controller</code> more in chapter 5. For now, lets get the KIC built and uploaded to our Docker registry.</p>
 </div>
 </div>
 </div>
@@ -556,7 +566,7 @@ generated for you during the docker setup? It&#8217;s in the file <code>~/secret
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 18:53:29 UTC
+Last updated 2021-03-10 21:35:52 UTC
 </div>
 </div>
 </body>

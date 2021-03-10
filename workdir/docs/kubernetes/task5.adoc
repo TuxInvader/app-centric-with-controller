@@ -14,8 +14,55 @@
 
 == 5.1 Ingress is Rubbish
 
+As stated previously, the job of a Kubernetes Ingress Controller is to provide the `Control Loop` for `Ingress` resources.
+All KICs perform that function to greater or lesser degrees, so why should you chose to deploy NGINX Plus?
 
-== 5.2 Custom Resource Definition
+Well, Ingress is actually a very simple specification. It sets the bar very low in terms of load balancing functionality.
+The specification has the following features:
+
+* HTTP and HTTPS services
+* TLS termination for HTTPS
+* Routing based on Host and Path
+
+That's it. The official spec doesn't even include TLS re-encryption. So what has happened is different vendors have "extended"
+the functionality by adding additional configuration through `annotations` and `configmaps`. The problem with this approach
+is the K8s API only validates content in the actual `Ingress Resource` specification. Annotations and configmaps are not part
+of that, and so don't get validated. 
+
+Think about that. 
+
+One of the main drivers for Kubernetes adoption is Agile development, driving `Continuous Delivery` pipelines for faster
+time-to-market of new applications and services. But if your Ingress layer relies on features enabled through un-validated
+input, then that's a big problem.
+
+== 5.2 Custom Resources
+
+Custom Resources solve that problem. They allow us to provide an alternative to `Ingress`, which isn't built for the lowest
+common denominator. NGINX Custom Resources allow us to provide our users with full ADC functionality through a fully validated
+API call. 
+
+Unlike an annotation, if an error creeps into a CRD, the Kubernetes API can spot it straight away and terminate the CiCD pipeline
+providing immediate feedback to the pipeline (and the developer) about where the problem occurred.
+
+NGINX CRDs provide features to support the following:
+
+* Fully validated ADC (Load Balancer) Configuration
+* Full Layer 7 routing (Host, Path, Cookie, Headers, Method, etc)
+* Support for non HTTP Services (HTTP/2, gRPC, TCP, UDP)
+* NGINX App Protect (Web Application Firewall)
+* Layer 7 Traffic Policies (Rate Limiting, ACLs, etc)
+* Traffic Splitting
+* Blue/Green Testing
+* Canary Releases
+* Circuit Breakers
+
+So, what should you think about when you're deciding on an Ingress Controller.....
+
+image:../img/k8s-kic-considerations.png[KIC considerations]
+
+Food for thought. Now let's get on with it and deploy our NGINX Plus Ingress Controller....
+
+== 5.3 Setup the CRDs for KIC
 
 Back on your gateway machine, where you have your kubectl setup and ready to talk to your K8s cluster, we're going
 to check out the NGINX KIC source again, so that we can upload the manifests for our Custom Resource Definitions
@@ -51,7 +98,7 @@ $ kubectl apply -f common/crds/appprotect.f5.com_appolicies.yaml
 $ kubectl apply -f common/crds/appprotect.f5.com_apusersigs.yaml
 ----
 
-== 5.3 Setup the Ingress Controller namespace
+== 5.4 Setup the Ingress Controller namespace
 
 It's time. We're finally (almost) going to deploy an NGINX Ingress Controller :-)
 
@@ -74,7 +121,7 @@ $ kubectl apply -f common/global-configuration.yaml
 $ kubectl apply -f common/ingress-class.yaml
 ----
 
-== 5.4 Deploy the controller
+== 5.5 Deploy the controller
 
 We've pushed the NGINX Ingress Controller to our private repository, so the next thing we need to do is give kubernetes
 access to it. We do that by creating a kubernetes `secret` from the docker config at `/home/ubuntu/.docker/config.json`.
@@ -102,7 +149,7 @@ You should now have an NGINX Ingress Controller deployed.
 
 image:../img/k8s-nginx-ingress.png[nginx-ingress-controller]
 
-== 5.5 Monitoring Hints
+== 5.6 Monitoring Hints
 
 Before we get into the bones of the workshop, I'm going to let you into a secret. The NGINX gateway which you are connecting
 to is also running NGINX Plus, and it has the NGINX Plus dashboard enabled.....

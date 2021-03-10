@@ -18,13 +18,13 @@ Welcome to this NGINX Kubernetes workshop.
 
 First lets take a look at the environment you'll be working with.
 
-image:../img/workshop-diagram.png[network,align="center"]
+image:../img/workshop-k8s-diagram.png[network,align="center"]
 
 Each individual in the workshop has been given access to a gateway instance, the gateway is multi-homed
-with a public interface in a routeable public network, and a secondary inteface in a private network.
+with a public interface in a routable public network, and a secondary interface in a private network.
 
 You can either access the gateway directly using SSH and HTTPS, or if that is restricted you may access
-using RDP to the jumphost. The RDP password is the same as the Basic-Auth password used to access this
+using RDP to the jump-host. The RDP password is the same as the Basic-Auth password used to access this
 site, and the username is `ec2-user`.
 
 All other machines in the course reside in the private network and will be accessed through the NGINX
@@ -40,8 +40,8 @@ The private key for gaining access to your workshop can be downloaded link:/secr
 You should find the SSH private key in both OpenSSH PEM and Putty PPK file formats.
 
 === 0.2.2 Jumphost Access
-Your jumphost should be accessable on the same stack number as this gateway. So for example,
-If you are on stack ws03.domain.com, then your jumphost will be on jump03.domain.com.  
+Your jump-host should be accessible on the same stack number as this gateway. So for example,
+If you are on stack ws03.domain.com, then your jump-host will be on jump03.domain.com.  
 
 Connect using your RDP client, with the username `ec2-user` and the same password as you used here.
 

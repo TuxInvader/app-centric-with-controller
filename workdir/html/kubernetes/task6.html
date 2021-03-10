@@ -444,6 +444,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_6_1_deploy_some_monitoring">6.1 Deploy some monitoring</a></li>
 <li><a href="#_6_2_what_cheese">6.2 What Cheese</a></li>
+<li><a href="#_6_3_the_ingress_resource">6.3 The Ingress Resource</a></li>
+<li><a href="#_6_4_custom_resource_definitions">6.4 Custom Resource Definitions</a></li>
 </ul>
 </div>
 </div>
@@ -465,11 +467,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_6_1_deploy_some_monitoring"><a class="link" href="#_6_1_deploy_some_monitoring">6.1 Deploy some monitoring</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Most Kubernetes Knights, like NGINX Ninjas, and F5 Frequent Flyers enjoy the magesty of a properly configured monitoring
+<p>Most Kubernetes Knights, like NGINX Ninjas, and F5 Frequent Flyers enjoy the majesty of a properly configured monitoring
 solution. In Kubernetes land, the most common tool for that sort of thing is Prometheus.</p>
 </div>
 <div class="paragraph">
-<p>NGINX KIC has native support for prometheus, so it would seem rude not to deploy some. First lets set a grafana password,
+<p>NGINX KIC has native support for prometheus, so it would seem rude not to deploy some. First let&#8217;s set a grafana password,
 we&#8217;ll use the same one basic auth password from <code>~/secrets/basic_auth_passwd</code></p>
 </div>
 <div class="listingblock">
@@ -491,9 +493,7 @@ $ kubectl apply -f monitoring/04_grafana_deploy.yaml
 $ kubectl apply -f monitoring/06_vservers.yaml</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>time to hit up <code>app.&lt;fqdn&gt;</code> and login as <code>admin</code> with your basic auth password.</p>
-</div>
+<p>time to hit up <a id='graf_link'>https://graf.your.fqdn/</a> and login as "admin" with your basic auth password.</p>
 <div class="paragraph">
 <p><span class="image"><img src="../img/k8s-grafana.png" alt="Grafana Dashboard"></span></p>
 </div>
@@ -503,7 +503,7 @@ $ kubectl apply -f monitoring/06_vservers.yaml</pre>
 <div class="paragraph">
 <p>Actually, here&#8217;s the thing&#8230;&#8203;&#8230;&#8203; we&#8217;re done with the whole ansible automation thing now. You&#8217;re here to learn Kubernetes,
 and well it&#8217;s about time you started doing some of this stuff yourself. In each of the applications we&#8217;re going to deploy
-from here in, you&#8217;ll likely have to change some hostnames in the <code>Ingress</code> and/or <code>VirtualServer</code> resources to match the
+from here in, you&#8217;ll likely have to change some host names in the <code>Ingress</code> and/or <code>VirtualServer</code> resources to match the
 names in your workshop.</p>
 </div>
 <div class="paragraph">
@@ -529,12 +529,22 @@ first one is for prometheus and looks like this:</p>
       <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">pass</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">web9090</span></code></pre>
 </div>
 </div>
+<p>
+You'll need to change the "host" line to match your workshop domain, <a id='prom_link'>https://prom.your.fqdn/</a>, and
+do the same for the grafana entry too, only that one should be <a id='graf2_link'>https://graf.your.fqdn/</a>.
+</p>
+<script>
+  var graf='https://graf.' + location.host + '/';
+  var prom='https://prom.' + location.host + '/';
+  document.getElementById("graf_link").innerHTML = graf;
+  document.getElementById("graf_link").href = graf;
+  document.getElementById("graf2_link").innerHTML = graf;
+  document.getElementById("graf2_link").href = graf;
+  document.getElementById("prom_link").innerHTML = prom;
+  document.getElementById("prom_link").href = prom;
+</script>
 <div class="paragraph">
-<p>You&#8217;ll need to change the <code>host</code> line to match your workshop domain, eg <code>prom.wsXX.nginxdemodomainthatwereusingthisweek.com</code>, and
-do the same for the grafana entry too, only that one should be <code>graf.wsXX.nginxdemodomainthatwereusingthisweek.com</code>.</p>
-</div>
-<div class="paragraph">
-<p>Once you&#8217;ve fixed those two lines, you only need to apply the vservers fail again to fix everything.</p>
+<p>Once you&#8217;ve fixed those two lines, you only need to apply the vservers manifest again to fix everything.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -542,7 +552,7 @@ do the same for the grafana entry too, only that one should be <code>graf.wsXX.n
 </div>
 </div>
 <div class="paragraph">
-<p>Enjoy.</p>
+<p>Now try that again.</p>
 </div>
 </div>
 </div>
@@ -552,6 +562,187 @@ do the same for the grafana entry too, only that one should be <code>graf.wsXX.n
 <div class="paragraph">
 <p>Now we&#8217;re going to look at the demo app&#8230;&#8203; change to the whatcheese directory and have a look at the manifests.</p>
 </div>
+<div class="paragraph">
+<p>Lets start up the application, but deploying some of the manifests&#8230;&#8203;.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f 01-namespace.yaml
+$ kubectl apply -f 10-whatcheese-web.yaml
+$ kubectl apply -f 11-whatcheese-db.yaml
+$ kubectl apply -f 12-whatcheese-api.yaml
+$ kubectl apply -f 13-whatcheese-web-v2.yaml
+$ kubectl apply -f 15-ingress.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That is whatcheese running, and exposed using a standard <code>Ingress Resource</code>.</p>
+</div>
+<p>
+Try access the WhatCheese website now at <a id='cheese_link'>https://www.your.fqdn/</a>.
+</p>
+<script>
+  var cheese='https://www.' + location.host + '/';
+  document.getElementById("cheese_link").innerHTML = cheese;
+  document.getElementById("cheese_link").href = cheese;
+</script>
+<div class="paragraph">
+<p>Did you remember to check that the host name matches your workshops FQDN?</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_3_the_ingress_resource"><a class="link" href="#_6_3_the_ingress_resource">6.3 The Ingress Resource</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you take a look at the file <code>15-ingress.yaml</code> you can see that this is an example of a standard Ingress resource.
+The spec section contains information on the <code>host</code> and routing based on the <code>path</code>. This particular example enables
+a WAF policy, and sets the load balancing method through annotations.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml"><span></span><span class="tok-nn">---</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apiVersion</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">extensions/v1beta1</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">kind</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">Ingress</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">metadata</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">www-whatcheese-web-ingress</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">namespace</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">cheese-demo</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">annotations</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">appprotect.f5.com/app-protect-enable</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;True&quot;</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">appprotect.f5.com/app-protect-policy</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;nginx-ingress/dataguard-blocking&quot;</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">nginx.org/lb-method</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;round_robin&quot;</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">spec</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">rules</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">host</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;www.ws01.nginxdemo.net&quot;</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">http</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">paths</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">path</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">backend</span><span class="tok-p tok-p-Indicator">:</span>
+          <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">serviceName</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">whatcheese-web-v2</span>
+          <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">servicePort</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">80</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As stated before, the Kubernetes API has no information about the annotations and they will not be validated
+by the K8s. The NGINX KIC will validate the settings later and refuse to apply a config with broken annotations,
+but you have to discover the failure out-of-pipeline, by checking the KIC status.</p>
+</div>
+<div class="paragraph">
+<p>Try changing the <code>lb_method</code> to "foo" or something else invalid and applying the manifest. The <code>kubectl</code> command
+does not report the error. But NGINX will reject the configuration.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>More information on the available annotations can be seen on
+<a href="https://docs.nginx.com/nginx-ingress-controller/configuration/ingress-resources/advanced-configuration-with-annotations/">docs.nginx.com</a></p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Remove the <code>Ingress</code> resource from Kubernetes by running</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl delete -f 15-ingress.yaml</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_4_custom_resource_definitions"><a class="link" href="#_6_4_custom_resource_definitions">6.4 Custom Resource Definitions</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Take a look at the files <code>15-virtualserver-1.yaml</code> and <code>15-virtualserver-2.yaml</code>.</p>
+</div>
+<div class="paragraph">
+<p>They both contain VirtualServer resources for an <code>API</code> and <code>WWW</code> endpoint. The second example is the more interesting
+one it creates a <code>canary</code> access to version 2 of the website, and restricts write access to the API endpoint with a
+pre-shared-key.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml"><span></span><span class="tok-nn">---</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apiVersion</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">k8s.nginx.org/v1</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">kind</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">VirtualServer</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">metadata</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">api-whatcheese-web-vs</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">namespace</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">cheese-demo</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">spec</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">host</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;api.ws01.nginxdemo.net&quot;</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">upstreams</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apiv1</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">service</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">whatcheese-api</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">port</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">80</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">routes</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">path</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">action</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">pass</span><span class="tok-p tok-p-Indicator">:</span>  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apiv1</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">path</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/v1/add</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">matches</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">conditions</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">argument</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">psk</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">value</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">superSecretKey</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">action</span><span class="tok-p tok-p-Indicator">:</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">pass</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apiv1</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">action</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">return</span><span class="tok-p tok-p-Indicator">:</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">code</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">200</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">type</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">application/json</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">body</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-p tok-p-Indicator">|</span>
+          <span class="tok-no">{\&quot;result\&quot;: \&quot;ERROR\&quot;, \&quot;details\&quot;: \&quot;Please provide the Super Secret Key in the psk field\&quot;}</span>
+<span class="tok-nn">---</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apiVersion</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">k8s.nginx.org/v1</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">kind</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">VirtualServer</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">metadata</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">www-whatcheese-web-vs</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">namespace</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">cheese-demo</span>
+<span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">spec</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">host</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-s">&quot;www.ws01.nginxdemo.net&quot;</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">upstreams</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">webv1</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">service</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">whatcheese-web</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">port</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">80</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">webv2</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">service</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">whatcheese-web-v2</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">port</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">80</span>
+  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">routes</span><span class="tok-p tok-p-Indicator">:</span>
+  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">path</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">/</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">matches</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">conditions</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">cookie</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">austin</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">value</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">yeahBabyYeah</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">action</span><span class="tok-p tok-p-Indicator">:</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">pass</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">webv2</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">action</span><span class="tok-p tok-p-Indicator">:</span>
+      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">pass</span><span class="tok-p tok-p-Indicator">:</span>  <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">webv1</span></code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>You have probably wondered at times "What ever happened to Austin Powers?". I know I used to wake up in a panic every
+other Thursday with exactly that question on my mind. It turns out he got a job as a developer for WhatCheese.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If you hit the website with a cookie called <code>austin</code> with the value <code>yeahBabyYeah</code>, then you get access to new
+versions of the site. You can see we&#8217;re doing routing based on the cookie value, and because this is a CRD it&#8217;s
+right there in the resource spec. That means this whole example is validated by the Kubernetes API.</p>
+</div>
+<div class="paragraph">
+<p>Apply the second VirtualServer resource, and try to access the <code>Canary</code> version of the website.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ kubectl apply -f 15-virtualserver-2.yaml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The new version of the site includes a form to upload new cheeses, but write access is protected by that PSK.
+Try to upload a new cheese.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -559,8 +750,8 @@ do the same for the grafana entry too, only that one should be <code>graf.wsXX.n
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Previous</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task5.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task7.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -569,7 +760,7 @@ do the same for the grafana entry too, only that one should be <code>graf.wsXX.n
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-08 23:23:21 UTC
+Last updated 2021-03-10 21:59:49 UTC
 </div>
 </div>
 <style>

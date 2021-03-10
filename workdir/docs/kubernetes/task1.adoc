@@ -36,7 +36,7 @@ containing only changed, ok or skipped statuses.
 
 image:../img/node-setup-result.png[playbook recap]
 
-With that done, we're a step closer to having a useful workshop envionment.
+With that done, we're a step closer to having a useful workshop environment.
 
 '''
 

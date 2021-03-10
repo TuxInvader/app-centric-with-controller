@@ -18,19 +18,36 @@ Kubernetes has become the defacto container orchestration system. All of the mai
 based on Kubernetes, and RedHat OpenShift is one of the most popular enterprise distributions, for use both on premise
 and in public cloud environments.
 
-At the heart of the different variants of Kubernetes is the Kubernetes API Server. It is the flixibility and the extensibility
-of the Kubernetets (K8s) API that has helped it win out over other platforms. In fact you'll see during this course how 
-vendors like F5/NGINX make good use of that extensibility to provide greater control of advanced extensions.
+At the heart of the different variants of Kubernetes is the Kubernetes API Server. It is the flexibility and the extensibility
+of the Kubernetes (K8s) API that has helped it win out over other platforms. In fact you'll see during this course how 
+vendors like F5/NGINX make good use of that extensibility to provide greater control of advanced extensions with Custom Resources.
 
 === Terminology
 
-When you want to run a workload on Kubernetes, you generally create a `deployment` which describes the application
-in terms of meta-data and the application containers you want to deploy. The containers themselves are deployed in `pods`
-which are the smallest unit of compute that k8s deals with. A `pod` can be made up of multiple containers, deployed in 
-a shared context. The `deployment` will contain information on the containers needed for each `pod` and also the numnber
-of `replicas` to deploy.
+When you want to run a workload on Kubernetes, you generally create a `deployment`. The deployment describes the application
+by specifying the required `containers`, but it also includes `meta-data` (including `name`, `namespace`, and `labels`),
+additional configuration through `annotations`, `env` (environment variables), `secrets`, and `config-maps` can be provided.
+Deployments can also be assigned shared file-systems through `Persistent Volumes` and `Persistent Volume Claims`. Often `volumes`
+are used to mount `config-maps` into a `pod` as a file-system mount too.
 
-When you want to make a deployment accessable to others, either internally or externally, then you create a `service`.
+image:../img/k8s-basics.png[service, deployment, replicaset]
+
+The `pod` is the smallest element of compute the Kubernetes deals with. Your `deployment` will specify a number of `replicas`
+which equates to the number of `pods` that get deployed. The pod is a single compute instance and can be made up from one or many
+containers. At least one of those containers will be persistent and run the application, but some may be short-lived or ephemeral.
+It's quite common for complex applications to use one or more `init-containers` which are there to setup the environment ready for
+the main task.
+
+The `deployment` is the common interface used to create a `replicaSet`, and the `pods` it manages. It provides support for scaling,
+rolling-updates, and other application life cycle functions. Applications can also be deployed as `daemonSets` which enable you to
+create a pod on each eligible Kubernetes node, or `statefulSets` which give you more control over how the pods are deployed and named.
+
+****
+The `DaemonSet` is a common pattern used for cluster services, and is often employed with `Kubernetes Ingress Controllers`. The NGINX
+KIC can be deployed in this way, but we also support the standard `deployment` model.
+****
+
+When you want to make a deployment accessible to others, either internally or externally, then you create a `service`.
 A Kubernetes `service` can be of several types: `ClusterIP`, `NodePort`, `LoadBalancer`, or `ExternalName`. If you
 are creating a `service` for consumption within the kubernetes cluster, then `ClusterIP` is generally used. It's also
 used in some cloud environments where the Kubernetes pod network is directly routable from external services.
@@ -46,8 +63,8 @@ In this section, we'll be deploying a 4 node Kubernetes cluster, but first lets 
 
 image:../img/k8s-components.svg[Kubernetes Components]
 
-Kubernetes provides a control plane for managing the lifecycle of containerised applications. At the heart
-of the systems is the Kubernetes API, which provids the communications channel between all k8s components and the
+Kubernetes provides a control plane for managing the lifecycle of containerized applications. At the heart
+of the systems is the Kubernetes API, which provides the communications channel between all k8s components and the
 end users.
 
 * The etcd database is used as the key/value store for keeping track of all k8s data
@@ -57,16 +74,20 @@ end users.
 * kubelet is the agent on each node which actually runs and looks after your containers.
 * kube-proxy manages the networking for the containers
 
-The Kubernetes API is a collection of losely coupled resource specifications. A `deployment`, a `service`, an `Ingress`
+The Kubernetes API is a collection of loosely coupled resource specifications. A `deployment`, a `service`, an `Ingress`
 are all examples of resources which are registered in the K8s API. When you create one of these resources, it is a
 `controller` which detects the CRUD request and takes appropriate action.
 
+image:../img/k8s-control-loop.png[Kubernetes Control Loop]
+
+****
 Interestingly one of the common resources `Ingress` doesn't come with a `controller` out of the box. More on that later.
+****
 
 == 2.3 Setup Kubernetes
 
 We're going to deploy Kubernetes across 4 nodes running in the private network. The node_setup playbook you
-just ran has assigned hostnames to them as 'k8s1, k8s2, k8s3, and k8s4'. Now we're going to install `docker` and
+just ran has assigned host names to them as 'k8s1, k8s2, k8s3, and k8s4'. Now we're going to install `docker` and
 the kubernetes packages: `kubeadm`, `kubectl` and `kubelet`.
 
 Please run the deployment playbook
@@ -109,7 +130,7 @@ $ cd ~/ansible
 $ ansible-playbook playbooks/kubernetes/setup_local.yaml
 ----
 
-You should know have a Kubernetes cluster installed in your lab environment, and we should be able to interract with it
+You should know have a Kubernetes cluster installed in your lab environment, and we should be able to interact with it
 from the command line. Try executing `kubectl get nodes` in your shell. You should see output similar to:
 
 image:../img/k8s-kubectl-get-nodes.png[node list]
