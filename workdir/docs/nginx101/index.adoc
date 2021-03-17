@@ -1,0 +1,54 @@
+= NGINX 101 Workshop
+:showtitle:
+:next_section: task1
+
+[cols="^20,<80" grid="none" frame="none"]
+|===
+| image:../img/nginx-logo-black.png[NGINX,150,100,align="center"]
+|
+Welcome and thank you for attending this course on NGINX 101.  +
+In this workshop we'll focus on providing you with a basic knowledge of NGINX as a +
+web server, load balancer and reverse proxy.
+|===
+
+'''
+
+This is just one of a number of NGINX workshops we run at the UKI digital academy. 
+
+Please ask your instructor or account manager about signing up to join us on one of
+out more advanced workshops. The other workshops cover: 
+
+* `App Centric Automation with Controller` - learn how to deploy NGINX and manage configuration with
+Ansible, before moving on to see how you can leverage NGINX Controller to manage your ADC config through
+declarative APIs and Ci/CD pipelines with Git and Jenkins.
+
+* `API Automation` - Take an indepth look at API gateway and API Management with NGINX and Controller
+
+* `Kubernetes Ingress Control` - Learn how to build and deploy an NGINX Plus Ingress Controller, and how
+to manage the configuration using both standard Ingress and unlock more ADC functionality with Custom Resources
+
+* `NGINX App Protect WAF` - Learn how NGINX App Protect WAF takes market leading F5 AWAF technology to parts
+other ADCs can't reach.
+
+'''
+
+During this NGINX 101 workshop, we'll cover :
+
+ * Deploying NGINX in a container
+ * Using NGINX as a webserver
+ * Creating an NGINX load balancer service
+ * Isolating issues with pools/upstreams
+ * Solving problems with NGINX
+
+== Tasks
+
+* <<task0.adoc#,Task 0: Welcome to the workshop>>
+* <<task1.adoc#,Task 1: Bootstrap the nodes>>
+* <<task2.adoc#,Task 2: Deploy the demo environment>>
+* <<task3.adoc#,Task 3: Primer>>
+* <<task4.adoc#,Task 4: NGINX Web Server>>
+* <<task5.adoc#,Task 5: Reverse Proxy and Load Balancing>>
+* <<task6.adoc#,Task 6: Uncovering Problems>>
+* <<task7.adoc#,Task 7: Finding Solutions>>
+* <<task8.adoc#,Task 8: Basic Authentication>>
+

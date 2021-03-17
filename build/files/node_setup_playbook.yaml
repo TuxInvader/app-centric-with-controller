@@ -63,6 +63,34 @@
         - { name: 'node3', alias: 'k8s3' }
         - { name: 'node4', alias: 'k8s4' }
         
+    when:
+    - wstype == "kubernetes"
+
+  - name: Run tasks for NGINX 101 workshop
+    block:
+
+    - name: Setup Inventory file (NGINX 101)
+      blockinfile:
+        path: /home/ubuntu/ansible/inventory
+        block: |
+          [remote]
+          cicd1
+
+    - name: setup hosts
+      lineinfile:
+        backrefs: yes
+        regexp: '(^[0-9\.]+)\s+{{item.name}}.*'
+        line: '\1 {{ item.name }} {{ item.alias }} {{ item.alias }}.{{ wsid }}.{{ domain }}'
+        path: /etc/hosts
+      loop:
+        - { name: 'cicd1', alias: 'registry' }
+        
+    when:
+    - wstype == "nginx101"
+
+  - name: Setup Docker client for nginx101 and kubernetes shops
+    block:
+
     - name: Remove any OS docker packages
       apt:
         name:
@@ -84,7 +112,7 @@
         state: present
         update_cache: yes
 
-    - name: Install Additional Packages for K8s workshop
+    - name: Install docker cli on gateway
       apt:
         name:
           - docker-ce-cli
@@ -96,7 +124,7 @@
         state: absent
 
     when:
-    - wstype == "kubernetes"
+    - wstype == "kubernetes" or wstype == "nginx101"
 
   - name: Refresh inventory to ensure new instances exist in inventory
     meta: refresh_inventory
@@ -119,4 +147,16 @@
 - name: Setup the NGINX gateway for APP/API ws.
   import_playbook: playbooks/nginx_workshop_gw/setup_app.yaml
   when: wstype == "api_automation" or wstype == "app_centric"
+
+- name: Setup the NGINX gateway for NGINX 101 ws.
+  import_playbook: playbooks/nginx_workshop_gw/setup_101.yaml
+  when: wstype == "nginx101"
+
+- name: Setup Gitea for NGINX 101
+  import_playbook: playbooks/cicd/gitea.yaml
+  when: wstype == "nginx101"
+
+- name: Setup Docker for NGINX 101
+  import_playbook: playbooks/cicd/docker-registry.yaml
+  when: wstype == "nginx101"
 

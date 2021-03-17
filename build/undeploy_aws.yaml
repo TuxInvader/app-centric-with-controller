@@ -43,3 +43,6 @@
           localhost
         dest: inventory
 
+    - name: remove old hosts files
+      shell: rm -f secrets/hosts.*
+

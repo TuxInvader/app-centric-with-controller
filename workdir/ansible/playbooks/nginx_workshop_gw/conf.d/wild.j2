@@ -9,6 +9,7 @@ server {
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
+        add_header Cache-Control private,max-age=1;
     }
 
     location /tasks {

@@ -25,4 +25,5 @@ cicd:
     home: /home/docker
     admin_username: nginx
     admin_password: "{{ lookup('password', '~/secrets/docker.cicd.passwd length=12') }}"
+    enable_insecure_daemon_network_connections: true
 

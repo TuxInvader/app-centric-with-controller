@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 1: Bootstrap the nodes</title>
+<title>Task 8: Basic Authentication</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,12 +438,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 1: Bootstrap the nodes</h1>
+<h1>Task 8: Basic Authentication</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
-<li><a href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></li>
+<li><a href="#_8_1_my_api_is_exposed">8.1 My API is exposed!</a></li>
+<li><a href="#_8_2_self_study_optional">8.2 Self Study (optional)</a></li>
+<li><a href="#_8_3_examine_the_gateway">8.3 Examine the gateway</a></li>
 </ul>
 </div>
 </div>
@@ -454,54 +455,176 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task0.html">Previous Task</a><br>
-<a href="task2.html">Next Task</a><br></p>
+<a href="task7.html">Previous Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
+<h2 id="_8_1_my_api_is_exposed"><a class="link" href="#_8_1_my_api_is_exposed">8.1 My API is exposed!</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
-in the App Centric workshop, but on this course, we&#8217;re just going to run a few playbooks to deploy our
-Kubernetes cluster.</p>
+<p>In Modules 5 and 6 we enabled the Extended Status Monitoring dashboard, but for it to function it
+relies heavily on the NGINX Plus API. We enabled the API in the same modules, but we did nothing to
+protect it. In a real-world scenario we would be exposed, and our attack vector would be rather
+broad. Luckily, since the API is defined in a location directive, we have all the safety measures
+available to any other location available to protect the API as well. Let us tie it down a bit, shall we?</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_1_2_boot_strap_the_nodes"><a class="link" href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></h2>
-<div class="sectionbody">
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>The workshop deployment process has already deployed your Virtual Machines, and configured the
-gateway instance. The first task we have to complete together is to assign identities to the VMs
-in your private network.</p>
+<p>Note: In this hosted version of NGINX Basics we&#8217;re already protecting the API at the gateway, but follow
+the steps here, because we&#8217;ll be using a local <code>curl</code> client to test the authentication.</p>
+</div>
+</div>
 </div>
 <div class="paragraph">
-<p>Please change to the ansible folder on your gateway and execute the node_setup playbook.</p>
+<p>For the sake of simplicity, we will enable basic authentication. First, run the following command to
+step into the shell of our NGINX Plus container:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook node_setup_playbook.yaml</pre>
+<pre>$ docker exec -it nginxbasics_nginxplus_1 /bin/sh</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
-containing only changed, ok or skipped statuses.</p>
+<p>Within the shell, first install apache2-utils by running this command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/ # apk add apache2-utils</pre>
+</div>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
+<p>Then, let us generate a password file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/ # htpasswd -c /etc/nginx/.htpasswd leif</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>With that done, we&#8217;re a step closer to having a useful workshop environment.</p>
+<p>You will be prompted for a password twice. Create one you will remember; no complexity
+requirements are set. You can verify the created file by running this:</p>
 </div>
-<hr>
+<div class="listingblock">
+<div class="content">
+<pre>/ # cat /etc/nginx/.htpasswd</pre>
+</div>
+</div>
 <div class="paragraph">
-<p>In the next task, we&#8217;ll introduce you to kubernetes, and get our cluster up and running.
-So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
+<p>You should receive output similar to this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/ # cat /etc/nginx/.htpasswd
+leif:$apr1$6EbX9hic$mdlrC1X9lfyVtRKhxmqdQ/</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exit the container by typing exit followed by enter. Next, within the nginxplus/config directory,
+create/edit the monitoring.conf file to reflect the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>server {
+  listen 8000;
+
+  location /api {
+    limit_except GET {
+      auth_basic "NGINX Plus API";
+      auth_basic_user_file /etc/nginx/.htpasswd;
+    }
+    api write=on;
+    allow 192.168.91.0/24;
+    allow 10.0.0.0/8;
+    deny all;
+ }
+
+ location = /dashboard.html {
+   root /usr/share/nginx/html;
+ }
+
+ location /swagger-ui {
+   root /usr/share/nginx/html;
+ }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure to reload the configuration after saving the file <code>docker exec nginxbasics_nginxplus_1
+nginx -s reload</code>.</p>
+</div>
+<p>
+We can verify that our dashboard <a id='dash'>http://wp.nginx.local:8000/dashboard.html</a> still works fine.
+</p>
+<script>
+  var dash_link='https://www.' + location.host + ':8000/dashboard.html';
+  document.getElementById("dash").innerHTML = dash_link;
+  document.getElementById("dash").href = dash_link;
+</script>
+<div class="paragraph">
+<p>We can also make API requests directly, via a local curl. Example request:</p>
+</div>
+<div id="curl1" class="listingblock">
+<div class="content">
+<pre>$ curl http://cicd1:8000/api/6/http/upstreams/wordpress/servers/3</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This gives me a JSON object that contains the settings for member 4 of my upstream group – the slow one.
+What if I wanted to manipulate it, or even delete it? I can do that in config, of course, but also:</p>
+</div>
+<div id="curl2" class="listingblock">
+<div class="content">
+<pre>$ curl --user "leif" --request PATCH -d "{ \"down\": true }" http://cicd1:8000/api/6/http/upstreams/wordpress/servers/3</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Would you look at that – an authentication prompt! Let us provide our credentials and see what the
+response is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{"id":3,"server":"192.168.91.9:80","weight":1,"max_conns":0,"max_fails":1,"fail_timeout":"10s",
+"slow_start":"0s","route":"","backup":false,"down":true}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It looks like we have marked or slow upstream as down. Let us check the dashboard:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/nginx101-dashboard-5.png" alt="Dashboard with node down"></span></p>
+</div>
+<div class="paragraph">
+<p>Success! We have now altered config in memory, in real-time! Well done!</p>
+</div>
+<div class="paragraph">
+<p>The eagle eyed observer will have noted that we exposed the swagger-ui for NIGNX Plus as well; you
+can peruse it at <a href="http://wp.nginx.local:8000/swagger-ui" class="bare">http://wp.nginx.local:8000/swagger-ui</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_8_2_self_study_optional"><a class="link" href="#_8_2_self_study_optional">8.2 Self Study (optional)</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>HTTPS/TLS:
+<a href="https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-tcp/" class="bare">https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-tcp/</a></p>
+</div>
+<div class="paragraph">
+<p>Caching:
+<a href="https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/" class="bare">https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_8_3_examine_the_gateway"><a class="link" href="#_8_3_examine_the_gateway">8.3 Examine the gateway</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You&#8217;re also invited to peruse the gateway instance configuration to see how it&#8217;s using SSL
+with <code>letsencrypt</code> certificates to act as a reverse_proxy for this course.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -510,8 +633,8 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task6.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Home</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -520,7 +643,7 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-17 08:33:04 UTC
+Last updated 2021-03-17 17:44:09 UTC
 </div>
 </div>
 </body>

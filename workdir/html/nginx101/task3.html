@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 1: Bootstrap the nodes</title>
+<title>Task 3: Primer</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,12 +438,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 1: Bootstrap the nodes</h1>
+<h1>Task 3: Primer</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
-<li><a href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></li>
+<li><a href="#_3_1_primer">3.1 Primer</a></li>
+<li><a href="#_3_2_simple_directives">3.2 Simple Directives</a></li>
+<li><a href="#_3_3_contexts">3.3 Contexts</a></li>
 </ul>
 </div>
 </div>
@@ -454,54 +455,133 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task0.html">Previous Task</a><br>
-<a href="task2.html">Next Task</a><br></p>
+<a href="task2.html">Previous Task</a><br>
+<a href="task4.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
+<h2 id="_3_1_primer"><a class="link" href="#_3_1_primer">3.1 Primer</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
-in the App Centric workshop, but on this course, we&#8217;re just going to run a few playbooks to deploy our
-Kubernetes cluster.</p>
+<p>NGINX Plus ships with a few basic HTML pages, and some other goodies, and that makes it easy for
+us to test the web server use case. First, we need to understand the config file structure of NGINX
+Plus.</p>
+</div>
+<div class="paragraph">
+<p>NGINX and NGINX Plus are similar to other services in that they use a text‑based configuration file
+written in a particular format. By default, the file is named nginx.conf and for NGINX Plus is placed in
+the <code>/etc/nginx</code> directory. (For NGINX Open Source, the location depends on the package system used
+to install NGINX and the operating system. It is typically one of <code>/usr/local/nginx/conf</code>, <code>/etc/nginx</code>, or
+<code>/usr/local/etc/nginx</code>.)</p>
+</div>
+<div class="paragraph">
+<p>The configuration file consists of directives and their parameters. Simple (single‑line) directives each
+end with a semicolon. Other directives act as “containers” that group together related directives,
+enclosing them in curly braces ( {} ); these are often referred to as blocks</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_2_boot_strap_the_nodes"><a class="link" href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></h2>
+<h2 id="_3_2_simple_directives"><a class="link" href="#_3_2_simple_directives">3.2 Simple Directives</a></h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>The workshop deployment process has already deployed your Virtual Machines, and configured the
-gateway instance. The first task we have to complete together is to assign identities to the VMs
-in your private network.</p>
+<div class="listingblock">
+<div class="content">
+<pre>user                    nobody;
+error_log               logs/error.log notice;
+worker_processes        1;</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Please change to the ansible folder on your gateway and execute the node_setup playbook.</p>
+<p>To make the configuration easier to maintain, it is recommended that we split it into a set of
+feature‑specific files stored in the <code>/etc/nginx/conf.d</code> directory and use the include directive in the
+main <code>nginx.conf</code> file to reference the contents of the feature‑specific files:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook node_setup_playbook.yaml</pre>
+<pre>include     conf.d/http;
+include     conf.d/stream;
+include     conf.d/exchange-enhanced;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
-containing only changed, ok or skipped statuses.</p>
+<p>A few top‑level directives, referred to as contexts, group together the directives that apply to
+different traffic types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>events – General connection processing</p>
+</li>
+<li>
+<p>http – HTTP traffic</p>
+</li>
+<li>
+<p>mail – Mail traffic</p>
+</li>
+<li>
+<p>stream – TCP and UDP traffic</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
+<p>Directives placed outside of these contexts are said to be in the main context.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_3_contexts"><a class="link" href="#_3_3_contexts">3.3 Contexts</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following configuration illustrates the use of contexts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>user nobody; # a directive in the 'main' context
+
+events {
+  # configuration of connection processing
+}
+
+http {
+  # Configuration specific to HTTP and affecting all virtual servers
+
+  server {
+    # configuration of HTTP virtual server 1
+
+    location /one {
+      # configuration for processing URIs starting with '/one'
+    }
+
+   location /two {
+     # configuration for processing URIs starting with '/two'
+   }
+
+  }
+
+  server {
+    # configuration of HTTP virtual server 2
+  }
+}
+
+stream {
+  # Configuration specific to TCP/UDP and affecting all virtual servers
+  server {
+    # configuration of TCP virtual server 1
+  }
+}</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>With that done, we&#8217;re a step closer to having a useful workshop environment.</p>
+<p>In general, a child context – one contained within another context (its parent) – inherits the settings
+of directives included at the parent level. Some directives can appear in multiple contexts, in which
+case you can override the setting inherited from the parent by including the directive in the child
+context.</p>
 </div>
-<hr>
 <div class="paragraph">
-<p>In the next task, we&#8217;ll introduce you to kubernetes, and get our cluster up and running.
-So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
+<p>Now let&#8217;s move on to our using NGINX as a webserver <a href="task4.html">Task 4</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -510,8 +590,8 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -520,7 +600,7 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-17 08:33:04 UTC
+Last updated 2021-03-17 11:57:36 UTC
 </div>
 </div>
 </body>

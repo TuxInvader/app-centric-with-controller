@@ -9,6 +9,11 @@
   - name: Copy configs for (APP/API)
     import_tasks: tasks/copy-configs-app.yaml
 
+  - name: Set custom index page
+    template:
+      src: conf.d/index.j2
+      dest: /usr/share/nginx/html/index.html
+
   - name: Restart NGINX
     service:
       name: nginx

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 1: Bootstrap the nodes</title>
+<title>Task 6: Uncovering Problems</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,12 +438,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 1: Bootstrap the nodes</h1>
+<h1>Task 6: Uncovering Problems</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
-<li><a href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></li>
+<li><a href="#_6_1_there_be_dragons">6.1 There be dragons</a></li>
+<li><a href="#_6_2_let_there_be_light">6.2 Let there be light</a></li>
+<li><a href="#_6_3_make_it_brighter">6.3 Make it Brighter</a></li>
 </ul>
 </div>
 </div>
@@ -454,54 +455,181 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task0.html">Previous Task</a><br>
-<a href="task2.html">Next Task</a><br></p>
+<a href="task5.html">Previous Task</a><br>
+<a href="task7.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
+<h2 id="_6_1_there_be_dragons"><a class="link" href="#_6_1_there_be_dragons">6.1 There be dragons</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
-in the App Centric workshop, but on this course, we&#8217;re just going to run a few playbooks to deploy our
-Kubernetes cluster.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_1_2_boot_strap_the_nodes"><a class="link" href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The workshop deployment process has already deployed your Virtual Machines, and configured the
-gateway instance. The first task we have to complete together is to assign identities to the VMs
-in your private network.</p>
-</div>
-<div class="paragraph">
-<p>Please change to the ansible folder on your gateway and execute the node_setup playbook.</p>
+<p>In the root working directory on the docker host, run <code>docker inspect nginxbasics_wordpress3_1 |
+grep IPAddress</code> and make note of the IP address of the container. In my case it is 192.168.91.4.
+Update the below config snippet to reflect your IP address.
+Within the nginxplus/config directory, edit the default.conf file to reflect the following contents:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook node_setup_playbook.yaml</pre>
+<pre>upstream wordpress {
+  server 192.168.91.5; #wp1
+  server 192.168.91.8; #wp2
+  server 192.168.91.4; #wp3
+}
+
+server {
+  listen 80;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_pass http://wordpress;
+  }
+}</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
-containing only changed, ok or skipped statuses.</p>
+<p>Make sure to reload the configuration after saving the file <code>docker exec nginxbasics_nginxplus_1
+nginx -s reload</code>.
+We have now added a third member to our Upstream Group named “wordpress”. We still have not
+specified a load balancing algorithm, thus still defaulting to round-robin.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
+<p>Point your browser at the wordpress site and be sure to reload the page a good few times.</p>
 </div>
 <div class="paragraph">
-<p>With that done, we&#8217;re a step closer to having a useful workshop environment.</p>
+<p>Jumping Jehosaphat! We seem to have a failure rate of 33%!!!
+No need to panic, this is an intentional "bug". The inquisitive amongst us will soon realize that I have
+simply thrown an error in the index.php file of the third instance. It gives us something real-world to
+work with. In our lab we are lucky; the website clearly identifies which upstream node it originated
+from, so troubleshooting becomes a bit easier. In the real world though, additional steps would need
+to be made to isolate where the error occurs, and even worse, is it just one upstream failing or
+several? Is it failing constantly or intermittent? If only we had greater visibility into the goings on of
+the NGINX Plus instance&#8230;&#8203;</p>
 </div>
-<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_2_let_there_be_light"><a class="link" href="#_6_2_let_there_be_light">6.2 Let there be light</a></h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>In the next task, we&#8217;ll introduce you to kubernetes, and get our cluster up and running.
-So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
+<p>Within the nginxplus/config directory, create/edit the monitoring.conf file</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo nano nginxplus/config/monitoring.conf</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>to reflect the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>server {
+  listen 8000;
+
+  location /api {
+    api write=on;
+  }
+
+  location = /dashboard.html {
+    root /usr/share/nginx/html;
+  }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure to reload the configuration after saving the file</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo docker exec nginxbasics_nginxplus_1 nginx -t
+$ sudo docker exec nginxbasics_nginxplus_1 nginx -s reload</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We now created an additional config file, within which we defined another virtual server – this time,
+listening on port 8000. This virtual server is set up for monitoring purposes, specifically to expose the
+NGINX Plus API and the bundled Extended Status Monitoring dashboard. Since the main config file
+for NGINX Plus <code>/etc/nginx/nginx.conf</code> defines an import directive for all files ending with .conf in
+the <code>/etc/nginx/conf.d</code> directory our newly created file will be included automatically.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>When you open the API/Dashboard the gateway will ask you to authenticate. The connection to the gateway is
+proxied through SSL and authenticated for security reasons. The NGINX config created above is much simpler.
+The curious amongst you may want to take a look at the <code>/etc/nginx/</code> folder on the gateway at the end of this
+course to see the SSL termination, and authentication settings.</p>
+</div>
+</div>
+</div>
+<p>
+Open your browser and navigate to <a id='wp_link'></a> and verify that you see a result similar to
+this
+</p>
+<script>
+  var wpl='https://www.' + location.host + ':8000/dashboard.html';
+  document.getElementById("wp_link").innerHTML = wpl;
+  document.getElementById("wp_link").href = wpl;
+</script>
+<div class="paragraph">
+<p><span class="image"><img src="../img/nginx101-dashboard.png" alt="NGINX Plus Dashboard"></span></p>
+</div>
+<div class="paragraph">
+<p>We have a status dashboard! Yet, alas, there does not seem to bee too much information in it…
+This is because we have yet to tell NGINX Plus what it should be monitoring. Let us fix that next.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_3_make_it_brighter"><a class="link" href="#_6_3_make_it_brighter">6.3 Make it Brighter</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Within the nginxplus/config directory, edit the default.conf file to reflect the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>upstream wordpress {
+  zone status_wordpress 64k;
+  server 192.168.91.5; #wp1
+  server 192.168.91.4; #wp2
+  server 192.168.91.7; #wp3
+}
+
+server {
+  status_zone portEighty;
+  listen 80;
+
+  location / {
+    status_zone portEighty_locationSlash;
+    proxy_set_header Host $host;
+    proxy_pass http://wordpress;
+  }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure to reload the configuration after saving the file <code>docker exec nginxbasics_nginxplus_1
+nginx -s reload</code>.</p>
+</div>
+<div class="paragraph">
+<p>What we are doing in this example is to tell the status monitoring what it should keep an eye on for
+us, and we are also setting up some shared memory zones for data collection. If we return to our
+web browser and reload the dashboard (it may have auto-reloaded) we should now have much
+more data at hand:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/nginx101-dashboard-2.png" alt="NGINX Plus Dashboard with Zones"></span></p>
+</div>
+<div class="paragraph">
+<p>Not only does the splash screen have more data; we have three additional tabs at the top right to
+investigate! If we visit our web site and reload a number of times, we should be able to pinpoint
+the culprit, or indeed culprits, in the HTTP Upstreams tab. Easy!</p>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task7.html">Task 7</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -510,8 +638,8 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task5.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task7.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -520,7 +648,7 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-17 08:33:04 UTC
+Last updated 2021-03-17 17:06:13 UTC
 </div>
 </div>
 </body>

@@ -9,6 +9,11 @@
   - name: Copy configs for (Kubernetes)
     import_tasks: tasks/copy-configs-k8s.yaml
 
+  - name: Set custom index page
+    template:
+      src: conf.d/index.j2
+      dest: /usr/share/nginx/html/index.html
+
   - name: Restart NGINX
     service:
       name: nginx

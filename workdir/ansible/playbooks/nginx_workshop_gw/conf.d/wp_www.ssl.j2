@@ -1,10 +1,15 @@
 
 upstream nginx_web {
   zone upstream_web 64k;
-  server k8s1:30080;
-  server k8s2:30080;
-  server k8s3:30080;
-  server k8s4:30080;
+  server cicd1:80;
+  keepalive 32;
+  keepalive_requests 100;
+  keepalive_timeout 60s;
+}
+
+upstream nginx_web_api {
+  zone upstream_web 64k;
+  server cicd1:8000;
   keepalive 32;
   keepalive_requests 100;
   keepalive_timeout 60s;
@@ -12,10 +17,7 @@ upstream nginx_web {
 
 upstream nginx_app {
   zone upstream_app 64k;
-  server k8s1:30080;
-  server k8s2:30080;
-  server k8s3:30080;
-  server k8s4:30080;
+  server cicd1:80;
   keepalive 32;
   keepalive_requests 100;
   keepalive_timeout 60s;
@@ -23,10 +25,7 @@ upstream nginx_app {
 
 upstream nginx_api {
   zone upstream_api 64k;
-  server k8s1:30080;
-  server k8s2:30080;
-  server k8s3:30080;
-  server k8s4:30080;
+  server cicd1:80;
   keepalive 32;
   keepalive_requests 100;
   keepalive_timeout 60s;
@@ -49,8 +48,6 @@ server {
     proxy_set_header Connection "";
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Real-IP $remote_addr;
-    health_check match=wwwok;
-  }
 
   # redirect server error pages to the static page /50x.html
   error_page   500 502 503 504  /50x.html;
@@ -58,11 +55,35 @@ server {
       root   /usr/share/nginx/html;
   }
 
+  listen 80;
   listen 443 ssl; # managed by Certbot
   ssl_certificate /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem; # managed by Certbot
   ssl_certificate_key /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/privkey.pem; # managed by Certbot
   include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+  server_name  www.{{ wsid }}.{{ domain }};
+  listen 8000 ssl;
+  ssl_certificate /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/{{ wsid }}.{{ domain }}/privkey.pem; # managed by Certbot
+  include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+  #access_log  /var/log/nginx/www.access.log  main_ext;
+
+  location / {
+    proxy_pass http://nginx_web_api;
+    proxy_set_header Host      $host;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Real-IP $remote_addr;
+    auth_basic "nginx restricted";
+    auth_basic_user_file /home/ubuntu/secrets/htpasswd;
+  }
 
 }
 
@@ -79,7 +100,6 @@ server {
     proxy_set_header Connection "";
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Real-IP $remote_addr;
-    health_check match=wwwok;
   }
 
   # redirect server error pages to the static page /50x.html
@@ -109,7 +129,6 @@ server {
     proxy_set_header Connection "";
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Real-IP $remote_addr;
-    health_check match=wwwok;
   }
 
   # redirect server error pages to the static page /50x.html
@@ -124,18 +143,6 @@ server {
   include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-}
-
-server {
-
-  if ($host = www.{{ wsid }}.{{ domain }}) {
-      return 301 https://$host$request_uri;
-  } # managed by Certbot
-
-  listen       80;
-
-  server_name  www.{{ wsid }}.{{ domain }};
-  return 404; # managed by Certbot
 }
 
 server {

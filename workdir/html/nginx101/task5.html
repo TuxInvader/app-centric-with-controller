@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 1: Bootstrap the nodes</title>
+<title>Task 5: Reverse Proxy and Load Balancing</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,12 +438,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 1: Bootstrap the nodes</h1>
+<h1>Task 5: Reverse Proxy and Load Balancing</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
-<li><a href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></li>
+<li><a href="#_5_1_reverse_proxy">5.1 Reverse Proxy</a></li>
+<li><a href="#_5_2_about_rp_config">5.2 About RP config</a></li>
+<li><a href="#_5_3_load_balancing">5.3 Load Balancing</a></li>
 </ul>
 </div>
 </div>
@@ -454,54 +455,124 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task0.html">Previous Task</a><br>
-<a href="task2.html">Next Task</a><br></p>
+<a href="task4.html">Previous Task</a><br>
+<a href="task6.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
+<h2 id="_5_1_reverse_proxy"><a class="link" href="#_5_1_reverse_proxy">5.1 Reverse Proxy</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
-in the App Centric workshop, but on this course, we&#8217;re just going to run a few playbooks to deploy our
-Kubernetes cluster.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_1_2_boot_strap_the_nodes"><a class="link" href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The workshop deployment process has already deployed your Virtual Machines, and configured the
-gateway instance. The first task we have to complete together is to assign identities to the VMs
-in your private network.</p>
+<p>In the root working directory on the docker host, run <code>docker inspect nginxbasics_wordpress1_1 |
+grep IPAddress</code> and make note of the IP address of the container. In my case it is 192.168.91.5.
+Update the below config snippet to reflect your IP address.</p>
 </div>
 <div class="paragraph">
-<p>Please change to the ansible folder on your gateway and execute the node_setup playbook.</p>
+<p>Within the <code>nginxplus/config</code> directory, edit the <code>default.conf</code> file to reflect the
+following contents:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook node_setup_playbook.yaml</pre>
+<pre>server {
+  listen 80;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_pass http://192.168.91.5;
+  }
+}</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
-containing only changed, ok or skipped statuses.</p>
+<p>Make sure to reload the configuration after saving the file</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo docker exec nginxbasics_nginxplus_1 nginx -t
+$ sudo docker exec nginxbasics_nginxplus_1 nginx -s reload</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_2_about_rp_config"><a class="link" href="#_5_2_about_rp_config">5.2 About RP config</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this example, our virtual server is still listening on port 80, and it still has a prefix matching block
+looking for "/". Now, however, we are not serving content locally from disk; rather, we are proxying
+the request to an upstream server, namely 192.168.91.5.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
+<p>We are also modifying a request header, Host, to reflect the expected domain. In our WordPress example this is
+redundant, but it is important to note this trick – as many upstreams break if they do not receive the expected host
+header. If we had not included this modified header, the upstream would see a Host request header
+value of "http://192.168.91.5".</p>
+</div>
+<p>
+Open your browser and navigate to <a id='wp_link'></a> and verify that you see a result similar to
+this
+</p>
+<script>
+  var wpl='https://www.' + location.host + '/';
+  document.getElementById("wp_link").innerHTML = wpl;
+  document.getElementById("wp_link").href = wpl;
+</script>
+<div class="paragraph">
+<p><span class="image"><img src="../img/nginx101-wp-shot.png" alt="Wordpress page"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_load_balancing"><a class="link" href="#_5_3_load_balancing">5.3 Load Balancing</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the root working directory on the docker host, run <code>docker inspect nginxbasics_wordpress2_1 |
+grep IPAddress</code> and make note of the IP address of the container. In my case it is 192.168.91.8.
+Update the below config snippet to reflect your IP address.</p>
 </div>
 <div class="paragraph">
-<p>With that done, we&#8217;re a step closer to having a useful workshop environment.</p>
+<p>Within the nginxplus/config directory, edit the default.conf file to reflect the following contents:</p>
 </div>
-<hr>
+<div class="listingblock">
+<div class="content">
+<pre>upstream wordpress {
+  server 192.168.91.5; #wp1
+  server 192.168.91.8; #wp2
+}
+
+server {
+  listen 80;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_pass http://wordpress;
+  }
+}</pre>
+</div>
+</div>
 <div class="paragraph">
-<p>In the next task, we&#8217;ll introduce you to kubernetes, and get our cluster up and running.
-So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
+<p>Make sure to reload the configuration after saving the file <code>docker exec nginxbasics_nginxplus_1
+nginx -s reload</code>.</p>
+</div>
+<div class="paragraph">
+<p>In this example we are defining an upstream group (load balancing pool) and naming it "wordpress".
+Within the upstream group we are defining two members, the two servers described by their IP
+addresses above. Note that we do not have to use IP addresses; resolvable host/domain names are
+also acceptable. We could also specify non-standard ports on a per-member basis if needed.
+Within the location block we are changing the proxy_pass directive to no longer proxy to one specific
+IP; rather, we are proxying to the upstream group named "wordpress". Since we made no definition
+of load balancing algorithm, we are now performing round-robin load balancing of inbound
+requests.</p>
+</div>
+<div class="paragraph">
+<p>Open your web browser and navigate to you website again and reload the page a few times.
+Observe that it alternates between “My Awesome Site 1” and “My Awesome Site 2”.</p>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s move on to <a href="task6.html">Task 6</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -510,8 +581,8 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task4.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task6.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -520,7 +591,7 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-17 08:33:04 UTC
+Last updated 2021-03-17 17:06:24 UTC
 </div>
 </div>
 </body>

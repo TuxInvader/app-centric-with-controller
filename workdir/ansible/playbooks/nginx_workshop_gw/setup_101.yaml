@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: yes
+  connection: local
+
+  tasks:
+
+  - name: Copy configs for (NGINX 101)
+    import_tasks: tasks/copy-configs-101.yaml
+
+  - name: Add docker socket to pp to registry
+    blockinfile:
+      path: /etc/nginx/nginx.conf
+      block: |
+        
+        # forward local docker connections to cicd1
+        stream {
+          server {
+            listen unix:/var/run/docker.sock;
+            proxy_pass cicd1:2375;
+          }
+        }
+
+  - name: Set custom index page
+    template:
+      src: conf.d/index.j2
+      dest: /usr/share/nginx/html/index.html
+
+  - name: Restart NGINX
+    service:
+      name: nginx
+      state: restarted
+

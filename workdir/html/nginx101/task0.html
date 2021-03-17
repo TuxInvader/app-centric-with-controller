@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 1: Bootstrap the nodes</title>
+<title>Task 0: Welcome to the workshop</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,12 +438,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 1: Bootstrap the nodes</h1>
+<h1>Task 0: Welcome to the workshop</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
-<li><a href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></li>
+<li><a href="#_0_1_introduction">0.1 Introduction</a></li>
+<li><a href="#_0_2_getting_access">0.2 Getting Access</a>
+<ul class="sectlevel2">
+<li><a href="#_0_2_1_direct_access">0.2.1 Direct Access</a></li>
+<li><a href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></li>
+</ul>
+</li>
+<li><a href="#_0_3_begin">0.3 Begin</a></li>
 </ul>
 </div>
 </div>
@@ -454,54 +460,71 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task0.html">Previous Task</a><br>
-<a href="task2.html">Next Task</a><br></p>
+<a href="index.html">Previous Task</a><br>
+<a href="task1.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
+<h2 id="_0_1_introduction"><a class="link" href="#_0_1_introduction">0.1 Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
-in the App Centric workshop, but on this course, we&#8217;re just going to run a few playbooks to deploy our
-Kubernetes cluster.</p>
+<p>Welcome to this NGINX 101 workshop.</p>
+</div>
+<div class="paragraph">
+<p>First lets take a look at the environment you&#8217;ll be working with.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="../img/workshop-101-diagram.png" alt="network"></span></p>
+</div>
+<div class="paragraph">
+<p>Each individual in the workshop has been given access to a gateway instance, the gateway is multi-homed
+with a public interface in a routable public network, and a secondary interface in a private network.</p>
+</div>
+<div class="paragraph">
+<p>You can either access the gateway directly using SSH and HTTPS, or if that is restricted you may access
+using RDP to the jump-host. The RDP password is the same as the Basic-Auth password used to access this
+site, and the username is <code>ec2-user</code>.</p>
+</div>
+<div class="paragraph">
+<p>All other machines in the course reside in the private network and will be accessed through the NGINX
+Plus instance running on the gateway. In this 101 course, we&#8217;ll be running everything on the cicd1 host.</p>
+</div>
+<div class="paragraph">
+<p>If you&#8217;re reading this then the gateway itself is already setup, and your instructor has supplied you
+with it&#8217;s hostname and password.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_2_boot_strap_the_nodes"><a class="link" href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></h2>
+<h2 id="_0_2_getting_access"><a class="link" href="#_0_2_getting_access">0.2 Getting Access</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_0_2_1_direct_access"><a class="link" href="#_0_2_1_direct_access">0.2.1 Direct Access</a></h3>
+<div class="paragraph">
+<p>The private key for gaining access to your workshop can be downloaded <a href="/secrets/">Here</a>
+You should find the SSH private key in both OpenSSH PEM and Putty PPK file formats.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_0_2_2_jumphost_access"><a class="link" href="#_0_2_2_jumphost_access">0.2.2 Jumphost Access</a></h3>
+<div class="paragraph">
+<p>Your jump-host should be accessible on the same stack number as this gateway. So for example,
+If you are on stack ws03.domain.com, then your jump-host will be on jump03.domain.com.</p>
+</div>
+<div class="paragraph">
+<p>Connect using your RDP client, with the username <code>ec2-user</code> and the same password as you used here.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_0_3_begin"><a class="link" href="#_0_3_begin">0.3 Begin</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The workshop deployment process has already deployed your Virtual Machines, and configured the
-gateway instance. The first task we have to complete together is to assign identities to the VMs
-in your private network.</p>
-</div>
-<div class="paragraph">
-<p>Please change to the ansible folder on your gateway and execute the node_setup playbook.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook node_setup_playbook.yaml</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
-containing only changed, ok or skipped statuses.</p>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
-</div>
-<div class="paragraph">
-<p>With that done, we&#8217;re a step closer to having a useful workshop environment.</p>
-</div>
-<hr>
-<div class="paragraph">
-<p>In the next task, we&#8217;ll introduce you to kubernetes, and get our cluster up and running.
-So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
+<p>Once you have both HTTPS and SSH access to the workshop please continue with <a href="task1.html">Task 1</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -510,8 +533,8 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="index.html">Contents</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task1.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -520,7 +543,7 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-17 08:33:04 UTC
+Last updated 2021-03-17 08:32:25 UTC
 </div>
 </div>
 </body>

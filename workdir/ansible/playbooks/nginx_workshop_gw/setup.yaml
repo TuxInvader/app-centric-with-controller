@@ -78,6 +78,11 @@
   - name: Copy configs
     import_tasks: tasks/copy-configs.yaml
 
+  - name: Set custom index page
+    template:
+      src: conf.d/wild-index.j2
+      dest: /usr/share/nginx/html/index.html
+
   - name: Restart NGINX
     service:
       name: nginx

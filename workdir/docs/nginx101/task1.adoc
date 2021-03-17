@@ -15,8 +15,8 @@
 == 1.1 Introduction
 
 We're going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
-in the App Centric workshop, but on this course, we're just going to run a few playbooks to deploy our
-Kubernetes cluster.
+in the App Centric workshop, but on this course, we're just going to run a few playbooks to deploy
+docker onto cicd1.
 
 == 1.2 Boot strap the nodes
 
@@ -40,7 +40,7 @@ With that done, we're a step closer to having a useful workshop environment.
 
 '''
 
-In the next task, we'll introduce you to kubernetes, and get our cluster up and running.
+In the next task, we'll deploy NGINX Plus and the demo site onto docker.
 So, let's move on to <<task2.adoc#,Task 2>> 
 
 |===

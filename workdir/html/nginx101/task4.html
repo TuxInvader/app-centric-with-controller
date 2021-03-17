@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Task 1: Bootstrap the nodes</title>
+<title>Task 4: NIGNX Web Server</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,12 +438,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Task 1: Bootstrap the nodes</h1>
+<h1>Task 4: NIGNX Web Server</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_1_introduction">1.1 Introduction</a></li>
-<li><a href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></li>
+<li><a href="#_4_1_nginx_web_server">4.1 NGINX Web Server</a></li>
+<li><a href="#_4_2_about_the_config">4.2 About the config</a></li>
 </ul>
 </div>
 </div>
@@ -454,54 +454,73 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="paragraph">
 <p><a href="index.html">Contents</a><br>
-<a href="task0.html">Previous Task</a><br>
-<a href="task2.html">Next Task</a><br></p>
+<a href="task3.html">Previous Task</a><br>
+<a href="task5.html">Next Task</a><br></p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_1_introduction"><a class="link" href="#_1_1_introduction">1.1 Introduction</a></h2>
+<h2 id="_4_1_nginx_web_server"><a class="link" href="#_4_1_nginx_web_server">4.1 NGINX Web Server</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>We&#8217;re going to use Ansible to get a few things set up. We cover Ansible in a lot more detail
-in the App Centric workshop, but on this course, we&#8217;re just going to run a few playbooks to deploy our
-Kubernetes cluster.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_1_2_boot_strap_the_nodes"><a class="link" href="#_1_2_boot_strap_the_nodes">1.2 Boot strap the nodes</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The workshop deployment process has already deployed your Virtual Machines, and configured the
-gateway instance. The first task we have to complete together is to assign identities to the VMs
-in your private network.</p>
-</div>
-<div class="paragraph">
-<p>Please change to the ansible folder on your gateway and execute the node_setup playbook.</p>
+<p>Using the editor of your choice, both <code>vim</code> and <code>nano</code> are installed on the <code>cicd1</code> machine. eg:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>$ cd ~/ansible
-$ ansible-playbook node_setup_playbook.yaml</pre>
+<pre>$ sudo nano nginxplus/config/default.conf</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Hopefully those tasks all completed successfully, and the final output from Ansible is a <em>PLAY RECAP</em>
-containing only changed, ok or skipped statuses.</p>
+<p>With the contents:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>server {
+  listen 80;
+  location / {
+    root /usr/share/nginx/html;
+    index index.html;
+  }
+}</pre>
+</div>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="../img/node-setup-result.png" alt="playbook recap"></span></p>
+<p>Make sure to reload the configuration after saving the file</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sudo docker exec nginxbasics_nginxplus_1 nginx -t
+$ sudo docker exec nginxbasics_nginxplus_1 nginx -s reload</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_2_about_the_config"><a class="link" href="#_4_2_about_the_config">4.2 About the config</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The above config defines a virtual server, telling it to listen to port 80 on any interface (*:80,
+0.0.0.0:80), and sets up a location matching block using a prefix match for "/". When a request
+comes in on port 80 that is matched by the prefix of "/" we will serve content from disk, starting
+from the <code>/usr/share/nginx/html</code> directory. If no specific resource is requested, we will attempt to
+deliver a resource named index.html.</p>
+</div>
+<p>
+Open your browser and navigate to <a id='wp_link'></a> and verify that you see a result similar to
+this
+</p>
+<script>
+  var wpl='https://www.' + location.host + '/';
+  document.getElementById("wp_link").innerHTML = wpl;
+  document.getElementById("wp_link").href = wpl;
+</script>
+<div class="paragraph">
+<p><span class="image"><img src="../img/nginx101-welcome-shot.png" alt="NGINX Welcome page"></span></p>
 </div>
 <div class="paragraph">
-<p>With that done, we&#8217;re a step closer to having a useful workshop environment.</p>
-</div>
-<hr>
-<div class="paragraph">
-<p>In the next task, we&#8217;ll introduce you to kubernetes, and get our cluster up and running.
-So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
+<p>Now let&#8217;s move on to <a href="task5.html">Task 5</a></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -510,8 +529,8 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task0.html">Previous</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task2.html">Next Task</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task3.html">Previous</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="task5.html">Next Task</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -520,7 +539,7 @@ So, let&#8217;s move on to <a href="task2.html">Task 2</a></p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-17 08:33:04 UTC
+Last updated 2021-03-17 16:25:11 UTC
 </div>
 </div>
 </body>
