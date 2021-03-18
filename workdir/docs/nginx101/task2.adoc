@@ -154,7 +154,7 @@ The NGINX Plus container is accessible directly from your browser using the foll
 <a id='wp_link'></a></p>
 <p>
 <script>
-  var wpl='https://www.' + location.host + '/';
+  var wpl='http://www.' + location.host + '/';
   document.getElementById("wp_link").innerHTML = wpl;
   document.getElementById("wp_link").href = wpl;
 </script>

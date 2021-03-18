@@ -53,7 +53,7 @@ Open your browser and navigate to <a id='wp_link'></a> and verify that you see a
 this
 </p>
 <script>
-  var wpl='https://www.' + location.host + '/';
+  var wpl='http://www.' + location.host + '/';
   document.getElementById("wp_link").innerHTML = wpl;
   document.getElementById("wp_link").href = wpl;
 </script>
