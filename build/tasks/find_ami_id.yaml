@@ -26,5 +26,5 @@
       set_fact:
         jump_ami_id: "{{ jh_results.images[0].image_id }}"
 
-    when: ws.jumphosts is true
+    when: ws.jumphosts
 
