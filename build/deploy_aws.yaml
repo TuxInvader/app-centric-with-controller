@@ -123,6 +123,17 @@
       with_sequence: "count={{ ws.stacks }} format=%02d"
       when: ws.jumphosts == true
 
+    - name: Add controller wildcard record to Route53 DNS
+      route53:
+        state: present
+        hosted_zone_id: "{{ ws.route53.zone_id }}"
+        record: "{{ '*.' ~ item ~ '.' ~ ws.route53.zone }}"
+        type: A
+        ttl: 120
+        value: "{{ deployed[item].gateway.public_ip_address }}"
+        overwrite: yes
+      with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
+
     - name: Add controller host record to Route53 DNS
       route53:
         state: present
@@ -145,17 +156,6 @@
         overwrite: yes
       with_sequence: "count={{ ws.stacks }} format=%02d"
       when: ws.jumphosts == true
-
-    - name: Add controller wildcard record to Route53 DNS
-      route53:
-        state: present
-        hosted_zone_id: "{{ ws.route53.zone_id }}"
-        record: "{{ '*.' ~ item ~ '.' ~ ws.route53.zone }}"
-        type: A
-        ttl: 120
-        value: "{{ deployed[item].gateway.public_ip_address }}"
-        overwrite: yes
-      with_sequence: "count={{ ws.stacks }} format={{ ws.prefix }}%02d"
 
     - name: Wait for first gateway to be reachable
       wait_for:
