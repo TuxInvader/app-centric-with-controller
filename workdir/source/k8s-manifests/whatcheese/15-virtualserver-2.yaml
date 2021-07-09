@@ -5,7 +5,7 @@ metadata:
   name: api-whatcheese-web-vs
   namespace: cheese-demo
 spec:
-  host: "api.ws01.nginxdemo.net"
+  host: "api.ws01.ngxlab.net"
   upstreams:
   - name: apiv1
     service: whatcheese-api
@@ -13,14 +13,24 @@ spec:
   routes:
   - path: /
     action:
-      pass:  apiv1
+      proxy:
+        upstream: apiv1
+        responseHeaders:
+          add:
+          - name: Access-Control-Allow-Origin
+            value: "*"
   - path: /v1/add
     matches:
     - conditions:
-      - argument: psk 
+      - argument: psk
         value: superSecretKey
       action:
-        pass: apiv1
+        proxy:
+          upstream: apiv1
+          responseHeaders:
+            add:
+            - name: Access-Control-Allow-Origin
+              value: "*"
     action:
       return:
         code: 200
@@ -34,7 +44,7 @@ metadata:
   name: www-whatcheese-web-vs
   namespace: cheese-demo
 spec:
-  host: "www.ws01.nginxdemo.net"
+  host: "www.ws01.ngxlab.net"
   upstreams:
   - name: webv1
     service: whatcheese-web
