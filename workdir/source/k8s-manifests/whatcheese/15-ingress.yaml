@@ -9,6 +9,7 @@ metadata:
     appprotect.f5.com/app-protect-policy: "nginx-ingress/dataguard-blocking"
     nginx.org/lb-method: "round_robin"
 spec:
+  ingressClassName: nginx
   rules:
   - host: "www.ws01.nginxdemo.net"
     http:
@@ -27,6 +28,7 @@ metadata:
   annotations:
     #custom.nginx.org/oidc:  "on"
 spec:
+  ingressClassName: nginx
   rules:
   - host: "api.ws01.nginxdemo.net"
     http:
