@@ -52,7 +52,7 @@ We're going to build `NGINX Plus with NAP`, so run the following build command:
 
 [#make_cmd]
 ----
-$ make debian-image-nap-plus PREFIX=registry.<fqdn>:5000/nginx-plus-ingress TARGET=container
+$ make debian-image-nap-plus PREFIX=registry.<fqdn>:5000/nginx-plus-ingress TARGET=container TAG=edge
 ----
 
 You should get some pretty output and timer showing you all of the steps the build process is running. This will take a
@@ -70,7 +70,7 @@ Now we can push the KIC image.
 
 [#push_cmd]
 ----
-make push PREFIX=registry.<fqdn>:5000/nginx-plus-ingress
+make push PREFIX=registry.<fqdn>:5000/nginx-plus-ingress TAG=edge
 ----
 
 ++++
