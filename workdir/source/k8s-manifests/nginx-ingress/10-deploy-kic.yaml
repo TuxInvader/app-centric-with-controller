@@ -21,7 +21,7 @@ spec:
       imagePullSecrets:
         - name: registry
       containers:
-      - image: registry.ws01.nginxdemo.net:5000/nginx-plus-ingress:edge
+      - image: registry.ws01.ngxlab.net:5000/nginx-plus-ingress:edge
         imagePullPolicy: "Always"
         name: nginx-plus-ingress
         ports:
