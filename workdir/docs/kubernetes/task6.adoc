@@ -77,7 +77,7 @@ You'll need to change the "host" line to match your workshop domain, <a id='prom
 do the same for the grafana entry too, only that one should be <a id='graf2_link'>https://graf.your.fqdn/</a>.
 </p>
 <script>
-  var graf='https://graf.' + location.host + '/';
+  var graf='https://app.' + location.host + '/';
   var prom='https://prom.' + location.host + '/';
   document.getElementById("graf_link").innerHTML = graf;
   document.getElementById("graf_link").href = graf;
