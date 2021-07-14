@@ -68,6 +68,7 @@
       yum:
         name: 
           - mate-desktop
+          - mate-settings-daemon
           - pluma
         state: latest
         
