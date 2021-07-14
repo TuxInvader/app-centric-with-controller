@@ -542,9 +542,9 @@ generated for you during the docker setup? It&#8217;s in the file <code>~/secret
 </div>
 <script>
   var reg='registry.' + location.hostname + ':5000';
-  document.getElementById("make_cmd").innerHTML = "<div class=\"content\"><pre>$ make debian-image-nap-plus PREFIX=" + reg + "/nginx-plus-ingress TARGET=container</pre></div>";
+  document.getElementById("make_cmd").innerHTML = "<div class=\"content\"><pre>$ make debian-image-nap-plus PREFIX=" + reg + "/nginx-plus-ingress TARGET=container TAG=edge</pre></div>";
   document.getElementById("doc_login").innerHTML = "<div class=\"content\"><pre>$ docker login " + reg + "</pre></div>";
-  document.getElementById("push_cmd").innerHTML = "<div class=\"content\"><pre>$ make push PREFIX=" + reg + "/nginx-plus-ingress</pre></div>";
+  document.getElementById("push_cmd").innerHTML = "<div class=\"content\"><pre>$ make push PREFIX=" + reg + "/nginx-plus-ingress TAG=edge</pre></div>";
 </script>
 <div class="paragraph">
 <p>Now let&#8217;s move on to <a href="task5.html">Task 5</a></p>
@@ -566,7 +566,7 @@ generated for you during the docker setup? It&#8217;s in the file <code>~/secret
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-13 08:59:11 +0100
+Last updated 2021-07-14 09:05:38 +0100
 </div>
 </div>
 </body>

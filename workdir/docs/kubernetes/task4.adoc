@@ -76,9 +76,9 @@ make push PREFIX=registry.<fqdn>:5000/nginx-plus-ingress TAG=edge
 ++++
 <script>
   var reg='registry.' + location.hostname + ':5000';
-  document.getElementById("make_cmd").innerHTML = "<div class=\"content\"><pre>$ make debian-image-nap-plus PREFIX=" + reg + "/nginx-plus-ingress TARGET=container</pre></div>";
+  document.getElementById("make_cmd").innerHTML = "<div class=\"content\"><pre>$ make debian-image-nap-plus PREFIX=" + reg + "/nginx-plus-ingress TARGET=container TAG=edge</pre></div>";
   document.getElementById("doc_login").innerHTML = "<div class=\"content\"><pre>$ docker login " + reg + "</pre></div>";
-  document.getElementById("push_cmd").innerHTML = "<div class=\"content\"><pre>$ make push PREFIX=" + reg + "/nginx-plus-ingress</pre></div>";
+  document.getElementById("push_cmd").innerHTML = "<div class=\"content\"><pre>$ make push PREFIX=" + reg + "/nginx-plus-ingress TAG=edge</pre></div>";
 </script>
 ++++
 
