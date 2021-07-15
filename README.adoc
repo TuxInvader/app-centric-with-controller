@@ -262,7 +262,26 @@ drwx------ root/root         0 2020-03-02 13:06 letsencrypt/renewal/
 === Generating access with SSO
 
 If you use SSO then you will need to provide a STS session token along with your temporary
-access keys. Assuming you have the AWS CLI installed and configured, then you can generate
+access keys.
+
+==== Using AWS CLI for the first time
+
+If this is the first time you've used the aws cli, then you will need to create a folder in your
+home directory `~/.aws` and create a `~/.aws/config` file with the following content:
+
+----
+[default]
+sso_start_url = https://<your-org-login-uri>/start#/
+sso_region = us-east-1
+sso_account_id = <account-id>
+sso_role_name = <role-name>
+region = us-east-1
+output = yaml
+----
+
+==== Generating the token
+
+Once you have the AWS CLI installed and configured, then you can generate
 the temp keys with...
 
 ----
@@ -274,6 +293,7 @@ Or use my little script
 ----
 $ ./bin/get_aws_token.sh
 ----
+
 
 You should see a file named `<uuid>.json` in your aws folder: `~/.aws/sso/cache/<uuid>.json`. That file
 will contain your current access token in use by the CLI.
