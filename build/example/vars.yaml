@@ -1,5 +1,6 @@
 ---
 ws:
+  ws_type: app_centric
   stack_name: workshop
   uk_se_name: mbodd
   prefix: mb
@@ -46,18 +47,18 @@ ws:
         disk_name: /dev/sda1
         disk_size: 80
         public: no
-      nginx1:
+      node1:
         type: t3.small
         public: no
-      nginx2:
+      node2:
         type: t3.small
         public: no
-      unit1:
+      node3:
         type: t3.small
         public: no
-      #unit2:
-      #  type: t3.small
-      #  public: no
+      node4:
+        type: t3.small
+        public: no
 
     subnets:
       public:
@@ -66,3 +67,4 @@ ws:
       private:
         third: 10
         bits: 24
+
