@@ -3,14 +3,15 @@
   - name: Locate the required Linux VM
     ec2_ami_facts:
       region: "{{ ws.aws_region }}"
+      owners: 099720109477
       filters:
-        #name: "ubuntu/*hvm-ssd*/ubuntu-bionic-18.04-amd64-server-20200112"
+        #name: "ubuntu/*hvm-ssd*/ubuntu-focal-20.04-amd64-server-*" 
         name: "ubuntu/*hvm-ssd*/ubuntu-bionic-18.04-amd64-server-*"
     register: ami_results
 
   - name: Register AMI fact
     set_fact:
-      ami_id: "{{ ami_results.images[0].image_id }}"
+      ami_id: "{{ (ami_results.images |sort(attribute='creation_date') | last ).image_id }}"
 
   - name: Locat the Jump Hosts Image
     block:
@@ -18,13 +19,14 @@
     - name: Locate the Jumphost Linux VM
       ec2_ami_facts:
         region: "{{ ws.aws_region }}"
+        owners: 815818094689 
         filters:
           name: "amzn2*MATE*"
       register: jh_results
 
     - name: Register Jump Host fact
       set_fact:
-        jump_ami_id: "{{ jh_results.images[0].image_id }}"
+        jump_ami_id: "{{ ( jh_results.images |sort(attribute='creation_date') | last ).image_id }}"
 
     when: ws.jumphosts
 
