@@ -18,7 +18,7 @@
       become: no
 
     - name: Ensure python symlink exists
-      raw: test -e /usr/bin/python || (apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yq install python-minimal )
+      raw: test -e /usr/bin/python || (apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yq install python3-minimal )
 
     - name: Set the gateway machines hostname
       command:
@@ -31,7 +31,8 @@
           #!/bin/bash
 
           nic=$(ip link show | awk -F: '{ if ( $3 ~ /.*state DOWN.*/ ) print $2 }')
-          ifconfig $nic {{ privip }}/{{ privmask }} up
+          ip addr add {{ privip }}/{{ privmask }} dev $nic
+          ip link set $nic up
 
           iptables -t nat -F POSTROUTING
           iptables -F FORWARD

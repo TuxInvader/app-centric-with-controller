@@ -149,9 +149,9 @@ The role abstracted away the steps required to install and setup NGINX, and prov
 interface.
 
 If you take a look at the _setup.yaml_ file in the same folder, you will see it's using a series of tasks
-in order to get the system to a desired state. This is much more of an imperative use of ansible. First we
-add the CertBot PPA to the system, then we install certbot and the NGINX plugin, we check if we've registered
-certs before, and then pick either SSL enabled or disabled versions of NGINX configuration files.
+in order to get the system to a desired state. This is much more of an imperative use of ansible. 
+We install certbot and the NGINX plugin, we check if we've registered certs before, and then pick either
+SSL enabled or disabled versions of NGINX configuration files.
 
 [source,yaml]
 ----
@@ -163,15 +163,10 @@ certs before, and then pick either SSL enabled or disabled versions of NGINX con
 
   tasks:
 
-  - name: Setup the certbot repository
-    apt_repository:
-      repo: ppa:certbot/certbot
-      update_cache: yes 
-
   - name: Install certbot package
     apt:
       name:
-        - python-certbot-nginx
+        - python3-certbot-nginx
 
 ----
 

@@ -6,15 +6,10 @@
 
   tasks:
 
-  - name: Setup the certbot repository
-    apt_repository:
-      repo: ppa:certbot/certbot
-      update_cache: yes
-
   - name: Install certbot package
     apt:
       name:
-        - python-certbot-nginx
+        - python3-certbot-nginx
 
   - name: Setup Basic Auth File for API/Dash/Swagger access
     htpasswd:

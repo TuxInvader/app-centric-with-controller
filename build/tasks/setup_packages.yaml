@@ -17,7 +17,7 @@
         - dnsmasq
         - asciidoctor
         - rsync
-        - python-passlib
+        - python3-passlib
         - siege
         - putty-tools
       state: latest
@@ -33,15 +33,16 @@
         [Resolve]
         DNS=127.0.0.1
         Domains={{ wsid }}.{{ ws.route53.zone }}
+        DNSStubListener=no
       dest: /etc/systemd/resolved.conf
-
-  - name: Restart dnsmasq service
-    service:
-      name: dnsmasq
-      state: restarted
 
   - name: Restart systemd resolver service
     service:
       name: systemd-resolved
+      state: restarted
+
+  - name: Restart dnsmasq service
+    service:
+      name: dnsmasq
       state: restarted
 

@@ -683,9 +683,9 @@ interface.</p>
 </div>
 <div class="paragraph">
 <p>If you take a look at the <em>setup.yaml</em> file in the same folder, you will see it&#8217;s using a series of tasks
-in order to get the system to a desired state. This is much more of an imperative use of ansible. First we
-add the CertBot PPA to the system, then we install certbot and the NGINX plugin, we check if we&#8217;ve registered
-certs before, and then pick either SSL enabled or disabled versions of NGINX configuration files.</p>
+in order to get the system to a desired state. This is much more of an imperative use of ansible.
+We install certbot and the NGINX plugin, we check if we&#8217;ve registered certs before, and then pick either
+SSL enabled or disabled versions of NGINX configuration files.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -697,15 +697,10 @@ certs before, and then pick either SSL enabled or disabled versions of NGINX con
 
   <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">tasks</span><span class="tok-p tok-p-Indicator">:</span>
 
-  <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">Setup the certbot repository</span>
-    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apt_repository</span><span class="tok-p tok-p-Indicator">:</span>
-      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">repo</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">ppa:certbot/certbot</span>
-      <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">update_cache</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">yes</span>
-
   <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">Install certbot package</span>
     <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">apt</span><span class="tok-p tok-p-Indicator">:</span>
       <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">name</span><span class="tok-p tok-p-Indicator">:</span>
-        <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">python-certbot-nginx</span></code></pre>
+        <span class="tok-p tok-p-Indicator">-</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">python3-certbot-nginx</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -824,7 +819,7 @@ servers.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-03 16:57:57 UTC
+Last updated 2022-01-06 16:14:23 UTC
 </div>
 </div>
 <style>

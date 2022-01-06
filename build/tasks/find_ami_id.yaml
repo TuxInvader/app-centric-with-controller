@@ -5,15 +5,15 @@
       region: "{{ ws.aws_region }}"
       owners: 099720109477
       filters:
-        #name: "ubuntu/*hvm-ssd*/ubuntu-focal-20.04-amd64-server-*" 
-        name: "ubuntu/*hvm-ssd*/ubuntu-bionic-18.04-amd64-server-*"
+        name: "ubuntu/*hvm-ssd*/ubuntu-focal-20.04-amd64-server-*" 
+        #name: "ubuntu/*hvm-ssd*/ubuntu-bionic-18.04-amd64-server-*"
     register: ami_results
 
   - name: Register AMI fact
     set_fact:
       ami_id: "{{ (ami_results.images |sort(attribute='creation_date') | last ).image_id }}"
 
-  - name: Locat the Jump Hosts Image
+  - name: Locate the Jump Hosts Image
     block:
 
     - name: Locate the Jumphost Linux VM
